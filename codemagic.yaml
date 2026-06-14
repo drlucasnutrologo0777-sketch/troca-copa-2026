@@ -1,10 +1,10 @@
 # TROCA COPA 2026 — iPhone (TestFlight)
 #
-# OBRIGATÓRIO no Codemagic (uma vez):
-# Team integrations → Developer Portal → Add key → nome EXATAMENTE: codemagic
-# Issuer ID: b681d77e-4c5b-4154-b3e4-962dab155c2d
-# Key ID: VHR75L74MJ
-# Arquivo: AuthKey_VHR75L74MJ.p8
+# Configure UMA VEZ no Codemagic (app troca-copa-2026 → Environment variables):
+# Grupo: troca_copa_apple (marcar Secret)
+#   APP_STORE_CONNECT_ISSUER_ID      = b681d77e-4c5b-4154-b3e4-962dab155c2d
+#   APP_STORE_CONNECT_KEY_IDENTIFIER = VHR75L74MJ
+#   APP_STORE_CONNECT_PRIVATE_KEY    = conteudo do AuthKey_VHR75L74MJ.p8
 
 workflows:
   troca-copa-ios:
@@ -12,10 +12,9 @@ workflows:
     max_build_duration: 60
     instance_type: mac_mini_m2
 
-    integrations:
-      app_store_connect: codemagic
-
     environment:
+      groups:
+        - troca_copa_apple
       vars:
         APP_STORE_APPLE_ID: 6780245563
         BUNDLE_ID: com.mycompany.trocafigurinha
@@ -30,16 +29,17 @@ workflows:
       - name: Create Apple Distribution certificate (with private key)
         script: |
           set -e
-          echo "Criando certificado Distribution na Apple (Codemagic guarda a chave)..."
+          echo "Issuer: ${APP_STORE_CONNECT_ISSUER_ID:+OK}"
+          echo "Key ID: ${APP_STORE_CONNECT_KEY_IDENTIFIER:+OK}"
+          echo "Private key: ${APP_STORE_CONNECT_PRIVATE_KEY:+OK}"
           app-store-connect certificates create \
             --type IOS_DISTRIBUTION \
             --save \
             --p12-password "$CM_CERTIFICATE_PASSWORD" \
-            --verbose || echo "Certificado Distribution ja existe ou limite Apple — continuando"
+            --verbose || echo "Certificado ja existe — continuando"
       - name: Fetch App Store profile from Apple
         script: |
           set -e
-          echo "Criando/buscando perfil App Store para $BUNDLE_ID ..."
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
@@ -47,8 +47,6 @@ workflows:
             --strict-match-identifier \
             --verbose
           keychain add-certificates
-          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ || true
-          ls -la ~/Library/MobileDevice/Certificates/ || true
       - name: Set up code signing on Xcode project
         script: xcode-project use-profiles
       - name: Flutter pub get
@@ -76,5 +74,7 @@ workflows:
           success: true
           failure: true
       app_store_connect:
-        auth: integration
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         submit_to_testflight: true
