@@ -1,6 +1,6 @@
 # TROCA COPA 2026 — iPhone (TestFlight)
-# Bundle: com.mycompany.trocafigurinha
-# Codemagic: Team integrations → Developer Portal → chave "codemagic" (ou Troca Copa)
+# OBRIGATÓRIO no Codemagic: Team integrations → Developer Portal → chave nome "codemagic"
+# Issuer: b681d77e-4c5b-4154-b3e4-962dab155c2d | Key: VHR75L74MJ | .p8 Troca Copa
 
 workflows:
   troca-copa-ios:
@@ -12,11 +12,9 @@ workflows:
       app_store_connect: codemagic
 
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.mycompany.trocafigurinha
       vars:
         APP_STORE_APPLE_ID: 6780245563
+        BUNDLE_ID: com.mycompany.trocafigurinha
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -27,11 +25,14 @@ workflows:
       - name: Fetch signing files from Apple
         script: |
           set -e
-          app-store-connect fetch-signing-files "com.mycompany.trocafigurinha" \
+          echo "Buscando certificado e perfil App Store na Apple..."
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
-            --strict-match-identifier
+            --strict-match-identifier \
+            --verbose
           keychain add-certificates
+          echo "Arquivos de assinatura OK"
       - name: Set up code signing on Xcode project
         script: xcode-project use-profiles
       - name: Flutter pub get
