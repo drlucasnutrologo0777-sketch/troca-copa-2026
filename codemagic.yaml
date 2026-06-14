@@ -26,6 +26,12 @@ workflows:
         script: |
           cd ios
           pod install
+      - name: Fetch iOS signing files from Apple
+        script: |
+          app-store-connect fetch-signing-files "com.mycompany.trocafigurinha" \
+            --type IOS_APP_STORE \
+            --create
+          keychain add-certificates
       - name: Code signing
         script: xcode-project use-profiles
       - name: Build IPA
