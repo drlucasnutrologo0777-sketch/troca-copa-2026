@@ -1,6 +1,10 @@
 # TROCA COPA 2026 — iPhone (TestFlight)
-# OBRIGATÓRIO no Codemagic: Team integrations → Developer Portal → chave nome "codemagic"
-# Issuer: b681d77e-4c5b-4154-b3e4-962dab155c2d | Key: VHR75L74MJ | .p8 Troca Copa
+#
+# OBRIGATÓRIO no Codemagic (uma vez):
+# Team integrations → Developer Portal → Add key → nome EXATAMENTE: codemagic
+# Issuer ID: b681d77e-4c5b-4154-b3e4-962dab155c2d
+# Key ID: VHR75L74MJ
+# Arquivo: AuthKey_VHR75L74MJ.p8
 
 workflows:
   troca-copa-ios:
@@ -15,6 +19,7 @@ workflows:
       vars:
         APP_STORE_APPLE_ID: 6780245563
         BUNDLE_ID: com.mycompany.trocafigurinha
+        CM_CERTIFICATE_PASSWORD: TrocaCopa2026
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -22,17 +27,28 @@ workflows:
     scripts:
       - name: Set up keychain
         script: keychain initialize
-      - name: Fetch signing files from Apple
+      - name: Create Apple Distribution certificate (with private key)
         script: |
           set -e
-          echo "Buscando certificado e perfil App Store na Apple..."
+          echo "Criando certificado Distribution na Apple (Codemagic guarda a chave)..."
+          app-store-connect certificates create \
+            --type IOS_DISTRIBUTION \
+            --save \
+            --p12-password "$CM_CERTIFICATE_PASSWORD" \
+            --verbose || echo "Certificado Distribution ja existe ou limite Apple — continuando"
+      - name: Fetch App Store profile from Apple
+        script: |
+          set -e
+          echo "Criando/buscando perfil App Store para $BUNDLE_ID ..."
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
+            --delete-stale-profiles \
             --strict-match-identifier \
             --verbose
           keychain add-certificates
-          echo "Arquivos de assinatura OK"
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ || true
+          ls -la ~/Library/MobileDevice/Certificates/ || true
       - name: Set up code signing on Xcode project
         script: xcode-project use-profiles
       - name: Flutter pub get
