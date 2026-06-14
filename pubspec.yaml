@@ -1,0 +1,33 @@
+name: troca_copa_app
+description: Troca Copa 2026 — troca de figurinhas Panini (projeto separado do Da Roça Pra Mesa)
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  firebase_core: ^3.14.0
+  firebase_auth: ^5.6.0
+  cloud_firestore: ^5.6.9
+  firebase_storage: ^12.4.7
+  geolocator: ^14.0.2
+  image_picker: ^1.1.2
+  file_picker: ^8.3.7
+  provider: ^6.1.5
+  google_fonts: ^6.3.3
+  uuid: ^4.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/stickers_catalog.json

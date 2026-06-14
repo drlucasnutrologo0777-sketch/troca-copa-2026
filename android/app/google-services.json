@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "545698991668",
+    "project_id": "troca-figurinha-53393",
+    "storage_bucket": "troca-figurinha-53393.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:545698991668:android:b6c05e610d602df3180461",
+        "android_client_info": {
+          "package_name": "com.mycompany.trocafigurinha"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAa7zwvY-y95j04FQ9EqfOD3G3fe3dRVCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

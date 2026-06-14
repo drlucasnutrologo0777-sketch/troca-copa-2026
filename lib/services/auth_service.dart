@@ -1,0 +1,258 @@
+import 'dart:typed_data';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:geolocator/geolocator.dart';
+import '../models/models.dart';
+import 'presence_service.dart';
+
+class AuthService {
+  AuthService._();
+  static final instance = AuthService._();
+
+  final _auth = FirebaseAuth.instance;
+  final _db = FirebaseFirestore.instance;
+  final _storage = FirebaseStorage.instance;
+
+  Stream<User?> get authState => _auth.authStateChanges();
+  User? get currentUser => _auth.currentUser;
+
+  Future<UserProfile?> loginEmail({
+    required String email,
+    required String senha,
+  }) async {
+    await _auth.signInWithEmailAndPassword(
+      email: email.trim(),
+      password: senha,
+    );
+    final profile = await carregarPerfil();
+    if (profile != null) {
+      await _atualizarLocalizacao(profile.id);
+      return carregarPerfil();
+    }
+    return null;
+  }
+
+  Future<UserProfile> cadastrar({
+    required String nome,
+    required String email,
+    required String senha,
+    required String telefone,
+    required String endereco,
+    required String cidade,
+    required String estado,
+    Uint8List? fotoBytes,
+    String? fotoNome,
+  }) async {
+    final cred = await _auth.createUserWithEmailAndPassword(
+      email: email.trim(),
+      password: senha,
+    );
+    final uid = cred.user!.uid;
+    final pos = await _obterLocalizacao();
+
+    final profile = UserProfile(
+      id: uid,
+      nome: nome.trim(),
+      email: email.trim(),
+      telefone: telefone.trim(),
+      endereco: endereco.trim(),
+      cidade: cidade.trim(),
+      estado: estado.trim(),
+      latitude: pos.latitude,
+      longitude: pos.longitude,
+    );
+
+    await _db.collection('users').doc(uid).set({
+      ...profile.toMap(),
+      'isOnline': false,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+
+    if (fotoBytes != null) {
+      final fotoUrl = await _enviarFoto(uid, fotoBytes, fotoNome ?? 'foto.jpg');
+      await _db.collection('users').doc(uid).update({'fotoUrl': fotoUrl});
+    }
+
+    return (await carregarPerfil())!;
+  }
+
+  Future<UserProfile> completarCadastro({
+    required String nome,
+    required String telefone,
+    required String endereco,
+    required String cidade,
+    required String estado,
+    Uint8List? fotoBytes,
+    String? fotoNome,
+  }) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw FirebaseAuthException(code: 'no-user', message: 'Faça login primeiro.');
+    }
+    final uid = user.uid;
+    final pos = await _obterLocalizacao();
+    final email = user.email ?? '';
+
+    final profile = UserProfile(
+      id: uid,
+      nome: nome.trim(),
+      email: email.trim(),
+      telefone: telefone.trim(),
+      endereco: endereco.trim(),
+      cidade: cidade.trim(),
+      estado: estado.trim(),
+      latitude: pos.latitude,
+      longitude: pos.longitude,
+    );
+
+    await _db.collection('users').doc(uid).set({
+      ...profile.toMap(),
+      'isOnline': false,
+      'updatedAt': FieldValue.serverTimestamp(),
+      'createdAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+
+    if (fotoBytes != null) {
+      final fotoUrl = await _enviarFoto(uid, fotoBytes, fotoNome ?? 'foto.jpg');
+      await _db.collection('users').doc(uid).update({'fotoUrl': fotoUrl});
+    }
+
+    return (await carregarPerfil())!;
+  }
+
+  Future<void> esqueciSenha(String email) async {
+    await _auth.sendPasswordResetEmail(email: email.trim());
+  }
+
+  Future<UserProfile?> carregarPerfil() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return null;
+    final snap = await _db.collection('users').doc(uid).get();
+    if (!snap.exists) return null;
+    final d = snap.data()!;
+    return UserProfile(
+      id: uid,
+      nome: d['nome'] as String? ?? '',
+      email: d['email'] as String? ?? _auth.currentUser?.email ?? '',
+      telefone: d['telefone'] as String? ?? '',
+      endereco: d['endereco'] as String? ?? '',
+      cidade: d['cidade'] as String? ?? '',
+      estado: d['estado'] as String? ?? '',
+      latitude: (d['latitude'] as num?)?.toDouble() ?? 0,
+      longitude: (d['longitude'] as num?)?.toDouble() ?? 0,
+      fotoUrl: d['fotoUrl'] as String?,
+      raioTrocaKm: (d['raioTrocaKm'] as num?)?.toDouble() ?? 10,
+      isOnline: d['isOnline'] as bool? ?? false,
+    );
+  }
+
+  Future<void> _atualizarLocalizacao(String uid) async {
+    final pos = await _obterLocalizacao();
+    await _db.collection('users').doc(uid).update({
+      'latitude': pos.latitude,
+      'longitude': pos.longitude,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<String> _enviarFoto(String uid, Uint8List bytes, String nome) async {
+    final lower = nome.toLowerCase();
+    final ext = lower.endsWith('.png')
+        ? 'png'
+        : lower.endsWith('.webp')
+            ? 'webp'
+            : 'jpg';
+    final contentType = switch (ext) {
+      'png' => 'image/png',
+      'webp' => 'image/webp',
+      _ => 'image/jpeg',
+    };
+    final path = 'users/$uid/profile_${DateTime.now().millisecondsSinceEpoch}.$ext';
+    final ref = _storage.ref().child(path);
+    await ref.putData(bytes, SettableMetadata(contentType: contentType));
+    return ref.getDownloadURL();
+  }
+
+  Future<UserProfile> atualizarFoto({
+    required Uint8List fotoBytes,
+    String? fotoNome,
+  }) async {
+    final uid = _auth.currentUser!.uid;
+    final fotoUrl = await _enviarFoto(uid, fotoBytes, fotoNome ?? 'foto.jpg');
+    await _db.collection('users').doc(uid).set({
+      'fotoUrl': fotoUrl,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+    return (await carregarPerfil())!;
+  }
+
+  Future<void> sair() async {
+    await PresenceService.instance.ficarOffline();
+    await _auth.signOut();
+  }
+
+  Future<UserProfile> atualizarPreferenciasTroca({
+    required String cidade,
+    required String estado,
+    required double raioKm,
+  }) async {
+    final uid = _auth.currentUser!.uid;
+    final pos = await _obterLocalizacao();
+    await _db.collection('users').doc(uid).update({
+      'cidade': cidade.trim(),
+      'estado': estado.trim(),
+      'raioTrocaKm': raioKm,
+      'latitude': pos.latitude,
+      'longitude': pos.longitude,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+    return (await carregarPerfil())!;
+  }
+
+  Future<void> apagarConta() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    final uid = user.uid;
+
+    await _db.collection('offers').doc(uid).delete().catchError((_) {});
+    final unlocked = await _db.collection('users').doc(uid).collection('unlockedMatches').get();
+    for (final doc in unlocked.docs) {
+      await doc.reference.delete();
+    }
+    await _db.collection('users').doc(uid).delete().catchError((_) {});
+
+    try {
+      final folder = _storage.ref().child('users/$uid');
+      final list = await folder.listAll();
+      for (final item in list.items) {
+        await item.delete();
+      }
+    } catch (_) {}
+
+    await user.delete();
+  }
+
+  Future<Position> _obterLocalizacao() async {
+    var perm = await Geolocator.checkPermission();
+    if (perm == LocationPermission.denied) {
+      perm = await Geolocator.requestPermission();
+    }
+    if (perm == LocationPermission.deniedForever ||
+        perm == LocationPermission.denied) {
+      return Position(
+        latitude: -16.735,
+        longitude: -43.861,
+        timestamp: DateTime.now(),
+        accuracy: 0,
+        altitude: 0,
+        altitudeAccuracy: 0,
+        heading: 0,
+        headingAccuracy: 0,
+        speed: 0,
+        speedAccuracy: 0,
+      );
+    }
+    return Geolocator.getCurrentPosition();
+  }
+}

@@ -1,0 +1,5675 @@
+{
+  "version": "2026.1",
+  "grupos": [
+    {
+      "id": "A",
+      "nome": "Grupo A",
+      "selecoes": [
+        {
+          "nome": "México",
+          "codigo": "MEX"
+        },
+        {
+          "nome": "África do Sul",
+          "codigo": "RSA"
+        },
+        {
+          "nome": "Coreia do Sul",
+          "codigo": "KOR"
+        },
+        {
+          "nome": "República Tcheca",
+          "codigo": "CZE"
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "nome": "Grupo B",
+      "selecoes": [
+        {
+          "nome": "Canadá",
+          "codigo": "CAN"
+        },
+        {
+          "nome": "Bósnia",
+          "codigo": "BIH"
+        },
+        {
+          "nome": "Catar",
+          "codigo": "QAT"
+        },
+        {
+          "nome": "Suíça",
+          "codigo": "SUI"
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "nome": "Grupo C",
+      "selecoes": [
+        {
+          "nome": "Brasil",
+          "codigo": "BRA"
+        },
+        {
+          "nome": "Marrocos",
+          "codigo": "MAR"
+        },
+        {
+          "nome": "Haiti",
+          "codigo": "HAI"
+        },
+        {
+          "nome": "Escócia",
+          "codigo": "SCO"
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "nome": "Grupo D",
+      "selecoes": [
+        {
+          "nome": "EUA",
+          "codigo": "USA"
+        },
+        {
+          "nome": "Paraguai",
+          "codigo": "PAR"
+        },
+        {
+          "nome": "Austrália",
+          "codigo": "AUS"
+        },
+        {
+          "nome": "Turquia",
+          "codigo": "TUR"
+        }
+      ]
+    },
+    {
+      "id": "E",
+      "nome": "Grupo E",
+      "selecoes": [
+        {
+          "nome": "Alemanha",
+          "codigo": "GER"
+        },
+        {
+          "nome": "Curaçao",
+          "codigo": "CUW"
+        },
+        {
+          "nome": "Costa do Marfim",
+          "codigo": "CIV"
+        },
+        {
+          "nome": "Equador",
+          "codigo": "ECU"
+        }
+      ]
+    },
+    {
+      "id": "F",
+      "nome": "Grupo F",
+      "selecoes": [
+        {
+          "nome": "Holanda",
+          "codigo": "NED"
+        },
+        {
+          "nome": "Japão",
+          "codigo": "JPN"
+        },
+        {
+          "nome": "Suécia",
+          "codigo": "SWE"
+        },
+        {
+          "nome": "Tunísia",
+          "codigo": "TUN"
+        }
+      ]
+    },
+    {
+      "id": "G",
+      "nome": "Grupo G",
+      "selecoes": [
+        {
+          "nome": "Bélgica",
+          "codigo": "BEL"
+        },
+        {
+          "nome": "Egito",
+          "codigo": "EGY"
+        },
+        {
+          "nome": "Irã",
+          "codigo": "IRN"
+        },
+        {
+          "nome": "Nova Zelândia",
+          "codigo": "NZL"
+        }
+      ]
+    },
+    {
+      "id": "H",
+      "nome": "Grupo H",
+      "selecoes": [
+        {
+          "nome": "Espanha",
+          "codigo": "ESP"
+        },
+        {
+          "nome": "Cabo Verde",
+          "codigo": "CPV"
+        },
+        {
+          "nome": "Arábia Saudita",
+          "codigo": "KSA"
+        },
+        {
+          "nome": "Uruguai",
+          "codigo": "URU"
+        }
+      ]
+    },
+    {
+      "id": "I",
+      "nome": "Grupo I",
+      "selecoes": [
+        {
+          "nome": "França",
+          "codigo": "FRA"
+        },
+        {
+          "nome": "Senegal",
+          "codigo": "SEN"
+        },
+        {
+          "nome": "Iraque",
+          "codigo": "IRQ"
+        },
+        {
+          "nome": "Noruega",
+          "codigo": "NOR"
+        }
+      ]
+    },
+    {
+      "id": "J",
+      "nome": "Grupo J",
+      "selecoes": [
+        {
+          "nome": "Argentina",
+          "codigo": "ARG"
+        },
+        {
+          "nome": "Argélia",
+          "codigo": "ALG"
+        },
+        {
+          "nome": "Áustria",
+          "codigo": "AUT"
+        },
+        {
+          "nome": "Jordânia",
+          "codigo": "JOR"
+        }
+      ]
+    },
+    {
+      "id": "K",
+      "nome": "Grupo K",
+      "selecoes": [
+        {
+          "nome": "Portugal",
+          "codigo": "POR"
+        },
+        {
+          "nome": "RD Congo",
+          "codigo": "COD"
+        },
+        {
+          "nome": "Uzbequistão",
+          "codigo": "UZB"
+        },
+        {
+          "nome": "Colômbia",
+          "codigo": "COL"
+        }
+      ]
+    },
+    {
+      "id": "L",
+      "nome": "Grupo L",
+      "selecoes": [
+        {
+          "nome": "Inglaterra",
+          "codigo": "ENG"
+        },
+        {
+          "nome": "Croácia",
+          "codigo": "CRO"
+        },
+        {
+          "nome": "Gana",
+          "codigo": "GHA"
+        },
+        {
+          "nome": "Panamá",
+          "codigo": "PAN"
+        }
+      ]
+    }
+  ],
+  "stickers": [
+    {
+      "idUnico": "MEX_01",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Luis Malagón",
+      "imagem": "mex_01.png"
+    },
+    {
+      "idUnico": "MEX_03",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Johan Vásquez",
+      "imagem": "mex_03.png"
+    },
+    {
+      "idUnico": "MEX_04",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Jorge Sánchez",
+      "imagem": "mex_04.png"
+    },
+    {
+      "idUnico": "MEX_05",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "César Montes",
+      "imagem": "mex_05.png"
+    },
+    {
+      "idUnico": "MEX_06",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Jesús Gallardo",
+      "imagem": "mex_06.png"
+    },
+    {
+      "idUnico": "MEX_07",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Israel Reyes",
+      "imagem": "mex_07.png"
+    },
+    {
+      "idUnico": "MEX_08",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Diego Lainez",
+      "imagem": "mex_08.png"
+    },
+    {
+      "idUnico": "MEX_09",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Carlos Rodríguez",
+      "imagem": "mex_09.png"
+    },
+    {
+      "idUnico": "MEX_11",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Orbelín Pineda",
+      "imagem": "mex_11.png"
+    },
+    {
+      "idUnico": "MEX_12",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Marcel Ruiz",
+      "imagem": "mex_12.png"
+    },
+    {
+      "idUnico": "MEX_13",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "mex_13.png"
+    },
+    {
+      "idUnico": "MEX_14",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Érick Sánchez",
+      "imagem": "mex_14.png"
+    },
+    {
+      "idUnico": "MEX_15",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Hirving Lozano",
+      "imagem": "mex_15.png"
+    },
+    {
+      "idUnico": "MEX_16",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Santiago Giménez",
+      "imagem": "mex_16.png"
+    },
+    {
+      "idUnico": "MEX_17",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Raúl Jiménez",
+      "imagem": "mex_17.png"
+    },
+    {
+      "idUnico": "MEX_18",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Edson Álvarez",
+      "imagem": "mex_18.png"
+    },
+    {
+      "idUnico": "MEX_19",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "Roberto Alvarado",
+      "imagem": "mex_19.png"
+    },
+    {
+      "idUnico": "MEX_20",
+      "grupo": "A",
+      "selecao": "México",
+      "nomeJogador": "César Huerta",
+      "imagem": "mex_20.png"
+    },
+    {
+      "idUnico": "RSA_01",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Sipho Chaine",
+      "imagem": "rsa_01.png"
+    },
+    {
+      "idUnico": "RSA_02",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Ronwen Williams",
+      "imagem": "rsa_02.png"
+    },
+    {
+      "idUnico": "RSA_04",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Aubrey Modiba",
+      "imagem": "rsa_04.png"
+    },
+    {
+      "idUnico": "RSA_05",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Samukele Kabini",
+      "imagem": "rsa_05.png"
+    },
+    {
+      "idUnico": "RSA_06",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Mbekezelu Mbokazi",
+      "imagem": "rsa_06.png"
+    },
+    {
+      "idUnico": "RSA_07",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Khuluman Ndamane",
+      "imagem": "rsa_07.png"
+    },
+    {
+      "idUnico": "RSA_08",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Siyabonga Ngezana",
+      "imagem": "rsa_08.png"
+    },
+    {
+      "idUnico": "RSA_09",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Khuliso Mudau",
+      "imagem": "rsa_09.png"
+    },
+    {
+      "idUnico": "RSA_10",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Nkosinathi Sibisi",
+      "imagem": "rsa_10.png"
+    },
+    {
+      "idUnico": "RSA_11",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Teboho Mokoena",
+      "imagem": "rsa_11.png"
+    },
+    {
+      "idUnico": "RSA_12",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Thalente Mbatha",
+      "imagem": "rsa_12.png"
+    },
+    {
+      "idUnico": "RSA_14",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Bathusi Aubaas",
+      "imagem": "rsa_14.png"
+    },
+    {
+      "idUnico": "RSA_15",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Vaya Sithole",
+      "imagem": "rsa_15.png"
+    },
+    {
+      "idUnico": "RSA_17",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Sipho Mbule",
+      "imagem": "rsa_17.png"
+    },
+    {
+      "idUnico": "RSA_18",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Iqraam Ravners",
+      "imagem": "rsa_18.png"
+    },
+    {
+      "idUnico": "RSA_20",
+      "grupo": "A",
+      "selecao": "África do Sul",
+      "nomeJogador": "Oswin Appollis",
+      "imagem": "rsa_20.png"
+    },
+    {
+      "idUnico": "KOR_02",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Hyeonwoo Jo",
+      "imagem": "kor_02.png"
+    },
+    {
+      "idUnico": "KOR_03",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Seunggyu Kim",
+      "imagem": "kor_03.png"
+    },
+    {
+      "idUnico": "KOR_04",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Minjae Kim",
+      "imagem": "kor_04.png"
+    },
+    {
+      "idUnico": "KOR_05",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Yumin Cho",
+      "imagem": "kor_05.png"
+    },
+    {
+      "idUnico": "KOR_06",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Youngwoo Seol",
+      "imagem": "kor_06.png"
+    },
+    {
+      "idUnico": "KOR_07",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Hanbeom Lee",
+      "imagem": "kor_07.png"
+    },
+    {
+      "idUnico": "KOR_08",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Taeseok Lee",
+      "imagem": "kor_08.png"
+    },
+    {
+      "idUnico": "KOR_10",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Jaesung Lee",
+      "imagem": "kor_10.png"
+    },
+    {
+      "idUnico": "KOR_11",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Inbeom Hwang",
+      "imagem": "kor_11.png"
+    },
+    {
+      "idUnico": "KOR_12",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Kangin Lee",
+      "imagem": "kor_12.png"
+    },
+    {
+      "idUnico": "KOR_14",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Seungho Paik",
+      "imagem": "kor_14.png"
+    },
+    {
+      "idUnico": "KOR_15",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Jens Castrop",
+      "imagem": "kor_15.png"
+    },
+    {
+      "idUnico": "KOR_16",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Donggyeong Lee",
+      "imagem": "kor_16.png"
+    },
+    {
+      "idUnico": "KOR_17",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Guesung Cho",
+      "imagem": "kor_17.png"
+    },
+    {
+      "idUnico": "KOR_18",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Heungmin Son",
+      "imagem": "kor_18.png"
+    },
+    {
+      "idUnico": "KOR_19",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Heechan Hwang",
+      "imagem": "kor_19.png"
+    },
+    {
+      "idUnico": "KOR_20",
+      "grupo": "A",
+      "selecao": "Coreia do Sul",
+      "nomeJogador": "Hyeongyu Oh",
+      "imagem": "kor_20.png"
+    },
+    {
+      "idUnico": "CZE_01",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Matěj Kovář",
+      "imagem": "cze_01.png"
+    },
+    {
+      "idUnico": "CZE_03",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Jindřich Staněk",
+      "imagem": "cze_03.png"
+    },
+    {
+      "idUnico": "CZE_04",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Ladislav Krejčí",
+      "imagem": "cze_04.png"
+    },
+    {
+      "idUnico": "CZE_05",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Vladimír Coufal",
+      "imagem": "cze_05.png"
+    },
+    {
+      "idUnico": "CZE_06",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Jaroslav Zelený",
+      "imagem": "cze_06.png"
+    },
+    {
+      "idUnico": "CZE_07",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Tomáš Holeš",
+      "imagem": "cze_07.png"
+    },
+    {
+      "idUnico": "CZE_08",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "David Zima",
+      "imagem": "cze_08.png"
+    },
+    {
+      "idUnico": "CZE_09",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Michal Sadílek",
+      "imagem": "cze_09.png"
+    },
+    {
+      "idUnico": "CZE_10",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Lukáš Provod",
+      "imagem": "cze_10.png"
+    },
+    {
+      "idUnico": "CZE_11",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Lukáš Červ",
+      "imagem": "cze_11.png"
+    },
+    {
+      "idUnico": "CZE_12",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Tomáš Souček",
+      "imagem": "cze_12.png"
+    },
+    {
+      "idUnico": "CZE_14",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Pavel Šulc",
+      "imagem": "cze_14.png"
+    },
+    {
+      "idUnico": "CZE_15",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Matěj Vydra",
+      "imagem": "cze_15.png"
+    },
+    {
+      "idUnico": "CZE_16",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Vasil Kušej",
+      "imagem": "cze_16.png"
+    },
+    {
+      "idUnico": "CZE_17",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Tomáš Chorý",
+      "imagem": "cze_17.png"
+    },
+    {
+      "idUnico": "CZE_18",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Václav Černý",
+      "imagem": "cze_18.png"
+    },
+    {
+      "idUnico": "CZE_19",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Adam Hložek",
+      "imagem": "cze_19.png"
+    },
+    {
+      "idUnico": "CZE_20",
+      "grupo": "A",
+      "selecao": "República Tcheca",
+      "nomeJogador": "Patrik Schick",
+      "imagem": "cze_20.png"
+    },
+    {
+      "idUnico": "CAN_01",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Dayne St. Clair",
+      "imagem": "can_01.png"
+    },
+    {
+      "idUnico": "CAN_03",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Alistair Johnston",
+      "imagem": "can_03.png"
+    },
+    {
+      "idUnico": "CAN_05",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Samuel Adekugbe",
+      "imagem": "can_05.png"
+    },
+    {
+      "idUnico": "CAN_06",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Richie Laryea",
+      "imagem": "can_06.png"
+    },
+    {
+      "idUnico": "CAN_07",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Derek Cornelius",
+      "imagem": "can_07.png"
+    },
+    {
+      "idUnico": "CAN_08",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Moïse Bombito",
+      "imagem": "can_08.png"
+    },
+    {
+      "idUnico": "CAN_09",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Kamal Miller",
+      "imagem": "can_09.png"
+    },
+    {
+      "idUnico": "CAN_10",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Stephen Eustáquio",
+      "imagem": "can_10.png"
+    },
+    {
+      "idUnico": "CAN_11",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Ismaël Koné",
+      "imagem": "can_11.png"
+    },
+    {
+      "idUnico": "CAN_12",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Jonathan Osorio",
+      "imagem": "can_12.png"
+    },
+    {
+      "idUnico": "CAN_14",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Jacob Shaffelburg",
+      "imagem": "can_14.png"
+    },
+    {
+      "idUnico": "CAN_15",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Mathieu Choinière",
+      "imagem": "can_15.png"
+    },
+    {
+      "idUnico": "CAN_16",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Niko Sigur",
+      "imagem": "can_16.png"
+    },
+    {
+      "idUnico": "CAN_17",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Tajon Buchanan",
+      "imagem": "can_17.png"
+    },
+    {
+      "idUnico": "CAN_18",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Liam Millar",
+      "imagem": "can_18.png"
+    },
+    {
+      "idUnico": "CAN_19",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Cyle Larin",
+      "imagem": "can_19.png"
+    },
+    {
+      "idUnico": "CAN_20",
+      "grupo": "B",
+      "selecao": "Canadá",
+      "nomeJogador": "Jonathan David",
+      "imagem": "can_20.png"
+    },
+    {
+      "idUnico": "BIH_01",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "bih_01.png"
+    },
+    {
+      "idUnico": "BIH_02",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Nikola Vasilj",
+      "imagem": "bih_02.png"
+    },
+    {
+      "idUnico": "BIH_03",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Amar Dedić",
+      "imagem": "bih_03.png"
+    },
+    {
+      "idUnico": "BIH_04",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Sead Kolašinac",
+      "imagem": "bih_04.png"
+    },
+    {
+      "idUnico": "BIH_05",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Tarik Muharemović",
+      "imagem": "bih_05.png"
+    },
+    {
+      "idUnico": "BIH_06",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Nihad Mujakić",
+      "imagem": "bih_06.png"
+    },
+    {
+      "idUnico": "BIH_07",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Mili Katić",
+      "imagem": "bih_07.png"
+    },
+    {
+      "idUnico": "BIH_08",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Amir Hadžiahmetović",
+      "imagem": "bih_08.png"
+    },
+    {
+      "idUnico": "BIH_09",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Benjamin Tahirović",
+      "imagem": "bih_09.png"
+    },
+    {
+      "idUnico": "BIH_10",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Armin Gigović",
+      "imagem": "bih_10.png"
+    },
+    {
+      "idUnico": "BIH_12",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "bih_12.png"
+    },
+    {
+      "idUnico": "BIH_13",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "bih_13.png"
+    },
+    {
+      "idUnico": "BIH_14",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Dženis Burnić",
+      "imagem": "bih_14.png"
+    },
+    {
+      "idUnico": "BIH_15",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Esmer Bajraktarević",
+      "imagem": "bih_15.png"
+    },
+    {
+      "idUnico": "BIH_16",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Amar Memić",
+      "imagem": "bih_16.png"
+    },
+    {
+      "idUnico": "BIH_17",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Ermedin Demirović",
+      "imagem": "bih_17.png"
+    },
+    {
+      "idUnico": "BIH_18",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Edin Džeko",
+      "imagem": "bih_18.png"
+    },
+    {
+      "idUnico": "BIH_19",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Samed Baždar",
+      "imagem": "bih_19.png"
+    },
+    {
+      "idUnico": "BIH_20",
+      "grupo": "B",
+      "selecao": "Bósnia",
+      "nomeJogador": "Nani Tabaković",
+      "imagem": "bih_20.png"
+    },
+    {
+      "idUnico": "QAT_02",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Meshaal Barsham",
+      "imagem": "qat_02.png"
+    },
+    {
+      "idUnico": "QAT_03",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Sultan Albrake",
+      "imagem": "qat_03.png"
+    },
+    {
+      "idUnico": "QAT_04",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Lucas Mendes",
+      "imagem": "qat_04.png"
+    },
+    {
+      "idUnico": "QAT_05",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Homam Ahmed",
+      "imagem": "qat_05.png"
+    },
+    {
+      "idUnico": "QAT_06",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Boualem Khoukhi",
+      "imagem": "qat_06.png"
+    },
+    {
+      "idUnico": "QAT_07",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Pedro Miguel",
+      "imagem": "qat_07.png"
+    },
+    {
+      "idUnico": "QAT_08",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Yusuf Salman",
+      "imagem": "qat_08.png"
+    },
+    {
+      "idUnico": "QAT_09",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Mohammed Mannai",
+      "imagem": "qat_09.png"
+    },
+    {
+      "idUnico": "QAT_10",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Karim Boudiaf",
+      "imagem": "qat_10.png"
+    },
+    {
+      "idUnico": "QAT_13",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "qat_13.png"
+    },
+    {
+      "idUnico": "QAT_14",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Mohammed Waad",
+      "imagem": "qat_14.png"
+    },
+    {
+      "idUnico": "QAT_15",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Abdulaziz Hatem",
+      "imagem": "qat_15.png"
+    },
+    {
+      "idUnico": "QAT_16",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Hassan Al-Haydos",
+      "imagem": "qat_16.png"
+    },
+    {
+      "idUnico": "QAT_17",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Edmilson Junior",
+      "imagem": "qat_17.png"
+    },
+    {
+      "idUnico": "QAT_18",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Akram Hassan Afif",
+      "imagem": "qat_18.png"
+    },
+    {
+      "idUnico": "QAT_19",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Ahmed Al-Ganehi",
+      "imagem": "qat_19.png"
+    },
+    {
+      "idUnico": "QAT_20",
+      "grupo": "B",
+      "selecao": "Catar",
+      "nomeJogador": "Almoez Ali",
+      "imagem": "qat_20.png"
+    },
+    {
+      "idUnico": "SUI_02",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Gregor Kobel",
+      "imagem": "sui_02.png"
+    },
+    {
+      "idUnico": "SUI_03",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Yvon Mvogo",
+      "imagem": "sui_03.png"
+    },
+    {
+      "idUnico": "SUI_04",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Manuel Akanji",
+      "imagem": "sui_04.png"
+    },
+    {
+      "idUnico": "SUI_05",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Ricardo Rodríguez",
+      "imagem": "sui_05.png"
+    },
+    {
+      "idUnico": "SUI_06",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Nico Elvedi",
+      "imagem": "sui_06.png"
+    },
+    {
+      "idUnico": "SUI_07",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Aurèle Amenda",
+      "imagem": "sui_07.png"
+    },
+    {
+      "idUnico": "SUI_08",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Silvan Widmer",
+      "imagem": "sui_08.png"
+    },
+    {
+      "idUnico": "SUI_09",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Granit Xhaka",
+      "imagem": "sui_09.png"
+    },
+    {
+      "idUnico": "SUI_10",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Denis Zakaria",
+      "imagem": "sui_10.png"
+    },
+    {
+      "idUnico": "SUI_11",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Remo Freuler",
+      "imagem": "sui_11.png"
+    },
+    {
+      "idUnico": "SUI_12",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Fabian Rieder",
+      "imagem": "sui_12.png"
+    },
+    {
+      "idUnico": "SUI_14",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Ardon Jashari",
+      "imagem": "sui_14.png"
+    },
+    {
+      "idUnico": "SUI_15",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Johan Manzambi",
+      "imagem": "sui_15.png"
+    },
+    {
+      "idUnico": "SUI_16",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Michel Aebischer",
+      "imagem": "sui_16.png"
+    },
+    {
+      "idUnico": "SUI_17",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Breel Embolo",
+      "imagem": "sui_17.png"
+    },
+    {
+      "idUnico": "SUI_18",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Rubén Vargas",
+      "imagem": "sui_18.png"
+    },
+    {
+      "idUnico": "SUI_19",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Dan Ndoye",
+      "imagem": "sui_19.png"
+    },
+    {
+      "idUnico": "SUI_20",
+      "grupo": "B",
+      "selecao": "Suíça",
+      "nomeJogador": "Zeki Amdouni",
+      "imagem": "sui_20.png"
+    },
+    {
+      "idUnico": "BRA_01",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "bra_01.png"
+    },
+    {
+      "idUnico": "BRA_02",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Alisson",
+      "imagem": "bra_02.png"
+    },
+    {
+      "idUnico": "BRA_04",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Bento",
+      "imagem": "bra_04.png"
+    },
+    {
+      "idUnico": "BRA_05",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Marquinhos",
+      "imagem": "bra_05.png"
+    },
+    {
+      "idUnico": "BRA_06",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Éder Militão",
+      "imagem": "bra_06.png"
+    },
+    {
+      "idUnico": "BRA_07",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Gabriel Magalhães",
+      "imagem": "bra_07.png"
+    },
+    {
+      "idUnico": "BRA_08",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Danilo",
+      "imagem": "bra_08.png"
+    },
+    {
+      "idUnico": "BRA_09",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Wesley",
+      "imagem": "bra_09.png"
+    },
+    {
+      "idUnico": "BRA_10",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Lucas Paquetá",
+      "imagem": "bra_10.png"
+    },
+    {
+      "idUnico": "BRA_11",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Casemiro",
+      "imagem": "bra_11.png"
+    },
+    {
+      "idUnico": "BRA_12",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Bruno Guimarães",
+      "imagem": "bra_12.png"
+    },
+    {
+      "idUnico": "BRA_14",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Luiz Henrique",
+      "imagem": "bra_14.png"
+    },
+    {
+      "idUnico": "BRA_15",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Vinícius Júnior",
+      "imagem": "bra_15.png"
+    },
+    {
+      "idUnico": "BRA_16",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Rodrygo",
+      "imagem": "bra_16.png"
+    },
+    {
+      "idUnico": "BRA_17",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "João Pedro",
+      "imagem": "bra_17.png"
+    },
+    {
+      "idUnico": "BRA_18",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Matheus Cunha",
+      "imagem": "bra_18.png"
+    },
+    {
+      "idUnico": "BRA_19",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Gabriel Martinelli",
+      "imagem": "bra_19.png"
+    },
+    {
+      "idUnico": "BRA_20",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Raphinha",
+      "imagem": "bra_20.png"
+    },
+    {
+      "idUnico": "BRA_21",
+      "grupo": "C",
+      "selecao": "Brasil",
+      "nomeJogador": "Estêvão",
+      "imagem": "bra_21.png"
+    },
+    {
+      "idUnico": "MAR_01",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Munir El Kajoui",
+      "imagem": "mar_01.png"
+    },
+    {
+      "idUnico": "MAR_02",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Yassine Bounou",
+      "imagem": "mar_02.png"
+    },
+    {
+      "idUnico": "MAR_05",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Noussair Mazraoui",
+      "imagem": "mar_05.png"
+    },
+    {
+      "idUnico": "MAR_06",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Naif Aguerd",
+      "imagem": "mar_06.png"
+    },
+    {
+      "idUnico": "MAR_08",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Román Saïss",
+      "imagem": "mar_08.png"
+    },
+    {
+      "idUnico": "MAR_09",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Jawad El Yamiq",
+      "imagem": "mar_09.png"
+    },
+    {
+      "idUnico": "MAR_10",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Adam Masina",
+      "imagem": "mar_10.png"
+    },
+    {
+      "idUnico": "MAR_11",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Sofyan Amrabat",
+      "imagem": "mar_11.png"
+    },
+    {
+      "idUnico": "MAR_12",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Azzedine Ounahi",
+      "imagem": "mar_12.png"
+    },
+    {
+      "idUnico": "MAR_14",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Bilal El Khannouss",
+      "imagem": "mar_14.png"
+    },
+    {
+      "idUnico": "MAR_15",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Ismael Saibari",
+      "imagem": "mar_15.png"
+    },
+    {
+      "idUnico": "MAR_16",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Youssef En-Nesyri",
+      "imagem": "mar_16.png"
+    },
+    {
+      "idUnico": "MAR_17",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Abde Ezzalzouli",
+      "imagem": "mar_17.png"
+    },
+    {
+      "idUnico": "MAR_18",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Soufiane Rahimi",
+      "imagem": "mar_18.png"
+    },
+    {
+      "idUnico": "MAR_19",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Brahim Díaz",
+      "imagem": "mar_19.png"
+    },
+    {
+      "idUnico": "MAR_20",
+      "grupo": "C",
+      "selecao": "Marrocos",
+      "nomeJogador": "Ayoub El Kaabi",
+      "imagem": "mar_20.png"
+    },
+    {
+      "idUnico": "HAI_02",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Johny Placide",
+      "imagem": "hai_02.png"
+    },
+    {
+      "idUnico": "HAI_03",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Carlens Arcus",
+      "imagem": "hai_03.png"
+    },
+    {
+      "idUnico": "HAI_04",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Martin Expérience",
+      "imagem": "hai_04.png"
+    },
+    {
+      "idUnico": "HAI_05",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Jean-Kévin Duverne",
+      "imagem": "hai_05.png"
+    },
+    {
+      "idUnico": "HAI_06",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Ricardo Adé",
+      "imagem": "hai_06.png"
+    },
+    {
+      "idUnico": "HAI_07",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Duke Lacroix",
+      "imagem": "hai_07.png"
+    },
+    {
+      "idUnico": "HAI_08",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Garath Mefusala",
+      "imagem": "hai_08.png"
+    },
+    {
+      "idUnico": "HAI_09",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Hannes Delcroix",
+      "imagem": "hai_09.png"
+    },
+    {
+      "idUnico": "HAI_10",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Leverton Pierre",
+      "imagem": "hai_10.png"
+    },
+    {
+      "idUnico": "HAI_11",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Danley Jean Jacques",
+      "imagem": "hai_11.png"
+    },
+    {
+      "idUnico": "HAI_12",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Jean-Ricner Bellegarde",
+      "imagem": "hai_12.png"
+    },
+    {
+      "idUnico": "HAI_14",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Christopher Attys",
+      "imagem": "hai_14.png"
+    },
+    {
+      "idUnico": "HAI_15",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Derrick Etienne Jr.",
+      "imagem": "hai_15.png"
+    },
+    {
+      "idUnico": "HAI_16",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Duckens Nazon",
+      "imagem": "hai_16.png"
+    },
+    {
+      "idUnico": "HAI_17",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Ruben Providence",
+      "imagem": "hai_17.png"
+    },
+    {
+      "idUnico": "HAI_18",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Mondy Prunier",
+      "imagem": "hai_18.png"
+    },
+    {
+      "idUnico": "HAI_19",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Louicius Deedson",
+      "imagem": "hai_19.png"
+    },
+    {
+      "idUnico": "HAI_20",
+      "grupo": "C",
+      "selecao": "Haiti",
+      "nomeJogador": "Frantzdy Pierrot",
+      "imagem": "hai_20.png"
+    },
+    {
+      "idUnico": "SCO_02",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Angus Gunn",
+      "imagem": "sco_02.png"
+    },
+    {
+      "idUnico": "SCO_03",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Jack Hendry",
+      "imagem": "sco_03.png"
+    },
+    {
+      "idUnico": "SCO_04",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Kieran Tierney",
+      "imagem": "sco_04.png"
+    },
+    {
+      "idUnico": "SCO_05",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Aaron Hickey",
+      "imagem": "sco_05.png"
+    },
+    {
+      "idUnico": "SCO_06",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Andrew Robertson",
+      "imagem": "sco_06.png"
+    },
+    {
+      "idUnico": "SCO_07",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Scott McKenna",
+      "imagem": "sco_07.png"
+    },
+    {
+      "idUnico": "SCO_08",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "John Souttar",
+      "imagem": "sco_08.png"
+    },
+    {
+      "idUnico": "SCO_09",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Anthony Ralston",
+      "imagem": "sco_09.png"
+    },
+    {
+      "idUnico": "SCO_10",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Grant Hanley",
+      "imagem": "sco_10.png"
+    },
+    {
+      "idUnico": "SCO_11",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Scott McTominay",
+      "imagem": "sco_11.png"
+    },
+    {
+      "idUnico": "SCO_12",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Billy Gilmour",
+      "imagem": "sco_12.png"
+    },
+    {
+      "idUnico": "SCO_14",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Lewis Ferguson",
+      "imagem": "sco_14.png"
+    },
+    {
+      "idUnico": "SCO_15",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Ryan Christie",
+      "imagem": "sco_15.png"
+    },
+    {
+      "idUnico": "SCO_16",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Kenny McLean",
+      "imagem": "sco_16.png"
+    },
+    {
+      "idUnico": "SCO_17",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "John McGinn",
+      "imagem": "sco_17.png"
+    },
+    {
+      "idUnico": "SCO_18",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Lyndon Dykes",
+      "imagem": "sco_18.png"
+    },
+    {
+      "idUnico": "SCO_19",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Ché Adams",
+      "imagem": "sco_19.png"
+    },
+    {
+      "idUnico": "SCO_20",
+      "grupo": "C",
+      "selecao": "Escócia",
+      "nomeJogador": "Ben Gannon-Doak",
+      "imagem": "sco_20.png"
+    },
+    {
+      "idUnico": "USA_02",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Matt Freese",
+      "imagem": "usa_02.png"
+    },
+    {
+      "idUnico": "USA_03",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Chris Richards",
+      "imagem": "usa_03.png"
+    },
+    {
+      "idUnico": "USA_04",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Tim Ream",
+      "imagem": "usa_04.png"
+    },
+    {
+      "idUnico": "USA_05",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Mark McKenzie",
+      "imagem": "usa_05.png"
+    },
+    {
+      "idUnico": "USA_06",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Alex Freeman",
+      "imagem": "usa_06.png"
+    },
+    {
+      "idUnico": "USA_07",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Antonee Robinson",
+      "imagem": "usa_07.png"
+    },
+    {
+      "idUnico": "USA_08",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Tyler Adams",
+      "imagem": "usa_08.png"
+    },
+    {
+      "idUnico": "USA_09",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Tanner Tessmann",
+      "imagem": "usa_09.png"
+    },
+    {
+      "idUnico": "USA_10",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Weston McKennie",
+      "imagem": "usa_10.png"
+    },
+    {
+      "idUnico": "USA_11",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Cristian Roldan",
+      "imagem": "usa_11.png"
+    },
+    {
+      "idUnico": "USA_12",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Timothy Weah",
+      "imagem": "usa_12.png"
+    },
+    {
+      "idUnico": "USA_14",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Malik Tillman",
+      "imagem": "usa_14.png"
+    },
+    {
+      "idUnico": "USA_15",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Christian Pulisic",
+      "imagem": "usa_15.png"
+    },
+    {
+      "idUnico": "USA_16",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Brenden Aaronson",
+      "imagem": "usa_16.png"
+    },
+    {
+      "idUnico": "USA_18",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Ricardo Pepi",
+      "imagem": "usa_18.png"
+    },
+    {
+      "idUnico": "USA_19",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Haji Wright",
+      "imagem": "usa_19.png"
+    },
+    {
+      "idUnico": "USA_20",
+      "grupo": "D",
+      "selecao": "EUA",
+      "nomeJogador": "Folarin Balogun",
+      "imagem": "usa_20.png"
+    },
+    {
+      "idUnico": "PAR_02",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Roberto Fernández",
+      "imagem": "par_02.png"
+    },
+    {
+      "idUnico": "PAR_03",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Orlando Gill",
+      "imagem": "par_03.png"
+    },
+    {
+      "idUnico": "PAR_04",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Gustavo Gómez",
+      "imagem": "par_04.png"
+    },
+    {
+      "idUnico": "PAR_05",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Fabián Balbuena",
+      "imagem": "par_05.png"
+    },
+    {
+      "idUnico": "PAR_06",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Juan José Cáceres",
+      "imagem": "par_06.png"
+    },
+    {
+      "idUnico": "PAR_07",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Omar Alderete",
+      "imagem": "par_07.png"
+    },
+    {
+      "idUnico": "PAR_08",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Junior Alonso",
+      "imagem": "par_08.png"
+    },
+    {
+      "idUnico": "PAR_09",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Mathías Villasanti",
+      "imagem": "par_09.png"
+    },
+    {
+      "idUnico": "PAR_10",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Diego Gómez",
+      "imagem": "par_10.png"
+    },
+    {
+      "idUnico": "PAR_11",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Damián Bobadilla",
+      "imagem": "par_11.png"
+    },
+    {
+      "idUnico": "PAR_12",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Andrés Cubas",
+      "imagem": "par_12.png"
+    },
+    {
+      "idUnico": "PAR_14",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Matías Galarza Fonda",
+      "imagem": "par_14.png"
+    },
+    {
+      "idUnico": "PAR_15",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Julio Enciso",
+      "imagem": "par_15.png"
+    },
+    {
+      "idUnico": "PAR_16",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Alejandro Romero Gamarra",
+      "imagem": "par_16.png"
+    },
+    {
+      "idUnico": "PAR_17",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Miguel Almirón",
+      "imagem": "par_17.png"
+    },
+    {
+      "idUnico": "PAR_18",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Ramón Sosa",
+      "imagem": "par_18.png"
+    },
+    {
+      "idUnico": "PAR_19",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Ángel Romero",
+      "imagem": "par_19.png"
+    },
+    {
+      "idUnico": "PAR_20",
+      "grupo": "D",
+      "selecao": "Paraguai",
+      "nomeJogador": "Antonio Sanabria",
+      "imagem": "par_20.png"
+    },
+    {
+      "idUnico": "AUS_02",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Mathew Ryan",
+      "imagem": "aus_02.png"
+    },
+    {
+      "idUnico": "AUS_03",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Joe Gauci",
+      "imagem": "aus_03.png"
+    },
+    {
+      "idUnico": "AUS_04",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Harry Souttar",
+      "imagem": "aus_04.png"
+    },
+    {
+      "idUnico": "AUS_06",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Jordan Bos",
+      "imagem": "aus_06.png"
+    },
+    {
+      "idUnico": "AUS_07",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Aziz Behich",
+      "imagem": "aus_07.png"
+    },
+    {
+      "idUnico": "AUS_08",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Cameron Burgess",
+      "imagem": "aus_08.png"
+    },
+    {
+      "idUnico": "AUS_09",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Lewis Miller",
+      "imagem": "aus_09.png"
+    },
+    {
+      "idUnico": "AUS_10",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Milos Degenek",
+      "imagem": "aus_10.png"
+    },
+    {
+      "idUnico": "AUS_11",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Jackson Irvine",
+      "imagem": "aus_11.png"
+    },
+    {
+      "idUnico": "AUS_12",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Riley McGree",
+      "imagem": "aus_12.png"
+    },
+    {
+      "idUnico": "AUS_14",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Aiden O'Neill",
+      "imagem": "aus_14.png"
+    },
+    {
+      "idUnico": "AUS_15",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Connor Metcalfe",
+      "imagem": "aus_15.png"
+    },
+    {
+      "idUnico": "AUS_16",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Patrick Yazbek",
+      "imagem": "aus_16.png"
+    },
+    {
+      "idUnico": "AUS_17",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Craig Goodwin",
+      "imagem": "aus_17.png"
+    },
+    {
+      "idUnico": "AUS_19",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Nestory Irankunda",
+      "imagem": "aus_19.png"
+    },
+    {
+      "idUnico": "AUS_20",
+      "grupo": "D",
+      "selecao": "Austrália",
+      "nomeJogador": "Mohamed Toure",
+      "imagem": "aus_20.png"
+    },
+    {
+      "idUnico": "TUR_02",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Uğurcan Çakır",
+      "imagem": "tur_02.png"
+    },
+    {
+      "idUnico": "TUR_03",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Mert Müldür",
+      "imagem": "tur_03.png"
+    },
+    {
+      "idUnico": "TUR_04",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Zeki Çelik",
+      "imagem": "tur_04.png"
+    },
+    {
+      "idUnico": "TUR_05",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Abdülkerim Bardakcı",
+      "imagem": "tur_05.png"
+    },
+    {
+      "idUnico": "TUR_06",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Çağlar Söyüncü",
+      "imagem": "tur_06.png"
+    },
+    {
+      "idUnico": "TUR_07",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Merih Demiral",
+      "imagem": "tur_07.png"
+    },
+    {
+      "idUnico": "TUR_08",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Ferdi Kadıoğlu",
+      "imagem": "tur_08.png"
+    },
+    {
+      "idUnico": "TUR_09",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Kaan Ayhan",
+      "imagem": "tur_09.png"
+    },
+    {
+      "idUnico": "TUR_11",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Hakan Çalhanoğlu",
+      "imagem": "tur_11.png"
+    },
+    {
+      "idUnico": "TUR_14",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Arda Güler",
+      "imagem": "tur_14.png"
+    },
+    {
+      "idUnico": "TUR_15",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "İrfan Can Kahveci",
+      "imagem": "tur_15.png"
+    },
+    {
+      "idUnico": "TUR_16",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Yunus Akgün",
+      "imagem": "tur_16.png"
+    },
+    {
+      "idUnico": "TUR_17",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Can Uzun",
+      "imagem": "tur_17.png"
+    },
+    {
+      "idUnico": "TUR_18",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Barış Alper Yılmaz",
+      "imagem": "tur_18.png"
+    },
+    {
+      "idUnico": "TUR_19",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Kerem Aktürkoğlu",
+      "imagem": "tur_19.png"
+    },
+    {
+      "idUnico": "TUR_20",
+      "grupo": "D",
+      "selecao": "Turquia",
+      "nomeJogador": "Kenan Yıldız",
+      "imagem": "tur_20.png"
+    },
+    {
+      "idUnico": "GER_02",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Marc-André ter Stegen",
+      "imagem": "ger_02.png"
+    },
+    {
+      "idUnico": "GER_04",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Jonathan Tah",
+      "imagem": "ger_04.png"
+    },
+    {
+      "idUnico": "GER_05",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "David Raum",
+      "imagem": "ger_05.png"
+    },
+    {
+      "idUnico": "GER_06",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Nico Schlotterbeck",
+      "imagem": "ger_06.png"
+    },
+    {
+      "idUnico": "GER_07",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Antonio Rüdiger",
+      "imagem": "ger_07.png"
+    },
+    {
+      "idUnico": "GER_08",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Waldemar Anton",
+      "imagem": "ger_08.png"
+    },
+    {
+      "idUnico": "GER_09",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Ridle Baku",
+      "imagem": "ger_09.png"
+    },
+    {
+      "idUnico": "GER_10",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Maximilian Mittelstädt",
+      "imagem": "ger_10.png"
+    },
+    {
+      "idUnico": "GER_11",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Joshua Kimmich",
+      "imagem": "ger_11.png"
+    },
+    {
+      "idUnico": "GER_14",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Florian Wirtz",
+      "imagem": "ger_14.png"
+    },
+    {
+      "idUnico": "GER_15",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Felix Nmecha",
+      "imagem": "ger_15.png"
+    },
+    {
+      "idUnico": "GER_16",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Leon Goretzka",
+      "imagem": "ger_16.png"
+    },
+    {
+      "idUnico": "GER_17",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Jamal Musiala",
+      "imagem": "ger_17.png"
+    },
+    {
+      "idUnico": "GER_18",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Kai Havertz",
+      "imagem": "ger_18.png"
+    },
+    {
+      "idUnico": "GER_19",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Leroy Sané",
+      "imagem": "ger_19.png"
+    },
+    {
+      "idUnico": "GER_20",
+      "grupo": "E",
+      "selecao": "Alemanha",
+      "nomeJogador": "Karim Adeyemi",
+      "imagem": "ger_20.png"
+    },
+    {
+      "idUnico": "CUW_02",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Eloy Room",
+      "imagem": "cuw_02.png"
+    },
+    {
+      "idUnico": "CUW_03",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Roshon van Eijma",
+      "imagem": "cuw_03.png"
+    },
+    {
+      "idUnico": "CUW_04",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Shurandy Sambo",
+      "imagem": "cuw_04.png"
+    },
+    {
+      "idUnico": "CUW_05",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Jurien Gaari",
+      "imagem": "cuw_05.png"
+    },
+    {
+      "idUnico": "CUW_06",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Joshua Brenet",
+      "imagem": "cuw_06.png"
+    },
+    {
+      "idUnico": "CUW_07",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Roshon van Eijma",
+      "imagem": "cuw_07.png"
+    },
+    {
+      "idUnico": "CUW_08",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Shurandy Sambo",
+      "imagem": "cuw_08.png"
+    },
+    {
+      "idUnico": "CUW_09",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Liandro Cuello",
+      "imagem": "cuw_09.png"
+    },
+    {
+      "idUnico": "CUW_10",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Godfried Roemeratoe",
+      "imagem": "cuw_10.png"
+    },
+    {
+      "idUnico": "CUW_12",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Juninho Bacuna",
+      "imagem": "cuw_12.png"
+    },
+    {
+      "idUnico": "CUW_14",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Tahith Chong",
+      "imagem": "cuw_14.png"
+    },
+    {
+      "idUnico": "CUW_15",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Kenji Gorré",
+      "imagem": "cuw_15.png"
+    },
+    {
+      "idUnico": "CUW_16",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Jearl Margaritha",
+      "imagem": "cuw_16.png"
+    },
+    {
+      "idUnico": "CUW_17",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Jurens Locadia",
+      "imagem": "cuw_17.png"
+    },
+    {
+      "idUnico": "CUW_18",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Jeremy Antonisse",
+      "imagem": "cuw_18.png"
+    },
+    {
+      "idUnico": "CUW_19",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Gervane Kastaneer",
+      "imagem": "cuw_19.png"
+    },
+    {
+      "idUnico": "CUW_20",
+      "grupo": "E",
+      "selecao": "Curaçao",
+      "nomeJogador": "Randel Hansen",
+      "imagem": "cuw_20.png"
+    },
+    {
+      "idUnico": "CIV_02",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Yahia Fofana",
+      "imagem": "civ_02.png"
+    },
+    {
+      "idUnico": "CIV_03",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Ghislain Konan",
+      "imagem": "civ_03.png"
+    },
+    {
+      "idUnico": "CIV_04",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Wilfried Singo",
+      "imagem": "civ_04.png"
+    },
+    {
+      "idUnico": "CIV_05",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Odilon Kossounou",
+      "imagem": "civ_05.png"
+    },
+    {
+      "idUnico": "CIV_06",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Evan Ndicka",
+      "imagem": "civ_06.png"
+    },
+    {
+      "idUnico": "CIV_07",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Odilon Kossounou",
+      "imagem": "civ_07.png"
+    },
+    {
+      "idUnico": "CIV_08",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Franck Kessié",
+      "imagem": "civ_08.png"
+    },
+    {
+      "idUnico": "CIV_09",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Ousmane Diomande",
+      "imagem": "civ_09.png"
+    },
+    {
+      "idUnico": "CIV_10",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Franck Kessié",
+      "imagem": "civ_10.png"
+    },
+    {
+      "idUnico": "CIV_11",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Seko Fofana",
+      "imagem": "civ_11.png"
+    },
+    {
+      "idUnico": "CIV_12",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Ibrahim Sangaré",
+      "imagem": "civ_12.png"
+    },
+    {
+      "idUnico": "CIV_14",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Jean-Philippe Gbamin",
+      "imagem": "civ_14.png"
+    },
+    {
+      "idUnico": "CIV_15",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Amad Diallo",
+      "imagem": "civ_15.png"
+    },
+    {
+      "idUnico": "CIV_16",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Sébastien Haller",
+      "imagem": "civ_16.png"
+    },
+    {
+      "idUnico": "CIV_17",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Simon Adingra",
+      "imagem": "civ_17.png"
+    },
+    {
+      "idUnico": "CIV_18",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Evan Ndicka",
+      "imagem": "civ_18.png"
+    },
+    {
+      "idUnico": "CIV_19",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Evann Guessand",
+      "imagem": "civ_19.png"
+    },
+    {
+      "idUnico": "CIV_20",
+      "grupo": "E",
+      "selecao": "Costa do Marfim",
+      "nomeJogador": "Oumar Diakité",
+      "imagem": "civ_20.png"
+    },
+    {
+      "idUnico": "ECU_02",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Hernán Galíndez",
+      "imagem": "ecu_02.png"
+    },
+    {
+      "idUnico": "ECU_03",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Gonzalo Valle",
+      "imagem": "ecu_03.png"
+    },
+    {
+      "idUnico": "ECU_04",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Piero Hincapié",
+      "imagem": "ecu_04.png"
+    },
+    {
+      "idUnico": "ECU_05",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Pervis Estupiñán",
+      "imagem": "ecu_05.png"
+    },
+    {
+      "idUnico": "ECU_06",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Willian Pacho",
+      "imagem": "ecu_06.png"
+    },
+    {
+      "idUnico": "ECU_07",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Ángelo Preciado",
+      "imagem": "ecu_07.png"
+    },
+    {
+      "idUnico": "ECU_08",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Joel Ordóñez",
+      "imagem": "ecu_08.png"
+    },
+    {
+      "idUnico": "ECU_09",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Moisés Caicedo",
+      "imagem": "ecu_09.png"
+    },
+    {
+      "idUnico": "ECU_10",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Alan Franco",
+      "imagem": "ecu_10.png"
+    },
+    {
+      "idUnico": "ECU_11",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Kendry Páez",
+      "imagem": "ecu_11.png"
+    },
+    {
+      "idUnico": "ECU_12",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Pedro Vite",
+      "imagem": "ecu_12.png"
+    },
+    {
+      "idUnico": "ECU_14",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "John Yeboah",
+      "imagem": "ecu_14.png"
+    },
+    {
+      "idUnico": "ECU_15",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Leonardo Campana",
+      "imagem": "ecu_15.png"
+    },
+    {
+      "idUnico": "ECU_16",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Gonzalo Plata",
+      "imagem": "ecu_16.png"
+    },
+    {
+      "idUnico": "ECU_17",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Nilson Angulo",
+      "imagem": "ecu_17.png"
+    },
+    {
+      "idUnico": "ECU_18",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Alan Minda",
+      "imagem": "ecu_18.png"
+    },
+    {
+      "idUnico": "ECU_19",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Willian Pacho",
+      "imagem": "ecu_19.png"
+    },
+    {
+      "idUnico": "ECU_20",
+      "grupo": "E",
+      "selecao": "Equador",
+      "nomeJogador": "Enner Valencia",
+      "imagem": "ecu_20.png"
+    },
+    {
+      "idUnico": "NED_02",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Bart Verbruggen",
+      "imagem": "ned_02.png"
+    },
+    {
+      "idUnico": "NED_04",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Virgil van Dijk",
+      "imagem": "ned_04.png"
+    },
+    {
+      "idUnico": "NED_05",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Micky van de Ven",
+      "imagem": "ned_05.png"
+    },
+    {
+      "idUnico": "NED_06",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Jurriën Timber",
+      "imagem": "ned_06.png"
+    },
+    {
+      "idUnico": "NED_07",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Denzel Dumfries",
+      "imagem": "ned_07.png"
+    },
+    {
+      "idUnico": "NED_08",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Jeremie Frimpong",
+      "imagem": "ned_08.png"
+    },
+    {
+      "idUnico": "NED_09",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Jan Paul van Hecke",
+      "imagem": "ned_09.png"
+    },
+    {
+      "idUnico": "NED_10",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Tijjani Reijnders",
+      "imagem": "ned_10.png"
+    },
+    {
+      "idUnico": "NED_11",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Ryan Gravenberch",
+      "imagem": "ned_11.png"
+    },
+    {
+      "idUnico": "NED_12",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Teun Koopmeiners",
+      "imagem": "ned_12.png"
+    },
+    {
+      "idUnico": "NED_14",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Frenkie de Jong",
+      "imagem": "ned_14.png"
+    },
+    {
+      "idUnico": "NED_15",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Xavi Simons",
+      "imagem": "ned_15.png"
+    },
+    {
+      "idUnico": "NED_16",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Justin Kluivert",
+      "imagem": "ned_16.png"
+    },
+    {
+      "idUnico": "NED_17",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Memphis Depay",
+      "imagem": "ned_17.png"
+    },
+    {
+      "idUnico": "NED_18",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Donyell Malen",
+      "imagem": "ned_18.png"
+    },
+    {
+      "idUnico": "NED_19",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Wout Weghorst",
+      "imagem": "ned_19.png"
+    },
+    {
+      "idUnico": "NED_20",
+      "grupo": "F",
+      "selecao": "Holanda",
+      "nomeJogador": "Cody Gakpo",
+      "imagem": "ned_20.png"
+    },
+    {
+      "idUnico": "JPN_02",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Zion Suzuki",
+      "imagem": "jpn_02.png"
+    },
+    {
+      "idUnico": "JPN_03",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Hiroki Mochizuki",
+      "imagem": "jpn_03.png"
+    },
+    {
+      "idUnico": "JPN_04",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Ayumu Seko",
+      "imagem": "jpn_04.png"
+    },
+    {
+      "idUnico": "JPN_05",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Junnosuke Suzuki",
+      "imagem": "jpn_05.png"
+    },
+    {
+      "idUnico": "JPN_06",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Shogo Taniguchi",
+      "imagem": "jpn_06.png"
+    },
+    {
+      "idUnico": "JPN_07",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Tsuyoshi Watanabe",
+      "imagem": "jpn_07.png"
+    },
+    {
+      "idUnico": "JPN_08",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Kaishu Sano",
+      "imagem": "jpn_08.png"
+    },
+    {
+      "idUnico": "JPN_09",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Yuki Soma",
+      "imagem": "jpn_09.png"
+    },
+    {
+      "idUnico": "JPN_10",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Ao Tanaka",
+      "imagem": "jpn_10.png"
+    },
+    {
+      "idUnico": "JPN_11",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Daichi Kamada",
+      "imagem": "jpn_11.png"
+    },
+    {
+      "idUnico": "JPN_12",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Takefusa Kubo",
+      "imagem": "jpn_12.png"
+    },
+    {
+      "idUnico": "JPN_14",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Ritsu Doan",
+      "imagem": "jpn_14.png"
+    },
+    {
+      "idUnico": "JPN_15",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Keito Nakamura",
+      "imagem": "jpn_15.png"
+    },
+    {
+      "idUnico": "JPN_16",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Takumi Minamino",
+      "imagem": "jpn_16.png"
+    },
+    {
+      "idUnico": "JPN_17",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Shuto Machino",
+      "imagem": "jpn_17.png"
+    },
+    {
+      "idUnico": "JPN_18",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Junya Ito",
+      "imagem": "jpn_18.png"
+    },
+    {
+      "idUnico": "JPN_19",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Koki Ogawa",
+      "imagem": "jpn_19.png"
+    },
+    {
+      "idUnico": "JPN_20",
+      "grupo": "F",
+      "selecao": "Japão",
+      "nomeJogador": "Ayase Ueda",
+      "imagem": "jpn_20.png"
+    },
+    {
+      "idUnico": "SWE_01",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Isak Hien",
+      "imagem": "swe_01.png"
+    },
+    {
+      "idUnico": "SWE_02",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Lucas Bergvall",
+      "imagem": "swe_02.png"
+    },
+    {
+      "idUnico": "SWE_03",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Isak Hien",
+      "imagem": "swe_03.png"
+    },
+    {
+      "idUnico": "SWE_04",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Gabriel Gudmundsson",
+      "imagem": "swe_04.png"
+    },
+    {
+      "idUnico": "SWE_05",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Emil Holm",
+      "imagem": "swe_05.png"
+    },
+    {
+      "idUnico": "SWE_06",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Victor Nilsson Lindelöf",
+      "imagem": "swe_06.png"
+    },
+    {
+      "idUnico": "SWE_09",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Hugo Larsson",
+      "imagem": "swe_09.png"
+    },
+    {
+      "idUnico": "SWE_10",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Jesper Karlström",
+      "imagem": "swe_10.png"
+    },
+    {
+      "idUnico": "SWE_11",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Yasin Ayari",
+      "imagem": "swe_11.png"
+    },
+    {
+      "idUnico": "SWE_12",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Mattias Svanberg",
+      "imagem": "swe_12.png"
+    },
+    {
+      "idUnico": "SWE_14",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Daniel Svensson",
+      "imagem": "swe_14.png"
+    },
+    {
+      "idUnico": "SWE_15",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Ken Sema",
+      "imagem": "swe_15.png"
+    },
+    {
+      "idUnico": "SWE_16",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Roony Bardghji",
+      "imagem": "swe_16.png"
+    },
+    {
+      "idUnico": "SWE_17",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Dejan Kulusevski",
+      "imagem": "swe_17.png"
+    },
+    {
+      "idUnico": "SWE_18",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Anthony Elanga",
+      "imagem": "swe_18.png"
+    },
+    {
+      "idUnico": "SWE_19",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Alexander Isak",
+      "imagem": "swe_19.png"
+    },
+    {
+      "idUnico": "SWE_20",
+      "grupo": "F",
+      "selecao": "Suécia",
+      "nomeJogador": "Viktor Gyökeres",
+      "imagem": "swe_20.png"
+    },
+    {
+      "idUnico": "TUN_01",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "tun_01.png"
+    },
+    {
+      "idUnico": "TUN_02",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Bechir Ben Said",
+      "imagem": "tun_02.png"
+    },
+    {
+      "idUnico": "TUN_03",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Aymen Dahmen",
+      "imagem": "tun_03.png"
+    },
+    {
+      "idUnico": "TUN_04",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Valery",
+      "imagem": "tun_04.png"
+    },
+    {
+      "idUnico": "TUN_05",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Montassar Talbi",
+      "imagem": "tun_05.png"
+    },
+    {
+      "idUnico": "TUN_06",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Yassine Meriah",
+      "imagem": "tun_06.png"
+    },
+    {
+      "idUnico": "TUN_07",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Ali Abdi",
+      "imagem": "tun_07.png"
+    },
+    {
+      "idUnico": "TUN_08",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Dylan Bronn",
+      "imagem": "tun_08.png"
+    },
+    {
+      "idUnico": "TUN_09",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Ellyes Skhiri",
+      "imagem": "tun_09.png"
+    },
+    {
+      "idUnico": "TUN_10",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Aïssa Laïdouni",
+      "imagem": "tun_10.png"
+    },
+    {
+      "idUnico": "TUN_11",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Ferjani Sassi",
+      "imagem": "tun_11.png"
+    },
+    {
+      "idUnico": "TUN_12",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Mohamed Ali Ben Romdhane",
+      "imagem": "tun_12.png"
+    },
+    {
+      "idUnico": "TUN_14",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Hannibal Mejbri",
+      "imagem": "tun_14.png"
+    },
+    {
+      "idUnico": "TUN_15",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Elias Achouri",
+      "imagem": "tun_15.png"
+    },
+    {
+      "idUnico": "TUN_16",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Elias Saad",
+      "imagem": "tun_16.png"
+    },
+    {
+      "idUnico": "TUN_17",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Hamza Rafia",
+      "imagem": "tun_17.png"
+    },
+    {
+      "idUnico": "TUN_18",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Ismaël Gharbi",
+      "imagem": "tun_18.png"
+    },
+    {
+      "idUnico": "TUN_19",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Sayfallah Ltaief",
+      "imagem": "tun_19.png"
+    },
+    {
+      "idUnico": "TUN_20",
+      "grupo": "F",
+      "selecao": "Tunísia",
+      "nomeJogador": "Naim Sliti",
+      "imagem": "tun_20.png"
+    },
+    {
+      "idUnico": "BEL_01",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "bel_01.png"
+    },
+    {
+      "idUnico": "BEL_02",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Thibaut Courtois",
+      "imagem": "bel_02.png"
+    },
+    {
+      "idUnico": "BEL_03",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Arthur Theate",
+      "imagem": "bel_03.png"
+    },
+    {
+      "idUnico": "BEL_04",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Timothy Castagne",
+      "imagem": "bel_04.png"
+    },
+    {
+      "idUnico": "BEL_05",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Zeno Debast",
+      "imagem": "bel_05.png"
+    },
+    {
+      "idUnico": "BEL_06",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Brandon Mechele",
+      "imagem": "bel_06.png"
+    },
+    {
+      "idUnico": "BEL_07",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Maxim De Cuyper",
+      "imagem": "bel_07.png"
+    },
+    {
+      "idUnico": "BEL_08",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Thomas Meunier",
+      "imagem": "bel_08.png"
+    },
+    {
+      "idUnico": "BEL_09",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Youri Tielemans",
+      "imagem": "bel_09.png"
+    },
+    {
+      "idUnico": "BEL_10",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Amadou Onana",
+      "imagem": "bel_10.png"
+    },
+    {
+      "idUnico": "BEL_11",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Nicolas Raskin",
+      "imagem": "bel_11.png"
+    },
+    {
+      "idUnico": "BEL_12",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Alexis Saelemaekers",
+      "imagem": "bel_12.png"
+    },
+    {
+      "idUnico": "BEL_14",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Hans Vanaken",
+      "imagem": "bel_14.png"
+    },
+    {
+      "idUnico": "BEL_15",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Kevin De Bruyne",
+      "imagem": "bel_15.png"
+    },
+    {
+      "idUnico": "BEL_16",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Jérémy Doku",
+      "imagem": "bel_16.png"
+    },
+    {
+      "idUnico": "BEL_17",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Charles De Ketelaere",
+      "imagem": "bel_17.png"
+    },
+    {
+      "idUnico": "BEL_18",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Leandro Trossard",
+      "imagem": "bel_18.png"
+    },
+    {
+      "idUnico": "BEL_19",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Loïs Openda",
+      "imagem": "bel_19.png"
+    },
+    {
+      "idUnico": "BEL_20",
+      "grupo": "G",
+      "selecao": "Bélgica",
+      "nomeJogador": "Romelu Lukaku",
+      "imagem": "bel_20.png"
+    },
+    {
+      "idUnico": "EGY_01",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "egy_01.png"
+    },
+    {
+      "idUnico": "EGY_02",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Mohamed El Shenawy",
+      "imagem": "egy_02.png"
+    },
+    {
+      "idUnico": "EGY_03",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Mohamed Hany",
+      "imagem": "egy_03.png"
+    },
+    {
+      "idUnico": "EGY_04",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Mohamed Hamdy",
+      "imagem": "egy_04.png"
+    },
+    {
+      "idUnico": "EGY_05",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Yasser Ibrahim",
+      "imagem": "egy_05.png"
+    },
+    {
+      "idUnico": "EGY_06",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Khaled Sobhi",
+      "imagem": "egy_06.png"
+    },
+    {
+      "idUnico": "EGY_07",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Ramy Rabia",
+      "imagem": "egy_07.png"
+    },
+    {
+      "idUnico": "EGY_08",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Hossam Abdelmaguid",
+      "imagem": "egy_08.png"
+    },
+    {
+      "idUnico": "EGY_09",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Ahmed Fatouh",
+      "imagem": "egy_09.png"
+    },
+    {
+      "idUnico": "EGY_10",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Marwan Attia",
+      "imagem": "egy_10.png"
+    },
+    {
+      "idUnico": "EGY_11",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Zizo",
+      "imagem": "egy_11.png"
+    },
+    {
+      "idUnico": "EGY_12",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Hamdy Fathy",
+      "imagem": "egy_12.png"
+    },
+    {
+      "idUnico": "EGY_14",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Mohanad Lasheen",
+      "imagem": "egy_14.png"
+    },
+    {
+      "idUnico": "EGY_15",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Emam Ashour",
+      "imagem": "egy_15.png"
+    },
+    {
+      "idUnico": "EGY_16",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Osama Faisal",
+      "imagem": "egy_16.png"
+    },
+    {
+      "idUnico": "EGY_17",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Mohamed Salah",
+      "imagem": "egy_17.png"
+    },
+    {
+      "idUnico": "EGY_18",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Mostafa Mohamed",
+      "imagem": "egy_18.png"
+    },
+    {
+      "idUnico": "EGY_19",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Trezeguet",
+      "imagem": "egy_19.png"
+    },
+    {
+      "idUnico": "EGY_20",
+      "grupo": "G",
+      "selecao": "Egito",
+      "nomeJogador": "Omar Marmoush",
+      "imagem": "egy_20.png"
+    },
+    {
+      "idUnico": "IRN_01",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "irn_01.png"
+    },
+    {
+      "idUnico": "IRN_02",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Alireza Beiranvand",
+      "imagem": "irn_02.png"
+    },
+    {
+      "idUnico": "IRN_03",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Morteza Pouraliganji",
+      "imagem": "irn_03.png"
+    },
+    {
+      "idUnico": "IRN_04",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Ehsan Hajsafi",
+      "imagem": "irn_04.png"
+    },
+    {
+      "idUnico": "IRN_05",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Milad Mohammadi",
+      "imagem": "irn_05.png"
+    },
+    {
+      "idUnico": "IRN_06",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Shojae Khalilzadeh",
+      "imagem": "irn_06.png"
+    },
+    {
+      "idUnico": "IRN_07",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Ramin Rezaeian",
+      "imagem": "irn_07.png"
+    },
+    {
+      "idUnico": "IRN_08",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Hossein Kanaani",
+      "imagem": "irn_08.png"
+    },
+    {
+      "idUnico": "IRN_09",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Sadegh Moharrami",
+      "imagem": "irn_09.png"
+    },
+    {
+      "idUnico": "IRN_10",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Saleh Hardani",
+      "imagem": "irn_10.png"
+    },
+    {
+      "idUnico": "IRN_11",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Saeid Ezatolahi",
+      "imagem": "irn_11.png"
+    },
+    {
+      "idUnico": "IRN_12",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Saman Ghoddos",
+      "imagem": "irn_12.png"
+    },
+    {
+      "idUnico": "IRN_14",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Omid Noorafkan",
+      "imagem": "irn_14.png"
+    },
+    {
+      "idUnico": "IRN_15",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Roozbeh Cheshmi",
+      "imagem": "irn_15.png"
+    },
+    {
+      "idUnico": "IRN_16",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Mohammad Mohebi",
+      "imagem": "irn_16.png"
+    },
+    {
+      "idUnico": "IRN_17",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Sardar Azmoun",
+      "imagem": "irn_17.png"
+    },
+    {
+      "idUnico": "IRN_18",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Mehdi Taremi",
+      "imagem": "irn_18.png"
+    },
+    {
+      "idUnico": "IRN_19",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Alireza Jahanbakhsh",
+      "imagem": "irn_19.png"
+    },
+    {
+      "idUnico": "IRN_20",
+      "grupo": "G",
+      "selecao": "Irã",
+      "nomeJogador": "Ali Gholizadeh",
+      "imagem": "irn_20.png"
+    },
+    {
+      "idUnico": "NZL_02",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Max Crocombe",
+      "imagem": "nzl_02.png"
+    },
+    {
+      "idUnico": "NZL_03",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Alex Paulsen",
+      "imagem": "nzl_03.png"
+    },
+    {
+      "idUnico": "NZL_04",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Michael Boxall",
+      "imagem": "nzl_04.png"
+    },
+    {
+      "idUnico": "NZL_05",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Liberato Cacace",
+      "imagem": "nzl_05.png"
+    },
+    {
+      "idUnico": "NZL_06",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Tim Payne",
+      "imagem": "nzl_06.png"
+    },
+    {
+      "idUnico": "NZL_07",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Tyler Bindon",
+      "imagem": "nzl_07.png"
+    },
+    {
+      "idUnico": "NZL_08",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Finn Surman",
+      "imagem": "nzl_08.png"
+    },
+    {
+      "idUnico": "NZL_10",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Joe Bell",
+      "imagem": "nzl_10.png"
+    },
+    {
+      "idUnico": "NZL_11",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Sarpreet Singh",
+      "imagem": "nzl_11.png"
+    },
+    {
+      "idUnico": "NZL_12",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Ryan Thomas",
+      "imagem": "nzl_12.png"
+    },
+    {
+      "idUnico": "NZL_14",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Matthew Garbett",
+      "imagem": "nzl_14.png"
+    },
+    {
+      "idUnico": "NZL_15",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Marko Stamenic",
+      "imagem": "nzl_15.png"
+    },
+    {
+      "idUnico": "NZL_16",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Ben Old",
+      "imagem": "nzl_16.png"
+    },
+    {
+      "idUnico": "NZL_17",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Chris Wood",
+      "imagem": "nzl_17.png"
+    },
+    {
+      "idUnico": "NZL_18",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Elijah Just",
+      "imagem": "nzl_18.png"
+    },
+    {
+      "idUnico": "NZL_19",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Callum McCowatt",
+      "imagem": "nzl_19.png"
+    },
+    {
+      "idUnico": "NZL_20",
+      "grupo": "G",
+      "selecao": "Nova Zelândia",
+      "nomeJogador": "Kosta Barbarouses",
+      "imagem": "nzl_20.png"
+    },
+    {
+      "idUnico": "ESP_02",
+      "grupo": "H",
+      "selecao": "Espanha",
+      "nomeJogador": "Unai Simón",
+      "imagem": "esp_02.png"
+    },
+    {
+      "idUnico": "ESP_03",
+      "grupo": "H",
+      "selecao": "Espanha",
+      "nomeJogador": "Robin Le Normand",
+      "imagem": "esp_03.png"
+    },
+    {
+      "idUnico": "ESP_04",
+      "grupo": "H",
+      "selecao": "Espanha",
+      "nomeJogador": "Aymeric Laporte",
+      "imagem": "esp_04.png"
+    },
+    {
+      "idUnico": "ESP_05",
+      "grupo": "H",
+      "selecao": "Espanha",
+      "nomeJogador": "Dean Huijsen",
+      "imagem": "esp_05.png"
+    },
+    {
+      "idUnico": "ESP_06",
+      "grupo": "H",
+      "selecao": "Espanha",
+      "nomeJogador": "Pedro Porro",
+      "imagem": "esp_06.png"
+    },
+    {
+      "idUnico": "ESP_08",
+      "grupo": "H",
+      "selecao": "Espanha",
+      "nomeJogador": "Marc Cucurella",
+      "imagem": "esp_08.png"
+    },
+    {
+      "idUnico": "ESP_09",
+      "grupo": "H",
+      "selecao": "Espanha",
+      "nomeJogador": "Martín Zubimendi",
+      "imagem": "esp_09.png"
+    },
+    {
+      "idUnico": "ESP_10",
+      "grupo": "H",
+      "selecao": "Espanha",
+      "nomeJogador": "Rodri",
+      "imagem": "esp_10.png"
+    },
+    {
+      "idUnico": "ESP_11",
+      "grupo": "H",
+      "selecao": "Espanha",
+      "nomeJogador": "Pedri",
+      "imagem": "esp_11.png"
+    },
+    {
+      "idUnico": "ESP_15",
+      "grupo": "H",
+      "selecao": "Espanha",
+      "nomeJogador": "Lamine Yamal",
+      "imagem": "esp_15.png"
+    },
+    {
+      "idUnico": "ESP_16",
+      "grupo": "H",
+      "selecao": "Espanha",
+      "nomeJogador": "Dani Olmo",
+      "imagem": "esp_16.png"
+    },
+    {
+      "idUnico": "ESP_18",
+      "grupo": "H",
+      "selecao": "Espanha",
+      "nomeJogador": "Ferran Torres",
+      "imagem": "esp_18.png"
+    },
+    {
+      "idUnico": "CPV_01",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "cpv_01.png"
+    },
+    {
+      "idUnico": "CPV_02",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Vozinha",
+      "imagem": "cpv_02.png"
+    },
+    {
+      "idUnico": "CPV_03",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Logan Costa",
+      "imagem": "cpv_03.png"
+    },
+    {
+      "idUnico": "CPV_04",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Pico",
+      "imagem": "cpv_04.png"
+    },
+    {
+      "idUnico": "CPV_05",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Diney",
+      "imagem": "cpv_05.png"
+    },
+    {
+      "idUnico": "CPV_06",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Steven Moreira",
+      "imagem": "cpv_06.png"
+    },
+    {
+      "idUnico": "CPV_07",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Wagner Pina",
+      "imagem": "cpv_07.png"
+    },
+    {
+      "idUnico": "CPV_08",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "João Paulo",
+      "imagem": "cpv_08.png"
+    },
+    {
+      "idUnico": "CPV_10",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Kevin Pina",
+      "imagem": "cpv_10.png"
+    },
+    {
+      "idUnico": "CPV_11",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Patrick Andrade",
+      "imagem": "cpv_11.png"
+    },
+    {
+      "idUnico": "CPV_12",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Jamiro Monteiro",
+      "imagem": "cpv_12.png"
+    },
+    {
+      "idUnico": "CPV_14",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Deroy Duarte",
+      "imagem": "cpv_14.png"
+    },
+    {
+      "idUnico": "CPV_15",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Garry Rodrigues",
+      "imagem": "cpv_15.png"
+    },
+    {
+      "idUnico": "CPV_17",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Ryan Mendes",
+      "imagem": "cpv_17.png"
+    },
+    {
+      "idUnico": "CPV_18",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Dailon Livramento",
+      "imagem": "cpv_18.png"
+    },
+    {
+      "idUnico": "CPV_19",
+      "grupo": "H",
+      "selecao": "Cabo Verde",
+      "nomeJogador": "Willy Semedo",
+      "imagem": "cpv_19.png"
+    },
+    {
+      "idUnico": "KSA_01",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "ksa_01.png"
+    },
+    {
+      "idUnico": "KSA_03",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Abdulrahman Alsanbi",
+      "imagem": "ksa_03.png"
+    },
+    {
+      "idUnico": "KSA_04",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Saud Abdulhamid",
+      "imagem": "ksa_04.png"
+    },
+    {
+      "idUnico": "KSA_05",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Nawaf Buwashl",
+      "imagem": "ksa_05.png"
+    },
+    {
+      "idUnico": "KSA_06",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Jehad Thikri",
+      "imagem": "ksa_06.png"
+    },
+    {
+      "idUnico": "KSA_08",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Hassan Altambakti",
+      "imagem": "ksa_08.png"
+    },
+    {
+      "idUnico": "KSA_09",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Musab Aljuwayr",
+      "imagem": "ksa_09.png"
+    },
+    {
+      "idUnico": "KSA_11",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Abdullah Alhaibari",
+      "imagem": "ksa_11.png"
+    },
+    {
+      "idUnico": "KSA_12",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Nasser Aldawsari",
+      "imagem": "ksa_12.png"
+    },
+    {
+      "idUnico": "KSA_14",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Saleh Alshamat",
+      "imagem": "ksa_14.png"
+    },
+    {
+      "idUnico": "KSA_15",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Marwan Alsahafi",
+      "imagem": "ksa_15.png"
+    },
+    {
+      "idUnico": "KSA_16",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Salem Aldawsari",
+      "imagem": "ksa_16.png"
+    },
+    {
+      "idUnico": "KSA_17",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Abdulrahman Alobud",
+      "imagem": "ksa_17.png"
+    },
+    {
+      "idUnico": "KSA_20",
+      "grupo": "H",
+      "selecao": "Arábia Saudita",
+      "nomeJogador": "Abdullah Alhamdan",
+      "imagem": "ksa_20.png"
+    },
+    {
+      "idUnico": "URU_02",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Sergio Rochet",
+      "imagem": "uru_02.png"
+    },
+    {
+      "idUnico": "URU_03",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Santiago Mele",
+      "imagem": "uru_03.png"
+    },
+    {
+      "idUnico": "URU_04",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Ronald Araújo",
+      "imagem": "uru_04.png"
+    },
+    {
+      "idUnico": "URU_05",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "José María Giménez",
+      "imagem": "uru_05.png"
+    },
+    {
+      "idUnico": "URU_06",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Sebastián Cáceres",
+      "imagem": "uru_06.png"
+    },
+    {
+      "idUnico": "URU_07",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Mathías Olivera",
+      "imagem": "uru_07.png"
+    },
+    {
+      "idUnico": "URU_08",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Guillermo Varela",
+      "imagem": "uru_08.png"
+    },
+    {
+      "idUnico": "URU_11",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Giorgian de Arrascaeta",
+      "imagem": "uru_11.png"
+    },
+    {
+      "idUnico": "URU_12",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Rodrigo Bentancur",
+      "imagem": "uru_12.png"
+    },
+    {
+      "idUnico": "URU_14",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Manuel Ugarte",
+      "imagem": "uru_14.png"
+    },
+    {
+      "idUnico": "URU_15",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Nicolás de la Cruz",
+      "imagem": "uru_15.png"
+    },
+    {
+      "idUnico": "URU_16",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Maxi Araújo",
+      "imagem": "uru_16.png"
+    },
+    {
+      "idUnico": "URU_17",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Darwin Núñez",
+      "imagem": "uru_17.png"
+    },
+    {
+      "idUnico": "URU_18",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Federico Viñas",
+      "imagem": "uru_18.png"
+    },
+    {
+      "idUnico": "URU_19",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Rodrigo Aguirre",
+      "imagem": "uru_19.png"
+    },
+    {
+      "idUnico": "URU_20",
+      "grupo": "H",
+      "selecao": "Uruguai",
+      "nomeJogador": "Facundo Pellistri",
+      "imagem": "uru_20.png"
+    },
+    {
+      "idUnico": "FRA_01",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "fra_01.png"
+    },
+    {
+      "idUnico": "FRA_03",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Théo Hernandez",
+      "imagem": "fra_03.png"
+    },
+    {
+      "idUnico": "FRA_04",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "William Saliba",
+      "imagem": "fra_04.png"
+    },
+    {
+      "idUnico": "FRA_05",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Jules Koundé",
+      "imagem": "fra_05.png"
+    },
+    {
+      "idUnico": "FRA_06",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Ibrahima Konaté",
+      "imagem": "fra_06.png"
+    },
+    {
+      "idUnico": "FRA_07",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Dayot Upamecano",
+      "imagem": "fra_07.png"
+    },
+    {
+      "idUnico": "FRA_08",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Lucas Digne",
+      "imagem": "fra_08.png"
+    },
+    {
+      "idUnico": "FRA_11",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Manu Koné",
+      "imagem": "fra_11.png"
+    },
+    {
+      "idUnico": "FRA_14",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Michael Olise",
+      "imagem": "fra_14.png"
+    },
+    {
+      "idUnico": "FRA_15",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Ousmane Dembélé",
+      "imagem": "fra_15.png"
+    },
+    {
+      "idUnico": "FRA_16",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Bradley Barcola",
+      "imagem": "fra_16.png"
+    },
+    {
+      "idUnico": "FRA_17",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Désiré Doué",
+      "imagem": "fra_17.png"
+    },
+    {
+      "idUnico": "FRA_18",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Kingsley Coman",
+      "imagem": "fra_18.png"
+    },
+    {
+      "idUnico": "FRA_19",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Hugo Ekitiké",
+      "imagem": "fra_19.png"
+    },
+    {
+      "idUnico": "FRA_20",
+      "grupo": "I",
+      "selecao": "França",
+      "nomeJogador": "Kylian Mbappé",
+      "imagem": "fra_20.png"
+    },
+    {
+      "idUnico": "SEN_01",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "sen_01.png"
+    },
+    {
+      "idUnico": "SEN_02",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "Édouard Mendy",
+      "imagem": "sen_02.png"
+    },
+    {
+      "idUnico": "SEN_03",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "sen_03.png"
+    },
+    {
+      "idUnico": "SEN_04",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "Moussa Niakhaté",
+      "imagem": "sen_04.png"
+    },
+    {
+      "idUnico": "SEN_05",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "Abdoulaye Seck",
+      "imagem": "sen_05.png"
+    },
+    {
+      "idUnico": "SEN_07",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "El Hadji Malick Diouf",
+      "imagem": "sen_07.png"
+    },
+    {
+      "idUnico": "SEN_08",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "Kalidou Koulibaly",
+      "imagem": "sen_08.png"
+    },
+    {
+      "idUnico": "SEN_12",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "Habib Diarra",
+      "imagem": "sen_12.png"
+    },
+    {
+      "idUnico": "SEN_14",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "Lamine Camara",
+      "imagem": "sen_14.png"
+    },
+    {
+      "idUnico": "SEN_15",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "Sadio Mané",
+      "imagem": "sen_15.png"
+    },
+    {
+      "idUnico": "SEN_16",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "Ismaïla Sarr",
+      "imagem": "sen_16.png"
+    },
+    {
+      "idUnico": "SEN_18",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "sen_18.png"
+    },
+    {
+      "idUnico": "SEN_19",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "Nicolas Jackson",
+      "imagem": "sen_19.png"
+    },
+    {
+      "idUnico": "SEN_20",
+      "grupo": "I",
+      "selecao": "Senegal",
+      "nomeJogador": "Krépin Diatta",
+      "imagem": "sen_20.png"
+    },
+    {
+      "idUnico": "IRQ_01",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "irq_01.png"
+    },
+    {
+      "idUnico": "IRQ_03",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Rebin Sulaka",
+      "imagem": "irq_03.png"
+    },
+    {
+      "idUnico": "IRQ_04",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Hussein Ali",
+      "imagem": "irq_04.png"
+    },
+    {
+      "idUnico": "IRQ_05",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Akam Hashem",
+      "imagem": "irq_05.png"
+    },
+    {
+      "idUnico": "IRQ_07",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Zaid Tahseen",
+      "imagem": "irq_07.png"
+    },
+    {
+      "idUnico": "IRQ_08",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Manaf Younis",
+      "imagem": "irq_08.png"
+    },
+    {
+      "idUnico": "IRQ_09",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Zidane Iqbal",
+      "imagem": "irq_09.png"
+    },
+    {
+      "idUnico": "IRQ_10",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Amir Al-Ammari",
+      "imagem": "irq_10.png"
+    },
+    {
+      "idUnico": "IRQ_11",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Ibrahim Bayesh",
+      "imagem": "irq_11.png"
+    },
+    {
+      "idUnico": "IRQ_14",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Youssef Amyn",
+      "imagem": "irq_14.png"
+    },
+    {
+      "idUnico": "IRQ_15",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Amar Sher",
+      "imagem": "irq_15.png"
+    },
+    {
+      "idUnico": "IRQ_16",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Marko Farji",
+      "imagem": "irq_16.png"
+    },
+    {
+      "idUnico": "IRQ_18",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Ali Al-Hamadi",
+      "imagem": "irq_18.png"
+    },
+    {
+      "idUnico": "IRQ_19",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Aymen Hussein",
+      "imagem": "irq_19.png"
+    },
+    {
+      "idUnico": "IRQ_20",
+      "grupo": "I",
+      "selecao": "Iraque",
+      "nomeJogador": "Mohanad Ali",
+      "imagem": "irq_20.png"
+    },
+    {
+      "idUnico": "NOR_03",
+      "grupo": "I",
+      "selecao": "Noruega",
+      "nomeJogador": "Julian Ryerson",
+      "imagem": "nor_03.png"
+    },
+    {
+      "idUnico": "NOR_04",
+      "grupo": "I",
+      "selecao": "Noruega",
+      "nomeJogador": "Leo Ostigård",
+      "imagem": "nor_04.png"
+    },
+    {
+      "idUnico": "NOR_05",
+      "grupo": "I",
+      "selecao": "Noruega",
+      "nomeJogador": "Kristoffer Vassbakk Ajer",
+      "imagem": "nor_05.png"
+    },
+    {
+      "idUnico": "NOR_07",
+      "grupo": "I",
+      "selecao": "Noruega",
+      "nomeJogador": "David Möller Wolfe",
+      "imagem": "nor_07.png"
+    },
+    {
+      "idUnico": "NOR_08",
+      "grupo": "I",
+      "selecao": "Noruega",
+      "nomeJogador": "Torbjørn Heggem",
+      "imagem": "nor_08.png"
+    },
+    {
+      "idUnico": "NOR_10",
+      "grupo": "I",
+      "selecao": "Noruega",
+      "nomeJogador": "Martin Ødegaard",
+      "imagem": "nor_10.png"
+    },
+    {
+      "idUnico": "NOR_11",
+      "grupo": "I",
+      "selecao": "Noruega",
+      "nomeJogador": "Sander Berge",
+      "imagem": "nor_11.png"
+    },
+    {
+      "idUnico": "NOR_14",
+      "grupo": "I",
+      "selecao": "Noruega",
+      "nomeJogador": "Patrick Berg",
+      "imagem": "nor_14.png"
+    },
+    {
+      "idUnico": "NOR_15",
+      "grupo": "I",
+      "selecao": "Noruega",
+      "nomeJogador": "Erling Haaland",
+      "imagem": "nor_15.png"
+    },
+    {
+      "idUnico": "NOR_16",
+      "grupo": "I",
+      "selecao": "Noruega",
+      "nomeJogador": "Alexander Sørloth",
+      "imagem": "nor_16.png"
+    },
+    {
+      "idUnico": "NOR_17",
+      "grupo": "I",
+      "selecao": "Noruega",
+      "nomeJogador": "Aron Dønnum",
+      "imagem": "nor_17.png"
+    },
+    {
+      "idUnico": "NOR_18",
+      "grupo": "I",
+      "selecao": "Noruega",
+      "nomeJogador": "Jørgen Strand Larsen",
+      "imagem": "nor_18.png"
+    },
+    {
+      "idUnico": "ARG_02",
+      "grupo": "J",
+      "selecao": "Argentina",
+      "nomeJogador": "Emiliano Martínez",
+      "imagem": "arg_02.png"
+    },
+    {
+      "idUnico": "ARG_03",
+      "grupo": "J",
+      "selecao": "Argentina",
+      "nomeJogador": "Nahuel Molina",
+      "imagem": "arg_03.png"
+    },
+    {
+      "idUnico": "ARG_06",
+      "grupo": "J",
+      "selecao": "Argentina",
+      "nomeJogador": "Nicolás Tagliafico",
+      "imagem": "arg_06.png"
+    },
+    {
+      "idUnico": "ARG_12",
+      "grupo": "J",
+      "selecao": "Argentina",
+      "nomeJogador": "Leandro Paredes",
+      "imagem": "arg_12.png"
+    },
+    {
+      "idUnico": "ARG_14",
+      "grupo": "J",
+      "selecao": "Argentina",
+      "nomeJogador": "Nico Paz",
+      "imagem": "arg_14.png"
+    },
+    {
+      "idUnico": "ARG_15",
+      "grupo": "J",
+      "selecao": "Argentina",
+      "nomeJogador": "Franco Mastantuono",
+      "imagem": "arg_15.png"
+    },
+    {
+      "idUnico": "ARG_16",
+      "grupo": "J",
+      "selecao": "Argentina",
+      "nomeJogador": "Nico González",
+      "imagem": "arg_16.png"
+    },
+    {
+      "idUnico": "ARG_17",
+      "grupo": "J",
+      "selecao": "Argentina",
+      "nomeJogador": "Lionel Messi",
+      "imagem": "arg_17.png"
+    },
+    {
+      "idUnico": "ARG_18",
+      "grupo": "J",
+      "selecao": "Argentina",
+      "nomeJogador": "Lautaro Martínez",
+      "imagem": "arg_18.png"
+    },
+    {
+      "idUnico": "ARG_19",
+      "grupo": "J",
+      "selecao": "Argentina",
+      "nomeJogador": "Julián Álvarez",
+      "imagem": "arg_19.png"
+    },
+    {
+      "idUnico": "ARG_20",
+      "grupo": "J",
+      "selecao": "Argentina",
+      "nomeJogador": "Giuard Simeone",
+      "imagem": "arg_20.png"
+    },
+    {
+      "idUnico": "ALG_01",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "alg_01.png"
+    },
+    {
+      "idUnico": "ALG_02",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Alexis Guendouzi",
+      "imagem": "alg_02.png"
+    },
+    {
+      "idUnico": "ALG_03",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Ramy Bensebaini",
+      "imagem": "alg_03.png"
+    },
+    {
+      "idUnico": "ALG_04",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Youcef Atal",
+      "imagem": "alg_04.png"
+    },
+    {
+      "idUnico": "ALG_05",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Rayan Aït-Nouri",
+      "imagem": "alg_05.png"
+    },
+    {
+      "idUnico": "ALG_06",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Mohamed-Amine Tougai",
+      "imagem": "alg_06.png"
+    },
+    {
+      "idUnico": "ALG_07",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Aïssa Mandi",
+      "imagem": "alg_07.png"
+    },
+    {
+      "idUnico": "ALG_08",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Ismaël Bennacer",
+      "imagem": "alg_08.png"
+    },
+    {
+      "idUnico": "ALG_11",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Ramiz Zerrouki",
+      "imagem": "alg_11.png"
+    },
+    {
+      "idUnico": "ALG_12",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Nabil Bentaleb",
+      "imagem": "alg_12.png"
+    },
+    {
+      "idUnico": "ALG_15",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Riyad Mahrez",
+      "imagem": "alg_15.png"
+    },
+    {
+      "idUnico": "ALG_16",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Said Benrahma",
+      "imagem": "alg_16.png"
+    },
+    {
+      "idUnico": "ALG_17",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Badreddine Bouanani",
+      "imagem": "alg_17.png"
+    },
+    {
+      "idUnico": "ALG_20",
+      "grupo": "J",
+      "selecao": "Argélia",
+      "nomeJogador": "Mohamed Amoura",
+      "imagem": "alg_20.png"
+    },
+    {
+      "idUnico": "AUT_03",
+      "grupo": "J",
+      "selecao": "Áustria",
+      "nomeJogador": "Patrick Pentz",
+      "imagem": "aut_03.png"
+    },
+    {
+      "idUnico": "AUT_04",
+      "grupo": "J",
+      "selecao": "Áustria",
+      "nomeJogador": "David Alaba",
+      "imagem": "aut_04.png"
+    },
+    {
+      "idUnico": "AUT_05",
+      "grupo": "J",
+      "selecao": "Áustria",
+      "nomeJogador": "Kevin Danso",
+      "imagem": "aut_05.png"
+    },
+    {
+      "idUnico": "AUT_06",
+      "grupo": "J",
+      "selecao": "Áustria",
+      "nomeJogador": "Philipp Lienhart",
+      "imagem": "aut_06.png"
+    },
+    {
+      "idUnico": "AUT_07",
+      "grupo": "J",
+      "selecao": "Áustria",
+      "nomeJogador": "Stefan Posch",
+      "imagem": "aut_07.png"
+    },
+    {
+      "idUnico": "AUT_08",
+      "grupo": "J",
+      "selecao": "Áustria",
+      "nomeJogador": "Philipp Mwene",
+      "imagem": "aut_08.png"
+    },
+    {
+      "idUnico": "AUT_09",
+      "grupo": "J",
+      "selecao": "Áustria",
+      "nomeJogador": "Alexander Prass",
+      "imagem": "aut_09.png"
+    },
+    {
+      "idUnico": "AUT_10",
+      "grupo": "J",
+      "selecao": "Áustria",
+      "nomeJogador": "Xaver Schlager",
+      "imagem": "aut_10.png"
+    },
+    {
+      "idUnico": "AUT_11",
+      "grupo": "J",
+      "selecao": "Áustria",
+      "nomeJogador": "Marcel Sabitzer",
+      "imagem": "aut_11.png"
+    },
+    {
+      "idUnico": "AUT_12",
+      "grupo": "J",
+      "selecao": "Áustria",
+      "nomeJogador": "Konrad Laimer",
+      "imagem": "aut_12.png"
+    },
+    {
+      "idUnico": "AUT_14",
+      "grupo": "J",
+      "selecao": "Áustria",
+      "nomeJogador": "Florian Grillitsch",
+      "imagem": "aut_14.png"
+    },
+    {
+      "idUnico": "AUT_15",
+      "grupo": "J",
+      "selecao": "Áustria",
+      "nomeJogador": "Nicolas Seiwald",
+      "imagem": "aut_15.png"
+    },
+    {
+      "idUnico": "AUT_18",
+      "grupo": "J",
+      "selecao": "Áustria",
+      "nomeJogador": "Christoph Baumgartner",
+      "imagem": "aut_18.png"
+    },
+    {
+      "idUnico": "JOR_01",
+      "grupo": "J",
+      "selecao": "Jordânia",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "jor_01.png"
+    },
+    {
+      "idUnico": "JOR_02",
+      "grupo": "J",
+      "selecao": "Jordânia",
+      "nomeJogador": "Yazeed Abulaila",
+      "imagem": "jor_02.png"
+    },
+    {
+      "idUnico": "JOR_04",
+      "grupo": "J",
+      "selecao": "Jordânia",
+      "nomeJogador": "Mohammad Abu Hashish",
+      "imagem": "jor_04.png"
+    },
+    {
+      "idUnico": "JOR_05",
+      "grupo": "J",
+      "selecao": "Jordânia",
+      "nomeJogador": "Yazan Al-Arab",
+      "imagem": "jor_05.png"
+    },
+    {
+      "idUnico": "JOR_06",
+      "grupo": "J",
+      "selecao": "Jordânia",
+      "nomeJogador": "Abdallah Nasib",
+      "imagem": "jor_06.png"
+    },
+    {
+      "idUnico": "JOR_12",
+      "grupo": "J",
+      "selecao": "Jordânia",
+      "nomeJogador": "Mohammad Abu Taha",
+      "imagem": "jor_12.png"
+    },
+    {
+      "idUnico": "JOR_17",
+      "grupo": "J",
+      "selecao": "Jordânia",
+      "nomeJogador": "Mahmoud Al-Mardi",
+      "imagem": "jor_17.png"
+    },
+    {
+      "idUnico": "JOR_18",
+      "grupo": "J",
+      "selecao": "Jordânia",
+      "nomeJogador": "Ali Olwan",
+      "imagem": "jor_18.png"
+    },
+    {
+      "idUnico": "POR_02",
+      "grupo": "K",
+      "selecao": "Portugal",
+      "nomeJogador": "Diogo Costa",
+      "imagem": "por_02.png"
+    },
+    {
+      "idUnico": "POR_03",
+      "grupo": "K",
+      "selecao": "Portugal",
+      "nomeJogador": "José Sá",
+      "imagem": "por_03.png"
+    },
+    {
+      "idUnico": "POR_04",
+      "grupo": "K",
+      "selecao": "Portugal",
+      "nomeJogador": "Rúben Dias",
+      "imagem": "por_04.png"
+    },
+    {
+      "idUnico": "POR_06",
+      "grupo": "K",
+      "selecao": "Portugal",
+      "nomeJogador": "Diogo Dalot",
+      "imagem": "por_06.png"
+    },
+    {
+      "idUnico": "POR_07",
+      "grupo": "K",
+      "selecao": "Portugal",
+      "nomeJogador": "Nuno Mendes",
+      "imagem": "por_07.png"
+    },
+    {
+      "idUnico": "POR_09",
+      "grupo": "K",
+      "selecao": "Portugal",
+      "nomeJogador": "Bernardo Silva",
+      "imagem": "por_09.png"
+    },
+    {
+      "idUnico": "POR_10",
+      "grupo": "K",
+      "selecao": "Portugal",
+      "nomeJogador": "Bruno Fernandes",
+      "imagem": "por_10.png"
+    },
+    {
+      "idUnico": "POR_11",
+      "grupo": "K",
+      "selecao": "Portugal",
+      "nomeJogador": "Rúben Neves",
+      "imagem": "por_11.png"
+    },
+    {
+      "idUnico": "POR_15",
+      "grupo": "K",
+      "selecao": "Portugal",
+      "nomeJogador": "Cristiano Ronaldo",
+      "imagem": "por_15.png"
+    },
+    {
+      "idUnico": "POR_16",
+      "grupo": "K",
+      "selecao": "Portugal",
+      "nomeJogador": "Francisco Trincão",
+      "imagem": "por_16.png"
+    },
+    {
+      "idUnico": "POR_18",
+      "grupo": "K",
+      "selecao": "Portugal",
+      "nomeJogador": "Gonçalo Ramos",
+      "imagem": "por_18.png"
+    },
+    {
+      "idUnico": "POR_19",
+      "grupo": "K",
+      "selecao": "Portugal",
+      "nomeJogador": "Pedro Neto",
+      "imagem": "por_19.png"
+    },
+    {
+      "idUnico": "COD_01",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "cod_01.png"
+    },
+    {
+      "idUnico": "COD_02",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Lionel Mpasi",
+      "imagem": "cod_02.png"
+    },
+    {
+      "idUnico": "COD_03",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Aaron Wan-Bissaka",
+      "imagem": "cod_03.png"
+    },
+    {
+      "idUnico": "COD_04",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Axel Tuanzebe",
+      "imagem": "cod_04.png"
+    },
+    {
+      "idUnico": "COD_05",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Arthur Masuaku",
+      "imagem": "cod_05.png"
+    },
+    {
+      "idUnico": "COD_06",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Chancel Mbemba",
+      "imagem": "cod_06.png"
+    },
+    {
+      "idUnico": "COD_07",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Joris Kayembe",
+      "imagem": "cod_07.png"
+    },
+    {
+      "idUnico": "COD_08",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Charles Pickel",
+      "imagem": "cod_08.png"
+    },
+    {
+      "idUnico": "COD_10",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Edo Kayembe",
+      "imagem": "cod_10.png"
+    },
+    {
+      "idUnico": "COD_11",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Samuel Moutoussamy",
+      "imagem": "cod_11.png"
+    },
+    {
+      "idUnico": "COD_12",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Noah Sadiki",
+      "imagem": "cod_12.png"
+    },
+    {
+      "idUnico": "COD_14",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Théo Bongonda",
+      "imagem": "cod_14.png"
+    },
+    {
+      "idUnico": "COD_15",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Meschack Elia",
+      "imagem": "cod_15.png"
+    },
+    {
+      "idUnico": "COD_16",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Yoane Wissa",
+      "imagem": "cod_16.png"
+    },
+    {
+      "idUnico": "COD_17",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Brian Cipenga",
+      "imagem": "cod_17.png"
+    },
+    {
+      "idUnico": "COD_18",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Fiston Mayele",
+      "imagem": "cod_18.png"
+    },
+    {
+      "idUnico": "COD_19",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Cédric Bakambu",
+      "imagem": "cod_19.png"
+    },
+    {
+      "idUnico": "COD_20",
+      "grupo": "K",
+      "selecao": "RD Congo",
+      "nomeJogador": "Nathanaël Mbuku",
+      "imagem": "cod_20.png"
+    },
+    {
+      "idUnico": "UZB_01",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "uzb_01.png"
+    },
+    {
+      "idUnico": "UZB_02",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Utkir Yusupov",
+      "imagem": "uzb_02.png"
+    },
+    {
+      "idUnico": "UZB_03",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Rustam Ashurmatov",
+      "imagem": "uzb_03.png"
+    },
+    {
+      "idUnico": "UZB_04",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Sherzod Nasrullaev",
+      "imagem": "uzb_04.png"
+    },
+    {
+      "idUnico": "UZB_05",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Umar Eshmurodov",
+      "imagem": "uzb_05.png"
+    },
+    {
+      "idUnico": "UZB_06",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Husniddin Alikulov",
+      "imagem": "uzb_06.png"
+    },
+    {
+      "idUnico": "UZB_08",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Khojiakbar Alijonov",
+      "imagem": "uzb_08.png"
+    },
+    {
+      "idUnico": "UZB_09",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Abdukodir Khusanov",
+      "imagem": "uzb_09.png"
+    },
+    {
+      "idUnico": "UZB_10",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Odiljon Hamrobekov",
+      "imagem": "uzb_10.png"
+    },
+    {
+      "idUnico": "UZB_12",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Jamshid Iskanderov",
+      "imagem": "uzb_12.png"
+    },
+    {
+      "idUnico": "UZB_14",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Azizbek Turgunboev",
+      "imagem": "uzb_14.png"
+    },
+    {
+      "idUnico": "UZB_15",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Khojimat Erkinov",
+      "imagem": "uzb_15.png"
+    },
+    {
+      "idUnico": "UZB_16",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Eldor Shomurodov",
+      "imagem": "uzb_16.png"
+    },
+    {
+      "idUnico": "UZB_17",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Oston Urunov",
+      "imagem": "uzb_17.png"
+    },
+    {
+      "idUnico": "UZB_18",
+      "grupo": "K",
+      "selecao": "Uzbequistão",
+      "nomeJogador": "Jaloliddin Masharipov",
+      "imagem": "uzb_18.png"
+    },
+    {
+      "idUnico": "COL_01",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "col_01.png"
+    },
+    {
+      "idUnico": "COL_02",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Camilo Vargas",
+      "imagem": "col_02.png"
+    },
+    {
+      "idUnico": "COL_03",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "David Ospina",
+      "imagem": "col_03.png"
+    },
+    {
+      "idUnico": "COL_04",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Dávinson Sánchez",
+      "imagem": "col_04.png"
+    },
+    {
+      "idUnico": "COL_05",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Yerry Mina",
+      "imagem": "col_05.png"
+    },
+    {
+      "idUnico": "COL_06",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Daniel Muñoz",
+      "imagem": "col_06.png"
+    },
+    {
+      "idUnico": "COL_07",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Johan Mojica",
+      "imagem": "col_07.png"
+    },
+    {
+      "idUnico": "COL_08",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Jhon Lucumí",
+      "imagem": "col_08.png"
+    },
+    {
+      "idUnico": "COL_09",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Santiago Arias",
+      "imagem": "col_09.png"
+    },
+    {
+      "idUnico": "COL_10",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Jefferson Lerma",
+      "imagem": "col_10.png"
+    },
+    {
+      "idUnico": "COL_11",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Kevin Castaño",
+      "imagem": "col_11.png"
+    },
+    {
+      "idUnico": "COL_12",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Richard Ríos",
+      "imagem": "col_12.png"
+    },
+    {
+      "idUnico": "COL_14",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "James Rodríguez",
+      "imagem": "col_14.png"
+    },
+    {
+      "idUnico": "COL_15",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Juan Fernando Quintero",
+      "imagem": "col_15.png"
+    },
+    {
+      "idUnico": "COL_16",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Jorge Carrascal",
+      "imagem": "col_16.png"
+    },
+    {
+      "idUnico": "COL_17",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Jhon Arias",
+      "imagem": "col_17.png"
+    },
+    {
+      "idUnico": "COL_18",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Jhon Córdoba",
+      "imagem": "col_18.png"
+    },
+    {
+      "idUnico": "COL_19",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Luis Suárez",
+      "imagem": "col_19.png"
+    },
+    {
+      "idUnico": "COL_20",
+      "grupo": "K",
+      "selecao": "Colômbia",
+      "nomeJogador": "Luis Díaz",
+      "imagem": "col_20.png"
+    },
+    {
+      "idUnico": "ENG_01",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "eng_01.png"
+    },
+    {
+      "idUnico": "ENG_02",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Jordan Pickford",
+      "imagem": "eng_02.png"
+    },
+    {
+      "idUnico": "ENG_04",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Marc Guéhi",
+      "imagem": "eng_04.png"
+    },
+    {
+      "idUnico": "ENG_05",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Ezri Konsa",
+      "imagem": "eng_05.png"
+    },
+    {
+      "idUnico": "ENG_06",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Trent Alexander-Arnold",
+      "imagem": "eng_06.png"
+    },
+    {
+      "idUnico": "ENG_07",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Reece James",
+      "imagem": "eng_07.png"
+    },
+    {
+      "idUnico": "ENG_08",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Dan Burn",
+      "imagem": "eng_08.png"
+    },
+    {
+      "idUnico": "ENG_09",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Jordan Henderson",
+      "imagem": "eng_09.png"
+    },
+    {
+      "idUnico": "ENG_11",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Jude Bellingham",
+      "imagem": "eng_11.png"
+    },
+    {
+      "idUnico": "ENG_12",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Cole Palmer",
+      "imagem": "eng_12.png"
+    },
+    {
+      "idUnico": "ENG_14",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Morgan Rogers",
+      "imagem": "eng_14.png"
+    },
+    {
+      "idUnico": "ENG_15",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Anthony Gordon",
+      "imagem": "eng_15.png"
+    },
+    {
+      "idUnico": "ENG_16",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Phil Foden",
+      "imagem": "eng_16.png"
+    },
+    {
+      "idUnico": "ENG_19",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Marcus Rashford",
+      "imagem": "eng_19.png"
+    },
+    {
+      "idUnico": "ENG_20",
+      "grupo": "L",
+      "selecao": "Inglaterra",
+      "nomeJogador": "Ollie Watkins",
+      "imagem": "eng_20.png"
+    },
+    {
+      "idUnico": "CRO_01",
+      "grupo": "L",
+      "selecao": "Croácia",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "cro_01.png"
+    },
+    {
+      "idUnico": "CRO_03",
+      "grupo": "L",
+      "selecao": "Croácia",
+      "nomeJogador": "Duje Ćaleta-Car",
+      "imagem": "cro_03.png"
+    },
+    {
+      "idUnico": "CRO_04",
+      "grupo": "L",
+      "selecao": "Croácia",
+      "nomeJogador": "Joško Gvardiol",
+      "imagem": "cro_04.png"
+    },
+    {
+      "idUnico": "CRO_05",
+      "grupo": "L",
+      "selecao": "Croácia",
+      "nomeJogador": "Josip Stanišić",
+      "imagem": "cro_05.png"
+    },
+    {
+      "idUnico": "CRO_07",
+      "grupo": "L",
+      "selecao": "Croácia",
+      "nomeJogador": "Josip Šutalo",
+      "imagem": "cro_07.png"
+    },
+    {
+      "idUnico": "CRO_08",
+      "grupo": "L",
+      "selecao": "Croácia",
+      "nomeJogador": "Kristijan Jakić",
+      "imagem": "cro_08.png"
+    },
+    {
+      "idUnico": "CRO_09",
+      "grupo": "L",
+      "selecao": "Croácia",
+      "nomeJogador": "Luka Modrić",
+      "imagem": "cro_09.png"
+    },
+    {
+      "idUnico": "CRO_11",
+      "grupo": "L",
+      "selecao": "Croácia",
+      "nomeJogador": "Martin Baturina",
+      "imagem": "cro_11.png"
+    },
+    {
+      "idUnico": "CRO_14",
+      "grupo": "L",
+      "selecao": "Croácia",
+      "nomeJogador": "Mario Pašalić",
+      "imagem": "cro_14.png"
+    },
+    {
+      "idUnico": "CRO_16",
+      "grupo": "L",
+      "selecao": "Croácia",
+      "nomeJogador": "Ivan Perišić",
+      "imagem": "cro_16.png"
+    },
+    {
+      "idUnico": "CRO_17",
+      "grupo": "L",
+      "selecao": "Croácia",
+      "nomeJogador": "Marco Pašalić",
+      "imagem": "cro_17.png"
+    },
+    {
+      "idUnico": "CRO_19",
+      "grupo": "L",
+      "selecao": "Croácia",
+      "nomeJogador": "Andrej Kramarić",
+      "imagem": "cro_19.png"
+    },
+    {
+      "idUnico": "CRO_20",
+      "grupo": "L",
+      "selecao": "Croácia",
+      "nomeJogador": "Franjo Ivanović",
+      "imagem": "cro_20.png"
+    },
+    {
+      "idUnico": "GHA_01",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Espaço reservado",
+      "imagem": "gha_01.png"
+    },
+    {
+      "idUnico": "GHA_02",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Lawrence Ati Zigi",
+      "imagem": "gha_02.png"
+    },
+    {
+      "idUnico": "GHA_03",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Tariq Lamptey",
+      "imagem": "gha_03.png"
+    },
+    {
+      "idUnico": "GHA_04",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Mohammed Salisu",
+      "imagem": "gha_04.png"
+    },
+    {
+      "idUnico": "GHA_06",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Alexander Djiku",
+      "imagem": "gha_06.png"
+    },
+    {
+      "idUnico": "GHA_07",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Gideon Mensah",
+      "imagem": "gha_07.png"
+    },
+    {
+      "idUnico": "GHA_08",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Caleb Virenkvi",
+      "imagem": "gha_08.png"
+    },
+    {
+      "idUnico": "GHA_10",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Thomas Partey",
+      "imagem": "gha_10.png"
+    },
+    {
+      "idUnico": "GHA_11",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Salis Abdul Samed",
+      "imagem": "gha_11.png"
+    },
+    {
+      "idUnico": "GHA_12",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Kamaldeen Sulemana",
+      "imagem": "gha_12.png"
+    },
+    {
+      "idUnico": "GHA_16",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Jordan Ayew",
+      "imagem": "gha_16.png"
+    },
+    {
+      "idUnico": "GHA_17",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "André Ayew",
+      "imagem": "gha_17.png"
+    },
+    {
+      "idUnico": "GHA_18",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Joseph Paintsil",
+      "imagem": "gha_18.png"
+    },
+    {
+      "idUnico": "GHA_19",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Osman Bukari",
+      "imagem": "gha_19.png"
+    },
+    {
+      "idUnico": "GHA_20",
+      "grupo": "L",
+      "selecao": "Gana",
+      "nomeJogador": "Antoine Semenyo",
+      "imagem": "gha_20.png"
+    },
+    {
+      "idUnico": "PAN_02",
+      "grupo": "L",
+      "selecao": "Panamá",
+      "nomeJogador": "Orlando Mosquera",
+      "imagem": "pan_02.png"
+    },
+    {
+      "idUnico": "PAN_03",
+      "grupo": "L",
+      "selecao": "Panamá",
+      "nomeJogador": "Luis Mejía",
+      "imagem": "pan_03.png"
+    },
+    {
+      "idUnico": "PAN_04",
+      "grupo": "L",
+      "selecao": "Panamá",
+      "nomeJogador": "Fidel Escobar",
+      "imagem": "pan_04.png"
+    },
+    {
+      "idUnico": "PAN_05",
+      "grupo": "L",
+      "selecao": "Panamá",
+      "nomeJogador": "Andrés Andrade",
+      "imagem": "pan_05.png"
+    },
+    {
+      "idUnico": "PAN_08",
+      "grupo": "L",
+      "selecao": "Panamá",
+      "nomeJogador": "Éric Davis",
+      "imagem": "pan_08.png"
+    },
+    {
+      "idUnico": "PAN_09",
+      "grupo": "L",
+      "selecao": "Panamá",
+      "nomeJogador": "José Córdoba",
+      "imagem": "pan_09.png"
+    },
+    {
+      "idUnico": "PAN_10",
+      "grupo": "L",
+      "selecao": "Panamá",
+      "nomeJogador": "César Blackman",
+      "imagem": "pan_10.png"
+    },
+    {
+      "idUnico": "PAN_11",
+      "grupo": "L",
+      "selecao": "Panamá",
+      "nomeJogador": "Aníbal Godoy",
+      "imagem": "pan_11.png"
+    },
+    {
+      "idUnico": "PAN_12",
+      "grupo": "L",
+      "selecao": "Panamá",
+      "nomeJogador": "Adalberto Carrasquilla",
+      "imagem": "pan_12.png"
+    },
+    {
+      "idUnico": "PAN_14",
+      "grupo": "L",
+      "selecao": "Panamá",
+      "nomeJogador": "Édgar Bárcenas",
+      "imagem": "pan_14.png"
+    },
+    {
+      "idUnico": "PAN_16",
+      "grupo": "L",
+      "selecao": "Panamá",
+      "nomeJogador": "Ismael Díaz",
+      "imagem": "pan_16.png"
+    },
+    {
+      "idUnico": "PAN_17",
+      "grupo": "L",
+      "selecao": "Panamá",
+      "nomeJogador": "José Fajardo",
+      "imagem": "pan_17.png"
+    },
+    {
+      "idUnico": "PAN_18",
+      "grupo": "L",
+      "selecao": "Panamá",
+      "nomeJogador": "Cecilio Waterman",
+      "imagem": "pan_18.png"
+    }
+  ]
+}
