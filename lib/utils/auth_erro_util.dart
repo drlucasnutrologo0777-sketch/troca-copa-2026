@@ -17,6 +17,8 @@ String mensagemAuthErro(Object e) {
         return 'Senha muito fraca (mínimo 6 caracteres).';
       case 'invalid-credential':
         return 'E-mail ou senha incorretos.';
+      case 'requires-recent-login':
+        return 'Digite sua senha novamente para confirmar a exclusão da conta.';
       case 'operation-not-allowed':
         return 'Login por e-mail não ativado no Firebase Console.';
       default:

@@ -85,11 +85,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _confirmarApagarConta() async {
+    final senhaController = TextEditingController();
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Apagar conta?'),
-        content: const Text('Esta ação é permanente.'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text('Esta ação é permanente. Digite sua senha para confirmar.'),
+            const SizedBox(height: 12),
+            TextField(
+              controller: senhaController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Senha',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('CANCELAR')),
           TextButton(
@@ -100,10 +116,24 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
     );
     if (ok != true || !mounted) return;
+    final senha = senhaController.text.trim();
+    if (senha.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Digite sua senha para confirmar.')),
+      );
+      return;
+    }
     final app = context.read<AppState>();
-    final removido = await app.apagarConta();
-    if (mounted && removido) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Conta apagada.')));
+    final removido = await app.apagarConta(senha: senha);
+    if (!mounted) return;
+    if (removido) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Conta apagada. Até logo!')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(app.erro ?? 'Não foi possível apagar a conta.')),
+      );
     }
   }
 

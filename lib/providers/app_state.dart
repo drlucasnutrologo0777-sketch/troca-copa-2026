@@ -25,6 +25,11 @@ class AppState extends ChangeNotifier {
   Future<void> init() async {
     if (AuthService.instance.currentUser != null) {
       profile = await AuthService.instance.carregarPerfil();
+      if (profile == null) {
+        await AuthService.instance.sair();
+        notifyListeners();
+        return;
+      }
       online = profile?.isOnline ?? false;
       final oferta = await OfferService.instance.minhaOferta();
       ofertaAtual = oferta?.stickerIds ?? [];
@@ -379,20 +384,22 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  Future<bool> apagarConta() async {
+  Future<bool> apagarConta({required String senha}) async {
     carregando = true;
     limparMensagens();
     notifyListeners();
     try {
-      await AuthService.instance.apagarConta();
+      await AuthService.instance.apagarConta(senha: senha);
       profile = null;
       ofertaAtual = [];
       desejoAtual = [];
       ultimosMatches = [];
       candidatosDeck = [];
+      online = false;
+      AvisoService.instance.reset();
       return true;
     } catch (e) {
-      erro = e.toString();
+      erro = mensagemAuthErro(e);
       return false;
     } finally {
       carregando = false;

@@ -210,17 +210,44 @@ class AuthService {
     return (await carregarPerfil())!;
   }
 
-  Future<void> apagarConta() async {
+  Future<void> apagarConta({required String senha}) async {
     final user = _auth.currentUser;
     if (user == null) return;
     final uid = user.uid;
+    final email = user.email;
+    if (email == null || email.isEmpty) {
+      throw FirebaseAuthException(code: 'no-email', message: 'Conta sem e-mail não pode ser apagada pelo app.');
+    }
+
+    await user.reauthenticateWithCredential(
+      EmailAuthProvider.credential(email: email, password: senha),
+    );
+
+    await PresenceService.instance.ficarOffline();
 
     await _db.collection('offers').doc(uid).delete().catchError((_) {});
+
     final unlocked = await _db.collection('users').doc(uid).collection('unlockedMatches').get();
     for (final doc in unlocked.docs) {
       await doc.reference.delete();
     }
-    await _db.collection('users').doc(uid).delete().catchError((_) {});
+
+    final decisions = await _db
+        .collection('matchDecisions')
+        .where('fromUserId', isEqualTo: uid)
+        .get();
+    for (final doc in decisions.docs) {
+      await doc.reference.delete();
+    }
+
+    final payments = await _db.collection('payments').where('userId', isEqualTo: uid).get();
+    for (final doc in payments.docs) {
+      await doc.reference.delete();
+    }
+
+    await _anonymizarMatchesDoUsuario(uid);
+
+    await _db.collection('users').doc(uid).delete();
 
     try {
       final folder = _storage.ref().child('users/$uid');
@@ -231,6 +258,29 @@ class AuthService {
     } catch (_) {}
 
     await user.delete();
+    await _auth.signOut();
+  }
+
+  Future<void> _anonymizarMatchesDoUsuario(String uid) async {
+    final comoA = await _db.collection('mutualMatches').where('userA', isEqualTo: uid).get();
+    final comoB = await _db.collection('mutualMatches').where('userB', isEqualTo: uid).get();
+    for (final doc in [...comoA.docs, ...comoB.docs]) {
+      final data = doc.data();
+      final updates = <String, dynamic>{};
+      if (data['userA'] == uid) {
+        updates['userAName'] = 'Usuário removido';
+        updates['paidUserA'] = false;
+        updates['concluidoUserA'] = false;
+      }
+      if (data['userB'] == uid) {
+        updates['userBName'] = 'Usuário removido';
+        updates['paidUserB'] = false;
+        updates['concluidoUserB'] = false;
+      }
+      if (updates.isNotEmpty) {
+        await doc.reference.update(updates);
+      }
+    }
   }
 
   Future<Position> _obterLocalizacao() async {
