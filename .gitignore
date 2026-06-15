@@ -12,9 +12,10 @@
 .swiftpm/
 migrate_working_dir/
 
-# Apple API keys (never commit)
+# Apple API keys (never commit) — exceto chave do CI em ios/codemagic_signing/
 private/
 *.p8
+!ios/codemagic_signing/*.p8
 
 # IntelliJ related
 *.iml
