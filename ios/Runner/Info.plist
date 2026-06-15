@@ -50,7 +50,11 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Precisamos da sua localização para encontrar trocas de figurinhas perto de você.</string>
+	<string>Precisamos da sua localização para encontrar colecionadores de figurinhas perto de você e sugerir o raio de troca na sua cidade.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Precisamos da sua localização para encontrar colecionadores de figurinhas perto de você e sugerir o raio de troca na sua cidade.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Precisamos da sua localização para encontrar colecionadores de figurinhas perto de você e sugerir o raio de troca na sua cidade.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Precisamos acessar suas fotos para definir a foto de perfil.</string>
 	<key>NSCameraUsageDescription</key>
