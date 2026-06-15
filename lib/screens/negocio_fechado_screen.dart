@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../constants/pix_config.dart';
+import '../services/iap_service.dart';
 import '../models/models.dart';
 import '../services/mutual_match_service.dart';
 import '../theme/copa_theme.dart';
@@ -96,7 +96,7 @@ class NegocioFechadoScreen extends StatelessWidget {
                             const Text('Pagamento', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
                             const SizedBox(height: 8),
                             Text(
-                              'PIX R\$ ${PixConfig.valorMatch.toStringAsFixed(2)} · ${PixConfig.titular}',
+                              'Compra in-app ${IapService.instance.precoExibicao} · libera contato e chat',
                               style: TextStyle(color: Colors.grey.shade700),
                             ),
                             const SizedBox(height: 8),
@@ -118,7 +118,7 @@ class NegocioFechadoScreen extends StatelessWidget {
                                       builder: (_) => MutualPaymentScreen(mutualMatchId: match.id),
                                     ),
                                   ),
-                                  child: Text('LIBERAR CONTATO · PIX R\$ ${PixConfig.valorMatch.toStringAsFixed(2)}'),
+                                  child: Text('LIBERAR CONTATO · ${IapService.instance.precoExibicao}'),
                                 ),
                               ),
                             ],

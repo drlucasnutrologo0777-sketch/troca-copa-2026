@@ -5,6 +5,23 @@ import '../constants/pix_config.dart';
 import '../models/models.dart';
 import 'offer_match_service.dart';
 
+/// Dados de uma compra IAP confirmada pela loja (Apple / Google).
+class IapPurchaseInfo {
+  const IapPurchaseInfo({
+    required this.productId,
+    required this.transactionId,
+    required this.platform,
+    required this.purchaseToken,
+    required this.valor,
+  });
+
+  final String productId;
+  final String transactionId;
+  final String platform;
+  final String purchaseToken;
+  final double valor;
+}
+
 /// Aceite mútuo estilo Tinder — decisões, match confirmado, pagamento duplo.
 class MutualMatchService {
   MutualMatchService._();
@@ -167,6 +184,42 @@ class MutualMatchService {
   }
 
   Future<void> confirmarPagamento(String mutualMatchId) async {
+    await _registrarPagamento(
+      mutualMatchId,
+      valor: PixConfig.valorMatch,
+      status: 'confirmado_manual',
+      metodo: 'pix',
+      extras: {
+        'pixChave': PixConfig.chave,
+        'pixTitular': PixConfig.titular,
+        'descricao': PixConfig.descricao,
+      },
+    );
+  }
+
+  Future<void> confirmarPagamentoIap(String mutualMatchId, IapPurchaseInfo compra) async {
+    await _registrarPagamento(
+      mutualMatchId,
+      valor: compra.valor,
+      status: 'confirmado_iap',
+      metodo: 'iap',
+      extras: {
+        'productId': compra.productId,
+        'transactionId': compra.transactionId,
+        'platform': compra.platform,
+        'purchaseToken': compra.purchaseToken,
+        'descricao': 'IAP match unlock',
+      },
+    );
+  }
+
+  Future<void> _registrarPagamento(
+    String mutualMatchId, {
+    required double valor,
+    required String status,
+    required String metodo,
+    required Map<String, dynamic> extras,
+  }) async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final match = await carregar(mutualMatchId);
     if (match == null || match.euPaguei(uid)) return;
@@ -182,18 +235,17 @@ class MutualMatchService {
     batch.set(_db.collection('payments').doc('${uid}_$mutualMatchId'), {
       'userId': uid,
       'mutualMatchId': mutualMatchId,
-      'valor': PixConfig.valorMatch,
-      'pixChave': PixConfig.chave,
-      'pixTitular': PixConfig.titular,
-      'descricao': PixConfig.descricao,
-      'status': 'confirmado_manual',
+      'valor': valor,
+      'metodo': metodo,
+      'status': status,
       'paidAt': FieldValue.serverTimestamp(),
+      ...extras,
     });
 
     batch.set(
       _db.collection('platform').doc('faturamento'),
       {
-        'totalRecebido': FieldValue.increment(PixConfig.valorMatch),
+        'totalRecebido': FieldValue.increment(valor),
         'totalTransacoes': FieldValue.increment(1),
         'ultimaTransacaoEm': FieldValue.serverTimestamp(),
       },

@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../constants/pix_config.dart';
+import '../services/iap_service.dart';
 import '../models/models.dart';
 import '../screens/chat_room_screen.dart';
 import '../screens/match_deck_screen.dart';
@@ -44,7 +44,7 @@ class AvisoService {
           titulo: 'MATCH CONFIRMADO!',
           mensagem:
               'Você e ${m.otherUserName(uid)} aceitaram a troca.\n\n'
-              'Negócio fechado — pague R\$ ${PixConfig.valorMatch.toStringAsFixed(2)} para liberar contato.',
+              'Negócio fechado — compre ${IapService.instance.precoExibicao} para liberar contato.',
           acao: 'VER NEGÓCIO FECHADO',
           onAcao: () => Navigator.push(
             context,
@@ -84,9 +84,9 @@ class AvisoService {
             context,
             titulo: 'Outro colecionador pagou',
             mensagem:
-                '${m.otherUserName(uid)} já pagou o PIX.\n'
-                'Pague R\$ ${PixConfig.valorMatch.toStringAsFixed(2)} para liberar o chat.',
-            acao: 'PAGAR PIX',
+                '${m.otherUserName(uid)} já pagou.\n'
+                'Compre ${IapService.instance.precoExibicao} para liberar o chat.',
+            acao: 'COMPRAR AGORA',
             onAcao: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => MutualPaymentScreen(mutualMatchId: m.id)),

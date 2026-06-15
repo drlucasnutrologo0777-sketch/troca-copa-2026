@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../constants/pix_config.dart';
+import '../services/iap_service.dart';
 import '../models/models.dart';
 import '../services/mutual_match_service.dart';
 import '../services/presence_service.dart';
@@ -47,7 +47,7 @@ class ChatScreen extends StatelessWidget {
                               const Text('Chat bloqueado', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
                               const SizedBox(height: 8),
                               Text(
-                                'Libera após aceite mútuo + PIX R\$ ${PixConfig.valorMatch.toStringAsFixed(2)} dos dois lados.',
+                                'Libera após aceite mútuo + compra ${IapService.instance.precoExibicao} dos dois lados.',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(color: Colors.grey.shade700),
                               ),

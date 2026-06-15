@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/models.dart';
+import '../services/iap_service.dart';
 import '../providers/app_state.dart';
 import '../theme/copa_theme.dart';
 import '../utils/sticker_token_util.dart';
@@ -71,7 +72,7 @@ class _MatchScreenState extends State<MatchScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Um colecionador por vez. Só paga PIX após os dois aceitarem.',
+                          'Um colecionador por vez. Só compra após os dois aceitarem (${IapService.instance.precoExibicao}).',
                           style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
                         ),
                         const SizedBox(height: 12),

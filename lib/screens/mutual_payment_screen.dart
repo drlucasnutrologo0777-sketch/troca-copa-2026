@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
+
 import '../constants/pix_config.dart';
+import '../services/iap_service.dart';
 import '../services/mutual_match_service.dart';
 import '../theme/copa_theme.dart';
 import '../widgets/copa_widgets.dart';
@@ -18,6 +23,25 @@ class MutualPaymentScreen extends StatefulWidget {
 class _MutualPaymentScreenState extends State<MutualPaymentScreen> {
   bool _pago = false;
   bool _carregando = false;
+  bool _iapPronto = false;
+  String _preco = IapService.instance.precoExibicao;
+
+  @override
+  void initState() {
+    super.initState();
+    _inicializarIap();
+  }
+
+  Future<void> _inicializarIap() async {
+    await IapService.instance.init();
+    if (!mounted) return;
+    setState(() {
+      _iapPronto = IapService.instance.lojaDisponivel && IapService.instance.produtoCarregado;
+      _preco = IapService.instance.precoExibicao;
+    });
+  }
+
+  bool get _usarIap => IapService.instance.suportado && (Platform.isIOS || _iapPronto);
 
   Future<void> _copiarPix() async {
     await Clipboard.setData(const ClipboardData(text: PixConfig.chave));
@@ -28,7 +52,49 @@ class _MutualPaymentScreenState extends State<MutualPaymentScreen> {
     }
   }
 
-  Future<void> _confirmar() async {
+  double _valorCompra(ProductDetails? product) {
+    final raw = double.tryParse(product?.rawPrice ?? '');
+    return raw ?? 0.99;
+  }
+
+  String get _platformLabel => Platform.isIOS ? 'apple' : 'google';
+
+  Future<void> _comprarIap() async {
+    setState(() => _carregando = true);
+    try {
+      final purchase = await IapService.instance.comprarLiberacaoMatch(widget.mutualMatchId);
+      final product = IapService.instance.product;
+      await MutualMatchService.instance.confirmarPagamentoIap(
+        widget.mutualMatchId,
+        IapPurchaseInfo(
+          productId: purchase.productID,
+          transactionId: purchase.purchaseID ??
+              purchase.verificationData.localVerificationData.toString(),
+          platform: _platformLabel,
+          purchaseToken: purchase.verificationData.serverVerificationData,
+          valor: _valorCompra(product),
+        ),
+      );
+      await IapService.instance.finalizarCompra(purchase);
+      setState(() => _pago = true);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Compra $_preco confirmada!', style: const TextStyle(fontWeight: FontWeight.w700)),
+            backgroundColor: CopaColors.verde,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
+  }
+
+  Future<void> _confirmarPix() async {
     setState(() => _carregando = true);
     try {
       await MutualMatchService.instance.confirmarPagamento(widget.mutualMatchId);
@@ -55,6 +121,8 @@ class _MutualPaymentScreenState extends State<MutualPaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final titulo = _usarIap ? 'Compra in-app — Match confirmado' : 'PIX — Match confirmado';
+
     return Scaffold(
       body: CopaAlbumBackground(
         child: Column(
@@ -63,9 +131,9 @@ class _MutualPaymentScreenState extends State<MutualPaymentScreen> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               iconTheme: const IconThemeData(color: CopaColors.branco),
-              title: const Text(
-                'PIX — Match confirmado',
-                style: TextStyle(color: CopaColors.branco, fontWeight: FontWeight.w900),
+              title: Text(
+                titulo,
+                style: const TextStyle(color: CopaColors.branco, fontWeight: FontWeight.w900),
               ),
             ),
             Expanded(
@@ -77,7 +145,7 @@ class _MutualPaymentScreenState extends State<MutualPaymentScreen> {
                     children: [
                       if (!_pago) ...[
                         Text(
-                          'R\$ ${PixConfig.valorMatch.toStringAsFixed(2).replaceAll(".", ",")}',
+                          _usarIap ? _preco : 'R\$ ${PixConfig.valorMatch.toStringAsFixed(2).replaceAll(".", ",")}',
                           style: const TextStyle(
                             fontSize: 42,
                             fontWeight: FontWeight.w900,
@@ -85,26 +153,47 @@ class _MutualPaymentScreenState extends State<MutualPaymentScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'Só cobramos após aceite mútuo dos dois lados.',
+                        Text(
+                          _usarIap
+                              ? 'Pagamento pela App Store / Google Play.\nSó cobramos após aceite mútuo dos dois lados.'
+                              : 'Só cobramos após aceite mútuo dos dois lados.',
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 20),
-                        _linha('PIX', PixConfig.chave),
-                        _linha('Titular', PixConfig.titular),
-                        const SizedBox(height: 20),
-                        OutlinedButton.icon(
-                          onPressed: _copiarPix,
-                          icon: const Icon(Icons.copy),
-                          label: const Text('COPIAR CHAVE PIX'),
-                        ),
-                        const SizedBox(height: 12),
-                        ElevatedButton(
-                          onPressed: _carregando ? null : _confirmar,
-                          child: _carregando
-                              ? const SizedBox(height: 22, width: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                              : const Text('JÁ PAGUEI — AGUARDAR OUTRO'),
-                        ),
+                        if (_usarIap) ...[
+                          if (!_iapPronto)
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 12),
+                              child: Text(
+                                'Produto IAP ainda não está na loja. Crie com.mycompany.trocafigurinha.match_unlock na App Store Connect.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.orange, fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ElevatedButton.icon(
+                            onPressed: (_carregando || !_iapPronto) ? null : _comprarIap,
+                            icon: const Icon(Icons.shopping_bag),
+                            label: _carregando
+                                ? const SizedBox(height: 22, width: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                                : Text('COMPRAR · $_preco'),
+                          ),
+                        ] else ...[
+                          _linha('PIX', PixConfig.chave),
+                          _linha('Titular', PixConfig.titular),
+                          const SizedBox(height: 20),
+                          OutlinedButton.icon(
+                            onPressed: _copiarPix,
+                            icon: const Icon(Icons.copy),
+                            label: const Text('COPIAR CHAVE PIX'),
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                            onPressed: _carregando ? null : _confirmarPix,
+                            child: _carregando
+                                ? const SizedBox(height: 22, width: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                                : const Text('JÁ PAGUEI — AGUARDAR OUTRO'),
+                          ),
+                        ],
                       ] else ...[
                         const Icon(Icons.check_circle, color: CopaColors.verde, size: 64),
                         const SizedBox(height: 16),

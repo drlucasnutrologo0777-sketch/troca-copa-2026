@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/models.dart';
+import '../services/iap_service.dart';
 import '../services/mutual_match_service.dart';
 import '../theme/copa_theme.dart';
 import '../widgets/copa_widgets.dart';
@@ -95,7 +96,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     return Center(
                       child: CopaCard(
                         child: Text(
-                          'Chat bloqueado até os dois pagarem o PIX de R\$ 0,50.',
+                          'Chat bloqueado até os dois comprarem (${IapService.instance.precoExibicao}).',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.grey.shade700),
                         ),

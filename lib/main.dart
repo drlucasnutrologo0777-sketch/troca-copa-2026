@@ -8,6 +8,7 @@ import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'services/auth_service.dart';
+import 'services/iap_service.dart';
 import 'services/sticker_catalog_service.dart';
 import 'theme/copa_theme.dart';
 import 'widgets/aviso_listener.dart';
@@ -16,6 +17,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await StickerCatalogService.instance.load();
+  await IapService.instance.init();
   runApp(const TrocaCopaApp());
 }
 
