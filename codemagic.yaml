@@ -1,15 +1,16 @@
 # TROCA COPA 2026 — iPhone (TestFlight)
-# Assinatura iOS: arquivos em ios/codemagic_signing/ (no repo, sem Mac).
 #
 # Codemagic → Environment variables → grupo troca_copa_apple (Secret):
-#   APP_STORE_CONNECT_ISSUER_ID
-#   APP_STORE_CONNECT_KEY_IDENTIFIER
-#   APP_STORE_CONNECT_PRIVATE_KEY  (conteudo do AuthKey_VHR75L74MJ.p8)
+#   APP_STORE_CONNECT_ISSUER_ID      = b681d77e-4c5b-4154-b3e4-962dab155c2d
+#   APP_STORE_CONNECT_KEY_IDENTIFIER = VHR75L74MJ
+#   APP_STORE_CONNECT_PRIVATE_KEY    = conteudo COMPLETO do AuthKey_VHR75L74MJ.p8
+#
+# IMPORTANTE: a chave API na Apple precisa permissao "App Manager" (nao so Developer).
 
 workflows:
   troca-copa-ios:
     name: TROCA COPA 2026 — iOS
-    max_build_duration: 60
+    max_build_duration: 90
     instance_type: mac_mini_m2
 
     environment:
@@ -24,6 +25,22 @@ workflows:
       cocoapods: default
 
     scripts:
+      - name: Verificar credenciais Apple
+        script: |
+          set -e
+          if [ -z "$APP_STORE_CONNECT_ISSUER_ID" ]; then
+            echo "ERRO: falta APP_STORE_CONNECT_ISSUER_ID no grupo troca_copa_apple"
+            exit 1
+          fi
+          if [ -z "$APP_STORE_CONNECT_KEY_IDENTIFIER" ]; then
+            echo "ERRO: falta APP_STORE_CONNECT_KEY_IDENTIFIER no grupo troca_copa_apple"
+            exit 1
+          fi
+          if [ -z "$APP_STORE_CONNECT_PRIVATE_KEY" ]; then
+            echo "ERRO: falta APP_STORE_CONNECT_PRIVATE_KEY no grupo troca_copa_apple"
+            exit 1
+          fi
+          echo "Credenciais Apple OK (Issuer + Key ID + Private Key presentes)"
       - name: Set up code signing
         script: |
           set -e
@@ -43,9 +60,26 @@ workflows:
           pod install
       - name: Build IPA
         script: |
+          set -e
           flutter build ipa --release \
             --build-name=1.0.1 \
-            --build-number=3
+            --build-number=4
+          ls -la build/ios/ipa/
+      - name: Upload to App Store Connect (TestFlight)
+        script: |
+          set -e
+          IPA=$(find build/ios/ipa -name "*.ipa" | head -1)
+          if [ -z "$IPA" ]; then
+            echo "ERRO: arquivo .ipa nao encontrado em build/ios/ipa/"
+            exit 1
+          fi
+          echo "Enviando para App Store Connect: $IPA"
+          app-store-connect publish \
+            --path "$IPA" \
+            --testflight \
+            --max-find-build-wait 900 \
+            --max-build-processing-wait 3600 \
+            --verbose
 
     artifacts:
       - build/ios/ipa/*.ipa
@@ -58,8 +92,3 @@ workflows:
         notify:
           success: true
           failure: true
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-        submit_to_testflight: true
