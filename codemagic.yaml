@@ -31,9 +31,10 @@ workflows:
           keychain add-certificates \
             --certificate ios/codemagic_signing/distribution.p12 \
             --certificate-password "$CM_CERTIFICATE_PASSWORD"
-          xcode-project use-profiles \
-            --project ios/Runner.xcodeproj \
-            --profile ios/codemagic_signing/app_store.mobileprovision
+          PROFILE="ios/codemagic_signing/app_store.mobileprovision"
+          PROFILE_UUID=$(security cms -D -i "$PROFILE" | plutil -extract UUID raw -)
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$PROFILE" "$HOME/Library/MobileDevice/Provisioning Profiles/${PROFILE_UUID}.mobileprovision"
       - name: Flutter pub get
         script: flutter pub get
       - name: CocoaPods
