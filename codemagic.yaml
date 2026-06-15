@@ -1,12 +1,10 @@
 # TROCA COPA 2026 — iPhone (TestFlight)
+# Assinatura iOS: arquivos em ios/codemagic_signing/ (no repo, sem Mac).
 #
-# Codemagic (app troca-copa-2026 → Environment variables → grupo troca_copa_apple, Secret):
-#   APP_STORE_CONNECT_ISSUER_ID      = b681d77e-4c5b-4154-b3e4-962dab155c2d
-#   APP_STORE_CONNECT_KEY_IDENTIFIER = VHR75L74MJ
-#   APP_STORE_CONNECT_PRIVATE_KEY    = conteudo do AuthKey_VHR75L74MJ.p8
-#   CERTIFICATE_PRIVATE_KEY          = conteudo de private/ios_distribution_private_key.pem
-#
-# Rode COLE-CHAVE-CODEMAGIC.bat uma vez para copiar a chave e abrir o Codemagic.
+# Codemagic → Environment variables → grupo troca_copa_apple (Secret):
+#   APP_STORE_CONNECT_ISSUER_ID
+#   APP_STORE_CONNECT_KEY_IDENTIFIER
+#   APP_STORE_CONNECT_PRIVATE_KEY  (conteudo do AuthKey_VHR75L74MJ.p8)
 
 workflows:
   troca-copa-ios:
@@ -26,31 +24,16 @@ workflows:
       cocoapods: default
 
     scripts:
-      - name: Set up keychain
-        script: keychain initialize
-      - name: Fetch App Store profile from Apple
+      - name: Set up code signing
         script: |
           set -e
-          if [ -z "$APP_STORE_CONNECT_ISSUER_ID" ] || [ -z "$APP_STORE_CONNECT_KEY_IDENTIFIER" ] || [ -z "$APP_STORE_CONNECT_PRIVATE_KEY" ]; then
-            echo "ERRO: faltam variaveis Apple API no grupo troca_copa_apple."
-            exit 1
-          fi
-          if [ -z "$CERTIFICATE_PRIVATE_KEY" ]; then
-            echo "ERRO: falta CERTIFICATE_PRIVATE_KEY no grupo troca_copa_apple."
-            echo "Rode COLE-CHAVE-CODEMAGIC.bat no Windows e cole no Codemagic."
-            exit 1
-          fi
-          app-store-connect fetch-signing-files "$BUNDLE_ID" \
-            --type IOS_APP_STORE \
-            --create \
-            --delete-stale-profiles \
-            --strict-match-identifier \
-            --certificate-key=@env:CERTIFICATE_PRIVATE_KEY \
-            --p12-password "$CM_CERTIFICATE_PASSWORD" \
-            --verbose
-          keychain add-certificates
-      - name: Set up code signing on Xcode project
-        script: xcode-project use-profiles
+          keychain initialize
+          keychain add-certificates \
+            --certificate ios/codemagic_signing/distribution.p12 \
+            --certificate-password "$CM_CERTIFICATE_PASSWORD"
+          xcode-project use-profiles \
+            --project ios/Runner.xcodeproj \
+            --profile ios/codemagic_signing/app_store.mobileprovision
       - name: Flutter pub get
         script: flutter pub get
       - name: CocoaPods
