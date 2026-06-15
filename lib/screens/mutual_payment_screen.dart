@@ -53,7 +53,8 @@ class _MutualPaymentScreenState extends State<MutualPaymentScreen> {
   }
 
   double _valorCompra(ProductDetails? product) {
-    final raw = double.tryParse(product?.rawPrice ?? '');
+    if (product == null) return 0.99;
+    final raw = double.tryParse(product.rawPrice.toString());
     return raw ?? 0.99;
   }
 
