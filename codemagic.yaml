@@ -60,7 +60,7 @@ workflows:
             --profile ios/codemagic_signing/app_store.mobileprovision
           flutter build ipa --release \
             --build-name=1.0.1 \
-            --build-number=7 \
+            --build-number=8 \
             --export-options-plist=ios/codemagic_signing/ExportOptions.plist
           ls -la build/ios/ipa/
       - name: Upload to App Store Connect (TestFlight)
@@ -73,14 +73,14 @@ workflows:
           fi
           API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
           export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
-          echo "Enviando para App Store Connect: $IPA"
+          echo "Enviando IPA para App Store Connect: $IPA"
           app-store-connect publish \
             --path "$IPA" \
             --private-key "@file:$API_KEY" \
-            --testflight \
             --max-find-build-wait 900 \
             --max-build-processing-wait 3600 \
             --verbose
+          echo "Upload concluido. Abra TestFlight no App Store Connect."
 
     artifacts:
       - build/ios/ipa/*.ipa
