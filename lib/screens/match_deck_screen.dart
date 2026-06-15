@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/models.dart';
 import '../providers/app_state.dart';
+import '../services/iap_service.dart';
 import '../services/mutual_match_service.dart';
 import '../services/presence_service.dart';
 import '../theme/copa_theme.dart';
@@ -66,8 +67,12 @@ class _MatchDeckScreenState extends State<MatchDeckScreen> {
     if (aceitar) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Você aceitou ${candidato.otherUserName}. Aguardando aceite mútuo.'),
+          content: Text(
+            'Você aceitou ${candidato.otherUserName}. '
+            'A cobrança (${IapService.instance.precoExibicao}) só aparece quando os DOIS aceitarem.',
+          ),
           backgroundColor: CopaColors.azul,
+          duration: const Duration(seconds: 5),
         ),
       );
     }
@@ -120,7 +125,7 @@ class _MatchDeckScreenState extends State<MatchDeckScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
-                  '${lista.length - _indice} restante(s) · Aceite mútuo = sem cobrança antes',
+                  '${lista.length - _indice} restante(s) · Pagamento só após os DOIS aceitarem',
                   style: TextStyle(color: CopaColors.branco.withValues(alpha: 0.9), fontSize: 12),
                   textAlign: TextAlign.center,
                 ),

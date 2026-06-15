@@ -10,10 +10,16 @@ class AlbumPicker extends StatefulWidget {
     super.key,
     required this.onSelected,
     this.titulo = 'Escolha a figurinha',
+    /// Dentro de cards brancos (Trocar Figurinha) — ícone/título escuros.
+    this.fundoClaro = false,
+    /// Volta ao grupo após cada toque (facilita escolher de vários grupos).
+    this.resetarAposSelecao = false,
   });
 
   final ValueChanged<String> onSelected;
   final String titulo;
+  final bool fundoClaro;
+  final bool resetarAposSelecao;
 
   @override
   State<AlbumPicker> createState() => _AlbumPickerState();
@@ -22,6 +28,26 @@ class AlbumPicker extends StatefulWidget {
 class _AlbumPickerState extends State<AlbumPicker> {
   String? _grupo;
   String? _selecao;
+
+  Color get _corIcone => widget.fundoClaro ? CopaColors.azul : CopaColors.branco;
+  Color get _corTitulo => widget.fundoClaro ? CopaColors.textoEscuro : CopaColors.branco;
+
+  void _selecionar(String id) {
+    widget.onSelected(id);
+    if (widget.resetarAposSelecao) {
+      setState(() {
+        _grupo = null;
+        _selecao = null;
+      });
+    }
+  }
+
+  void _voltarGrupo() => setState(() {
+        _grupo = null;
+        _selecao = null;
+      });
+
+  void _voltarSelecao() => setState(() => _selecao = null);
 
   @override
   Widget build(BuildContext context) {
@@ -53,16 +79,28 @@ class _AlbumPickerState extends State<AlbumPicker> {
         Row(
           children: [
             IconButton(
-              onPressed: () => setState(() => _selecao = null),
-              icon: const Icon(Icons.arrow_back, color: CopaColors.branco),
+              onPressed: _voltarSelecao,
+              icon: Icon(Icons.arrow_back, color: _corIcone),
+              tooltip: 'Voltar seleções',
             ),
             Expanded(
               child: Text(
                 '$_selecao · Jogadores',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: CopaColors.branco,
+                      color: _corTitulo,
                       fontWeight: FontWeight.w900,
                     ),
+              ),
+            ),
+            TextButton(
+              onPressed: _voltarGrupo,
+              child: Text(
+                'GRUPOS',
+                style: TextStyle(
+                  color: _corIcone,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 11,
+                ),
               ),
             ),
           ],
@@ -71,7 +109,7 @@ class _AlbumPickerState extends State<AlbumPicker> {
           padding: const EdgeInsets.only(bottom: 10),
           child: CopaCard(
             color: CopaColors.amarelo,
-            onTap: () => widget.onSelected(anyId),
+            onTap: () => _selecionar(anyId),
             child: Row(
               children: [
                 const Icon(Icons.groups, color: CopaColors.textoEscuro, size: 36),
@@ -111,7 +149,7 @@ class _AlbumPickerState extends State<AlbumPicker> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: CopaCard(
-                  onTap: () => widget.onSelected(s.idUnico),
+                  onTap: () => _selecionar(s.idUnico),
                   child: Row(
                     children: [
                       Container(
@@ -182,13 +220,14 @@ class _AlbumPickerState extends State<AlbumPicker> {
             if (voltar != null)
               IconButton(
                 onPressed: voltar,
-                icon: const Icon(Icons.arrow_back, color: CopaColors.branco),
+                icon: Icon(Icons.arrow_back, color: _corIcone),
+                tooltip: 'Voltar',
               ),
             Expanded(
               child: Text(
                 titulo,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: CopaColors.branco,
+                      color: _corTitulo,
                       fontWeight: FontWeight.w900,
                     ),
               ),

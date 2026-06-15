@@ -318,6 +318,8 @@ class _TradeScreenState extends State<TradeScreen> {
         Expanded(
           child: AlbumPicker(
             titulo: titulo,
+            fundoClaro: true,
+            resetarAposSelecao: true,
             onSelected: (id) {
               if (ids.length >= TradeOffer.maxStickers) {
                 ScaffoldMessenger.of(context).showSnackBar(
