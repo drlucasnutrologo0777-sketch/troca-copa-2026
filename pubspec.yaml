@@ -1,7 +1,7 @@
 name: troca_copa_app
 description: Troca Copa 2026 — troca de figurinhas Panini (projeto separado do Da Roça Pra Mesa)
 publish_to: 'none'
-version: 1.0.2+10
+version: 1.0.2+11
 
 environment:
   sdk: ^3.11.5

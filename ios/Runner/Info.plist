@@ -57,6 +57,8 @@
 	<string>Precisamos da sua localização para encontrar colecionadores de figurinhas perto de você e sugerir o raio de troca na sua cidade.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Precisamos acessar suas fotos para definir a foto de perfil.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Permite salvar a foto de perfil no seu álbum, se você escolher.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Precisamos da câmera para tirar a foto de perfil.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

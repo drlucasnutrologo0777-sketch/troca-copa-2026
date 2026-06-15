@@ -26,7 +26,7 @@ class AppState extends ChangeNotifier {
     if (AuthService.instance.currentUser != null) {
       profile = await AuthService.instance.carregarPerfil();
       if (profile == null) {
-        await AuthService.instance.sair();
+        // Auth sem documento no Firestore — cadastro incompleto; não deslogar.
         notifyListeners();
         return;
       }

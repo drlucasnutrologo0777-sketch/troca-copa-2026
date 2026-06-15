@@ -148,14 +148,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
           );
 
     if (ok && mounted) {
-      final msg = _fotoBytes != null && app.profile?.fotoUrl == null
-          ? 'Cadastro concluído, mas a foto não foi salva. Altere em Configurações → Perfil.'
+      final semFoto = _fotoBytes != null && (app.profile?.fotoUrl == null || app.profile!.fotoUrl!.isEmpty);
+      final msg = semFoto
+          ? 'Cadastro concluído! A foto não subiu — tente de novo em Configurações → Perfil.'
           : 'Cadastro concluído com sucesso!';
-      _mostrarAviso(msg, erro: _fotoBytes != null && app.profile?.fotoUrl == null);
+      _mostrarAviso(msg, erro: semFoto);
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const AvisoListener(child: HomeScreen())),
         (_) => false,
       );
+    } else if (!ok && mounted && !widget.completarCadastro) {
+      final err = app.erro ?? '';
+      if (err.contains('já está cadastrado') && FirebaseAuth.instance.currentUser != null) {
+        _mostrarAviso(
+          'Este e-mail já existe. Concluindo cadastro com sua conta...',
+          erro: false,
+        );
+        final retry = await app.completarCadastro(
+          nome: _nome.text,
+          telefone: _telefone.text,
+          endereco: _endereco.text,
+          cidade: _cidade.text,
+          estado: _estado.text,
+          fotoBytes: _fotoBytes,
+          fotoNome: _fotoNome,
+        );
+        if (retry && mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const AvisoListener(child: HomeScreen())),
+            (_) => false,
+          );
+        }
+      }
     }
   }
 

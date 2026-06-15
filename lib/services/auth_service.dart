@@ -44,11 +44,16 @@ class AuthService {
     Uint8List? fotoBytes,
     String? fotoNome,
   }) async {
-    final cred = await _auth.createUserWithEmailAndPassword(
-      email: email.trim(),
-      password: senha,
-    );
-    final uid = cred.user!.uid;
+    final emailNorm = email.trim();
+    User? user = _auth.currentUser;
+    if (user == null || user.email?.trim().toLowerCase() != emailNorm.toLowerCase()) {
+      final cred = await _auth.createUserWithEmailAndPassword(
+        email: emailNorm,
+        password: senha,
+      );
+      user = cred.user;
+    }
+    final uid = user!.uid;
     final pos = await _obterLocalizacao();
 
     final profile = UserProfile(
@@ -69,10 +74,7 @@ class AuthService {
       'createdAt': FieldValue.serverTimestamp(),
     });
 
-    if (fotoBytes != null) {
-      final fotoUrl = await _enviarFoto(uid, fotoBytes, fotoNome ?? 'foto.jpg');
-      await _db.collection('users').doc(uid).update({'fotoUrl': fotoUrl});
-    }
+    await _tentarSalvarFoto(uid, fotoBytes, fotoNome);
 
     return (await carregarPerfil())!;
   }
@@ -113,10 +115,7 @@ class AuthService {
       'createdAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
 
-    if (fotoBytes != null) {
-      final fotoUrl = await _enviarFoto(uid, fotoBytes, fotoNome ?? 'foto.jpg');
-      await _db.collection('users').doc(uid).update({'fotoUrl': fotoUrl});
-    }
+    await _tentarSalvarFoto(uid, fotoBytes, fotoNome);
 
     return (await carregarPerfil())!;
   }
@@ -156,18 +155,24 @@ class AuthService {
     });
   }
 
+  Future<void> _tentarSalvarFoto(String uid, Uint8List? fotoBytes, String? fotoNome) async {
+    if (fotoBytes == null || fotoBytes.isEmpty) return;
+    try {
+      final fotoUrl = await _enviarFoto(uid, fotoBytes, fotoNome ?? 'foto.jpg');
+      await _db.collection('users').doc(uid).set({
+        'fotoUrl': fotoUrl,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (_) {
+      // Foto opcional — cadastro conclui mesmo se o upload falhar.
+    }
+  }
+
   Future<String> _enviarFoto(String uid, Uint8List bytes, String nome) async {
     final lower = nome.toLowerCase();
-    final ext = lower.endsWith('.png')
-        ? 'png'
-        : lower.endsWith('.webp')
-            ? 'webp'
-            : 'jpg';
-    final contentType = switch (ext) {
-      'png' => 'image/png',
-      'webp' => 'image/webp',
-      _ => 'image/jpeg',
-    };
+    // iPhone envia HEIC; image_picker já converte bytes — sempre salvar como JPEG.
+    final ext = lower.endsWith('.png') ? 'png' : 'jpg';
+    final contentType = ext == 'png' ? 'image/png' : 'image/jpeg';
     final path = 'users/$uid/profile_${DateTime.now().millisecondsSinceEpoch}.$ext';
     final ref = _storage.ref().child(path);
     await ref.putData(bytes, SettableMetadata(contentType: contentType));
@@ -303,6 +308,25 @@ class AuthService {
         speedAccuracy: 0,
       );
     }
-    return Geolocator.getCurrentPosition();
+    try {
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          timeLimit: Duration(seconds: 8),
+        ),
+      );
+    } catch (_) {
+      return Position(
+        latitude: -16.735,
+        longitude: -43.861,
+        timestamp: DateTime.now(),
+        accuracy: 0,
+        altitude: 0,
+        altitudeAccuracy: 0,
+        heading: 0,
+        headingAccuracy: 0,
+        speed: 0,
+        speedAccuracy: 0,
+      );
+    }
   }
 }

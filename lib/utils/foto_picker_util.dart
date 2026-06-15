@@ -26,12 +26,16 @@ Future<({Uint8List bytes, String nome})?> escolherFotoPerfil() async {
   final file = await picker.pickImage(
     source: ImageSource.gallery,
     maxWidth: 800,
+    maxHeight: 800,
     imageQuality: 85,
   );
   if (file == null) return null;
   final bytes = await file.readAsBytes();
+  if (bytes.isEmpty) return null;
+  // iPhone usa HEIC no nome do arquivo; bytes já vêm comprimidos em JPEG.
+  final nome = file.name.toLowerCase().endsWith('.png') ? file.name : 'foto.jpg';
   return (
     bytes: bytes,
-    nome: file.name.isNotEmpty ? file.name : 'foto.jpg',
+    nome: nome,
   );
 }
