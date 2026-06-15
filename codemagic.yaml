@@ -1,10 +1,11 @@
 # TROCA COPA 2026 — iPhone (TestFlight)
 #
 # Configure UMA VEZ no Codemagic (app troca-copa-2026 → Environment variables):
-# Grupo: troca_copa_apple (marcar Secret)
+# Grupo: troca_copa_apple (marcar Secret em todas)
 #   APP_STORE_CONNECT_ISSUER_ID      = b681d77e-4c5b-4154-b3e4-962dab155c2d
 #   APP_STORE_CONNECT_KEY_IDENTIFIER = VHR75L74MJ
 #   APP_STORE_CONNECT_PRIVATE_KEY    = conteudo do AuthKey_VHR75L74MJ.p8
+#   CERTIFICATE_PRIVATE_KEY          = (opcional) chave RSA fixa; se omitir, o build gera uma
 
 workflows:
   troca-copa-ios:
@@ -26,25 +27,21 @@ workflows:
     scripts:
       - name: Set up keychain
         script: keychain initialize
-      - name: Create Apple Distribution certificate (with private key)
-        script: |
-          set -e
-          echo "Issuer: ${APP_STORE_CONNECT_ISSUER_ID:+OK}"
-          echo "Key ID: ${APP_STORE_CONNECT_KEY_IDENTIFIER:+OK}"
-          echo "Private key: ${APP_STORE_CONNECT_PRIVATE_KEY:+OK}"
-          app-store-connect certificates create \
-            --type IOS_DISTRIBUTION \
-            --save \
-            --p12-password "$CM_CERTIFICATE_PASSWORD" \
-            --verbose || echo "Certificado ja existe — continuando"
       - name: Fetch App Store profile from Apple
         script: |
           set -e
+          if [ -z "$CERTIFICATE_PRIVATE_KEY" ]; then
+            echo "Gerando chave RSA para certificado de distribuicao..."
+            openssl genrsa -out /tmp/codemagic_dist_key.pem 2048
+            export CERTIFICATE_PRIVATE_KEY="$(cat /tmp/codemagic_dist_key.pem)"
+          fi
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
             --delete-stale-profiles \
             --strict-match-identifier \
+            --certificate-key=@env:CERTIFICATE_PRIVATE_KEY \
+            --p12-password "$CM_CERTIFICATE_PASSWORD" \
             --verbose
           keychain add-certificates
       - name: Set up code signing on Xcode project
@@ -59,8 +56,7 @@ workflows:
         script: |
           flutter build ipa --release \
             --build-name=1.0.0 \
-            --build-number=1 \
-            --export-options-plist=/Users/builder/export_options.plist
+            --build-number=1
 
     artifacts:
       - build/ios/ipa/*.ipa
