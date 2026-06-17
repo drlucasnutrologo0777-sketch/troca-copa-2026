@@ -2,5 +2,5 @@
 abstract final class AppName {
   static const titulo = 'TROCAR FIGURINHAS';
   static const disclaimer =
-      'App independente — não afiliado à FIFA nem Panini.';
+      'App independente de colecionadores. Não é produto oficial de álbum licenciado.';
 }

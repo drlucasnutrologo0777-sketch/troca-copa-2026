@@ -79,10 +79,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final app = context.watch<AppState>();
 
     return CopaAlbumBackground(
-      showCapa: true,
       child: Column(
         children: [
-          const SizedBox(height: 130),
+          const SizedBox(height: 48),
           Text(
             AppName.titulo,
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: CopaColors.branco),
@@ -127,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               ),
                             ),
                             Text(
-                              'Nome, endereço, foto e Firebase',
+                              'Nome, e-mail e foto (opcional)',
                               style: TextStyle(color: CopaColors.branco, fontSize: 12),
                             ),
                           ],
