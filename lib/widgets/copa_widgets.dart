@@ -1,7 +1,8 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../theme/copa_theme.dart';
 
-/// Fundo com gradiente suave e formas discretas (sem estilo de álbum oficial).
+/// Fundo estilo capa Panini — semicírculos coloridos sobrepostos.
 class CopaAlbumBackground extends StatelessWidget {
   const CopaAlbumBackground({
     super.key,
@@ -17,43 +18,42 @@ class CopaAlbumBackground extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        CustomPaint(painter: _FundoAppPainter()),
+        CustomPaint(painter: _CirculosPaniniPainter()),
+        if (showCapa)
+          Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 48, left: 24, right: 24),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  'assets/images/album_capa.png',
+                  height: 140,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
         SafeArea(child: child),
       ],
     );
   }
 }
 
-class _FundoAppPainter extends CustomPainter {
+class _CirculosPaniniPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
     canvas.drawRect(
-      rect,
-      Paint()
-        ..shader = const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            CopaColors.fundoMedio,
-            CopaColors.fundoEscuro,
-            Color(0xFF172554),
-          ],
-        ).createShader(rect),
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = const Color(0xFF1E3A5F),
     );
-
-    final blobs = [
-      (0.12, 0.08, 0.42, CopaColors.primario),
-      (0.88, 0.12, 0.36, CopaColors.roxo),
-      (0.05, 0.72, 0.38, CopaColors.destaque),
-      (0.78, 0.78, 0.34, CopaColors.secundario),
-    ];
-    for (final (cx, cy, r, color) in blobs) {
-      canvas.drawCircle(
-        Offset(size.width * cx, size.height * cy),
-        size.width * r,
-        Paint()..color = color.withValues(alpha: 0.22),
-      );
+    final rnd = math.Random(26);
+    for (var i = 0; i < 18; i++) {
+      final color = CopaColors.circulos[i % CopaColors.circulos.length];
+      final r = size.width * (0.18 + rnd.nextDouble() * 0.22);
+      final cx = rnd.nextDouble() * size.width;
+      final cy = rnd.nextDouble() * size.height;
+      canvas.drawCircle(Offset(cx, cy), r, Paint()..color = color.withValues(alpha: 0.85));
     }
   }
 
@@ -76,7 +76,7 @@ class CopaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: color ?? CopaColors.branco.withValues(alpha: 0.97),
+      color: color ?? CopaColors.branco.withValues(alpha: 0.95),
       borderRadius: BorderRadius.circular(20),
       elevation: 6,
       shadowColor: Colors.black26,

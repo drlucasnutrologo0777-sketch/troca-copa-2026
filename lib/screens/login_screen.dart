@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
-import '../constants/app_branding.dart';
 import '../theme/copa_theme.dart';
 import '../widgets/copa_widgets.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
-import '../widgets/disclaimer_banner.dart';
 import '../widgets/aviso_listener.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -80,44 +78,30 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final app = context.watch<AppState>();
 
     return CopaAlbumBackground(
+      showCapa: true,
       child: Column(
         children: [
-          const SizedBox(height: 48),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: CopaColors.branco.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-              border: Border.all(color: CopaColors.branco.withValues(alpha: 0.35), width: 2),
-            ),
-            child: const Icon(Icons.swap_horiz_rounded, size: 44, color: CopaColors.branco),
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 130),
           Text(
-            AppBranding.appName,
+            'TROCA COPA 2026',
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: CopaColors.branco),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
-            AppBranding.tagline,
-            style: const TextStyle(
-              color: CopaColors.textoClaro,
-              fontWeight: FontWeight.w700,
-              fontSize: 15,
+            'App independente — não afiliado à FIFA nem Panini.',
+            style: TextStyle(
+              color: CopaColors.branco.withValues(alpha: 0.9),
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
             ),
             textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: DisclaimerBanner(compact: true),
           ),
           const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Material(
-              color: CopaColors.destaque,
+              color: CopaColors.verde,
               borderRadius: BorderRadius.circular(16),
               elevation: 8,
               child: InkWell(
@@ -142,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               ),
                             ),
                             Text(
-                              'Nome, e-mail e foto (opcional)',
+                              'Nome, endereço, foto e Firebase',
                               style: TextStyle(color: CopaColors.branco, fontSize: 12),
                             ),
                           ],
@@ -159,19 +143,18 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: CopaColors.branco.withValues(alpha: 0.1),
+              color: CopaColors.branco.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: CopaColors.branco.withValues(alpha: 0.2)),
             ),
             child: TabBar(
               controller: _tabs,
               indicator: BoxDecoration(
-                color: _tabs.index == 1 ? CopaColors.secundario : CopaColors.primario,
+                color: _tabs.index == 1 ? CopaColors.amarelo : CopaColors.azul,
                 borderRadius: BorderRadius.circular(12),
               ),
               indicatorSize: TabBarIndicatorSize.tab,
-              labelColor: CopaColors.branco,
-              unselectedLabelColor: CopaColors.textoClaro,
+              labelColor: CopaColors.textoEscuro,
+              unselectedLabelColor: CopaColors.branco,
               labelStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
               tabs: const [
                 Tab(text: 'LOGIN'),
@@ -240,10 +223,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: CopaCard(
-        color: CopaColors.branco.withValues(alpha: 0.98),
+        color: CopaColors.amarelo,
         child: Column(
           children: [
-            const Icon(Icons.how_to_reg, size: 64, color: CopaColors.primario),
+            const Icon(Icons.how_to_reg, size: 64, color: CopaColors.textoEscuro),
             const SizedBox(height: 12),
             const Text(
               'CADASTRO COMPLETO',
@@ -251,7 +234,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             ),
             const SizedBox(height: 8),
             const Text(
-              'Nome, e-mail e foto opcional. Telefone e endereço só se quiser compartilhar no match.',
+              'Nome, endereço, foto de perfil e conta salva no Firebase para calcular distância do match.',
               textAlign: TextAlign.center,
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
@@ -260,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: CopaColors.primario,
+                  backgroundColor: CopaColors.verde,
                   foregroundColor: CopaColors.branco,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
@@ -315,7 +298,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       keyboardType: label == 'E-mail' ? TextInputType.emailAddress : TextInputType.text,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: CopaColors.primario),
+        prefixIcon: Icon(icon, color: CopaColors.azul),
       ),
     );
   }

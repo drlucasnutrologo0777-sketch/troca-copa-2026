@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../constants/app_branding.dart';
 import '../providers/app_state.dart';
 import '../services/aviso_service.dart';
 import '../services/presence_service.dart';
 import '../theme/copa_theme.dart';
 import '../widgets/copa_widgets.dart';
-import '../widgets/disclaimer_banner.dart';
 import 'chat_screen.dart';
 import 'match_screen.dart';
 import 'my_offers_screen.dart';
@@ -154,15 +152,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: Column(
                 children: [
                   Text(
-                    AppBranding.appName,
+                    'TROCA COPA 2026',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           color: CopaColors.branco,
                           fontWeight: FontWeight.w900,
                         ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8),
-                  const DisclaimerBanner(compact: true),
+                  const SizedBox(height: 12),
                   CopaCard(
                     child: Row(
                       children: [

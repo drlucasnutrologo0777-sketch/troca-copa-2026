@@ -3,12 +3,10 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../constants/app_branding.dart';
 import '../providers/app_state.dart';
 import '../theme/copa_theme.dart';
 import '../utils/foto_picker_util.dart';
 import '../widgets/aviso_listener.dart';
-import '../widgets/disclaimer_banner.dart';
 import '../widgets/copa_widgets.dart';
 import 'home_screen.dart';
 
@@ -279,8 +277,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ],
                       const SizedBox(height: 16),
-                      const DisclaimerBanner(compact: true),
-                      const SizedBox(height: 12),
                       _campo(_nome, 'Nome completo', Icons.person),
                       const SizedBox(height: 12),
                       _campo(
