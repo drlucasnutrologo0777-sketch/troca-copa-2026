@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'constants/app_branding.dart';
 import 'providers/app_state.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
@@ -29,7 +30,7 @@ class TrocaCopaApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => AppState()..init(),
       child: MaterialApp(
-        title: 'TROCA COPA 2026',
+        title: AppBranding.appName,
         debugShowCheckedModeBanner: false,
         theme: buildCopaTheme(),
         home: const _RootGate(),

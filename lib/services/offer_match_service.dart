@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../constants/pix_config.dart';
 import '../models/models.dart';
 import '../utils/sticker_token_util.dart';
 import 'sticker_catalog_service.dart';
@@ -381,83 +380,6 @@ class MatchService {
     final snap = await _db.collection('matchRequests').doc(requestId).get();
     if (!snap.exists) return null;
     return MatchRequest.fromFirestore(snap.id, snap.data()!);
-  }
-
-  Future<void> confirmarPagamentoMatch(String requestId) async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final req = await carregarSolicitacao(requestId);
-    if (req == null || req.isExpired) return;
-    if (req.isPaid) return;
-
-    final outroId = req.fromUserId == uid ? req.toUserId : req.fromUserId;
-    final outroSnap = await _db.collection('users').doc(outroId).get();
-    final outro = outroSnap.data() ?? {};
-    final meuSnap = await _db.collection('users').doc(uid).get();
-    final meu = meuSnap.data() ?? {};
-
-    final batch = _db.batch();
-    final matchRef = _db.collection('matchRequests').doc(requestId);
-    final paymentRef = _db.collection('payments').doc('${uid}_$requestId');
-    final faturamentoRef = _db.collection('platform').doc('faturamento');
-    final chatRef = _db.collection('chats').doc(requestId);
-    final historicoRef = _db.collection('users').doc(uid).collection('unlockedMatches').doc(requestId);
-
-    batch.update(matchRef, {
-      'status': 'paid',
-      'paidAt': FieldValue.serverTimestamp(),
-      'paidByUserId': uid,
-    });
-
-    batch.set(paymentRef, {
-      'userId': uid,
-      'requestId': requestId,
-      'matchId': req.matchId,
-      'fromUserId': req.fromUserId,
-      'toUserId': req.toUserId,
-      'valor': PixConfig.valorMatch,
-      'pixChave': PixConfig.chave,
-      'pixTitular': PixConfig.titular,
-      'descricao': PixConfig.descricao,
-      'status': 'confirmado_manual',
-      'paidAt': FieldValue.serverTimestamp(),
-    });
-
-    batch.set(
-      faturamentoRef,
-      {
-        'totalRecebido': FieldValue.increment(PixConfig.valorMatch),
-        'totalTransacoes': FieldValue.increment(1),
-        'ultimaTransacaoEm': FieldValue.serverTimestamp(),
-        'pixTitular': PixConfig.titular,
-        'pixChave': PixConfig.chave,
-        'valorUnitarioMatch': PixConfig.valorMatch,
-      },
-      SetOptions(merge: true),
-    );
-
-    batch.set(chatRef, {
-      'participants': [uid, outroId],
-      'requestId': requestId,
-      'user_${uid}_name': meu['nome'] ?? '',
-      'user_${uid}_tel': meu['telefone'] ?? '',
-      'user_${outroId}_name': outro['nome'] ?? '',
-      'user_${outroId}_tel': outro['telefone'] ?? '',
-      'unlockedAt': FieldValue.serverTimestamp(),
-    });
-
-    final souSolicitante = req.fromUserId == uid;
-    batch.set(historicoRef, {
-      'requestId': requestId,
-      'matchId': req.matchId,
-      'otherUserId': outroId,
-      'otherUserName': outro['nome'] ?? '',
-      'euDou': souSolicitante ? req.euDou : req.euRecebo,
-      'euRecebo': souSolicitante ? req.euRecebo : req.euDou,
-      'valorPix': PixConfig.valorMatch,
-      'unlockedAt': FieldValue.serverTimestamp(),
-    });
-
-    await batch.commit();
   }
 
   Stream<List<ActiveChat>> chatsAtivos() {

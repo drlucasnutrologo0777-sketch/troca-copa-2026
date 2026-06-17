@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:troca_copa_app/constants/iap_config.dart';
-import 'package:troca_copa_app/constants/pix_config.dart';
 import 'package:troca_copa_app/services/mutual_match_service.dart';
 
 /// Simula 8 colecionadores em 4 pares com aceite mútuo e pagamento duplo (IAP).
@@ -35,7 +34,7 @@ void main() {
     for (final (a, b) in pairs) {
       final id = MutualMatchService.mutualMatchId(a, b);
       for (final uid in [a, b]) {
-        final valorIap = 0.99;
+        final valorIap = IapConfig.valorMatch;
         payments.add({
           'userId': uid,
           'mutualMatchId': id,
@@ -75,13 +74,8 @@ void main() {
     }
   });
 
-  test('pagamento PIX manual usa valor 0,50 nas regras do Firestore', () {
-    expect(PixConfig.valorMatch, 0.5);
-    expect(PixConfig.valorMatch >= 0.5 && PixConfig.valorMatch <= 99.99, isTrue);
-  });
-
-  test('pagamento IAP 0,99 passa nas regras do Firestore', () {
-    const valorIap = 0.99;
+  test('pagamento IAP passa nas regras do Firestore', () {
+    const valorIap = IapConfig.valorMatch;
     expect(valorIap >= 0.5 && valorIap <= 99.99, isTrue);
     expect(IapConfig.matchUnlockProductId, 'com.mycompany.trocafigurinha.match_unlock');
   });

@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="com.android.vending.BILLING"/>
     <application
-        android:label="TROCA COPA 2026"
+        android:label="Trocar Figurinhas"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -88,12 +88,7 @@ class UserProfile {
   final bool isOnline;
 
   bool get cadastroCompleto =>
-      nome.trim().isNotEmpty &&
-      email.trim().isNotEmpty &&
-      telefone.trim().isNotEmpty &&
-      endereco.trim().isNotEmpty &&
-      cidade.trim().isNotEmpty &&
-      estado.trim().isNotEmpty;
+      nome.trim().isNotEmpty && email.trim().isNotEmpty;
 
   Map<String, dynamic> toMap() => {
         'nome': nome,

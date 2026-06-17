@@ -83,9 +83,9 @@ class PastTradesScreen extends StatelessWidget {
                                               'Recebeu: ${(d['euRecebo'] as List).join(', ')}',
                                               style: TextStyle(color: Colors.grey.shade700, fontSize: 12),
                                             ),
-                                          if (d['valorPix'] != null)
+                                          if (d['valorIap'] != null || d['valorPix'] != null)
                                             Text(
-                                              'PIX R\$ ${(d['valorPix'] as num).toStringAsFixed(2)}',
+                                              'Compra in-app R\$ ${((d['valorIap'] ?? d['valorPix']) as num).toStringAsFixed(2)}',
                                               style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                                             ),
                                           if (quando != null)

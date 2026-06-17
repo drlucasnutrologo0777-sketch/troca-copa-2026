@@ -3,10 +3,12 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../constants/app_branding.dart';
 import '../providers/app_state.dart';
 import '../theme/copa_theme.dart';
 import '../utils/foto_picker_util.dart';
 import '../widgets/aviso_listener.dart';
+import '../widgets/disclaimer_banner.dart';
 import '../widgets/copa_widgets.dart';
 import 'home_screen.dart';
 
@@ -28,7 +30,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _telefone = TextEditingController();
   final _endereco = TextEditingController();
   final _cidade = TextEditingController();
-  final _estado = TextEditingController(text: 'MG');
+  final _estado = TextEditingController();
 
   Uint8List? _fotoBytes;
   String? _fotoNome;
@@ -102,13 +104,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _cadastrar() async {
-    if (_nome.text.trim().isEmpty ||
-        _email.text.trim().isEmpty ||
-        _telefone.text.trim().isEmpty ||
-        _endereco.text.trim().isEmpty ||
-        _cidade.text.trim().isEmpty ||
-        _estado.text.trim().isEmpty) {
-      _mostrarAviso('Preencha nome, e-mail, telefone, endereço, cidade e estado.', erro: true);
+    if (_nome.text.trim().isEmpty || _email.text.trim().isEmpty) {
+      _mostrarAviso('Preencha nome e e-mail.', erro: true);
       return;
     }
 
@@ -282,6 +279,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ],
                       const SizedBox(height: 16),
+                      const DisclaimerBanner(compact: true),
+                      const SizedBox(height: 12),
                       _campo(_nome, 'Nome completo', Icons.person),
                       const SizedBox(height: 12),
                       _campo(
@@ -297,16 +296,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         _campo(_repetirSenha, 'Repetir senha', Icons.lock_outline, obscure: true),
                       ],
                       const SizedBox(height: 12),
-                      _campo(_telefone, 'Telefone', Icons.phone),
+                      _campo(_telefone, 'Telefone (opcional)', Icons.phone),
                       const SizedBox(height: 12),
-                      _campo(_endereco, 'Endereço (rua, nº, bairro)', Icons.home),
+                      _campo(_endereco, 'Endereço (opcional)', Icons.home),
                       const SizedBox(height: 12),
-                      _campo(_cidade, 'Cidade', Icons.location_city),
+                      _campo(_cidade, 'Cidade (opcional)', Icons.location_city),
                       const SizedBox(height: 12),
-                      _campo(_estado, 'Estado (UF)', Icons.map),
+                      _campo(_estado, 'Estado / UF (opcional)', Icons.map),
                       const SizedBox(height: 8),
                       Text(
-                        'Usamos sua localização (GPS) junto com o endereço para calcular a distância dos matches.',
+                        'Localização (GPS) ajuda a calcular distância no match. '
+                        'Telefone e endereço são opcionais e só aparecem após pagamento mútuo.',
                         style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
                         textAlign: TextAlign.center,
                       ),

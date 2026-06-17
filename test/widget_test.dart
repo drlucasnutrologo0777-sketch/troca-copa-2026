@@ -1,11 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:troca_copa_app/constants/app_branding.dart';
 import 'package:troca_copa_app/constants/iap_config.dart';
-import 'package:troca_copa_app/constants/pix_config.dart';
 
 void main() {
-  test('configurações de pagamento estão definidas', () {
+  test('branding e IAP estão definidos', () {
+    expect(AppBranding.appName, 'TROCAR FIGURINHAS');
+    expect(AppBranding.disclaimer, contains('FIFA'));
     expect(IapConfig.matchUnlockProductId, 'com.mycompany.trocafigurinha.match_unlock');
-    expect(PixConfig.valorMatch, greaterThan(0));
-    expect(PixConfig.chave, isNotEmpty);
+    expect(IapConfig.valorMatch, greaterThan(0));
   });
 }

@@ -47,7 +47,7 @@ class ChatScreen extends StatelessWidget {
                               const Text('Chat bloqueado', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
                               const SizedBox(height: 8),
                               Text(
-                                'Libera após aceite mútuo + compra ${IapService.instance.precoExibicao} dos dois lados.',
+                                'Libera após aceite mútuo e compra in-app (App Store) dos dois lados.',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(color: Colors.grey.shade700),
                               ),

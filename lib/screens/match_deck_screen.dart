@@ -40,7 +40,7 @@ class _MatchDeckScreenState extends State<MatchDeckScreen> {
           title: const Text('MATCH CONFIRMADO!', style: TextStyle(fontWeight: FontWeight.w900)),
           content: Text(
             'Você e ${candidato.otherUserName} aceitaram a troca.\n\n'
-            'Negócio fechado — pague R\$ 0,50 para liberar contato e chat.',
+            'Negócio fechado — compre ${IapService.instance.precoExibicao} na App Store para liberar contato e chat.',
           ),
           actions: [
             ElevatedButton(

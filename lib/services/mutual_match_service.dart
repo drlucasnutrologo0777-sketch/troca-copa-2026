@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../constants/pix_config.dart';
+import '../constants/iap_config.dart';
 import '../models/models.dart';
 import 'offer_match_service.dart';
 
@@ -183,20 +183,6 @@ class MutualMatchService {
     return MutualMatch.fromFirestore(snap.id, snap.data()!);
   }
 
-  Future<void> confirmarPagamento(String mutualMatchId) async {
-    await _registrarPagamento(
-      mutualMatchId,
-      valor: PixConfig.valorMatch,
-      status: 'confirmado_manual',
-      metodo: 'pix',
-      extras: {
-        'pixChave': PixConfig.chave,
-        'pixTitular': PixConfig.titular,
-        'descricao': PixConfig.descricao,
-      },
-    );
-  }
-
   Future<void> confirmarPagamentoIap(String mutualMatchId, IapPurchaseInfo compra) async {
     await _registrarPagamento(
       mutualMatchId,
@@ -290,7 +276,7 @@ class MutualMatchService {
         'otherUserName': outroNome,
         'euDou': match.meuDou(uid),
         'euRecebo': match.meuRecebo(uid),
-        'valorPix': PixConfig.valorMatch,
+        'valorIap': IapConfig.valorMatch,
         'unlockedAt': FieldValue.serverTimestamp(),
       });
     }

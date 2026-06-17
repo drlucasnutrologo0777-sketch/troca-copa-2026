@@ -59,8 +59,8 @@ workflows:
             --project ios/Runner.xcodeproj \
             --profile ios/codemagic_signing/app_store.mobileprovision
           flutter build ipa --release \
-            --build-name=1.0.2 \
-            --build-number=12 \
+            --build-name=1.0.4 \
+            --build-number=14 \
             --export-options-plist=ios/codemagic_signing/ExportOptions.plist
           ls -la build/ios/ipa/
       - name: Upload to App Store Connect (TestFlight)
