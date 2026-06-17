@@ -59,8 +59,8 @@ workflows:
             --project ios/Runner.xcodeproj \
             --profile ios/codemagic_signing/app_store.mobileprovision
           flutter build ipa --release \
-            --build-name=1.0.5 \
-            --build-number=16 \
+            --build-name=1.0.6 \
+            --build-number=17 \
             --export-options-plist=ios/codemagic_signing/ExportOptions.plist
           ls -la build/ios/ipa/
           IPA_CHECK=$(find build/ios/ipa -name "*.ipa" | head -1)

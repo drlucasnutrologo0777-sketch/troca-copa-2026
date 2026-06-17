@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../constants/app_name.dart';
 import '../providers/app_state.dart';
 import '../theme/copa_theme.dart';
 import '../widgets/copa_widgets.dart';
@@ -83,13 +84,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         children: [
           const SizedBox(height: 130),
           Text(
-            'TROCA COPA 2026',
+            AppName.titulo,
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: CopaColors.branco),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 4),
           Text(
-            'App independente — não afiliado à FIFA nem Panini.',
+            AppName.disclaimer,
             style: TextStyle(
               color: CopaColors.branco.withValues(alpha: 0.9),
               fontWeight: FontWeight.w600,

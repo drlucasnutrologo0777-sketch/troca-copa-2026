@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../constants/app_name.dart';
 import '../providers/app_state.dart';
 import '../services/aviso_service.dart';
 import '../services/presence_service.dart';
@@ -152,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: Column(
                 children: [
                   Text(
-                    'TROCA COPA 2026',
+                    AppName.titulo,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           color: CopaColors.branco,
                           fontWeight: FontWeight.w900,
