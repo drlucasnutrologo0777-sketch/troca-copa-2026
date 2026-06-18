@@ -24,6 +24,7 @@ CINZA = (110, 110, 120)
 IPHONE = (1284, 2778)
 PRECO = "R$ 0,99"
 PRODUTO = "com.mycompany.trocafigurinha.match_unlock"
+APP_NOME = "Trocar Figurinhas"
 
 
 def font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
@@ -179,8 +180,8 @@ def tela_dialogo_apple_pay() -> Image.Image:
     sheet = (60, 1100, w - 60, 2100)
     draw.rounded_rectangle(sheet, radius=48, fill=(245, 245, 250, 255))
 
-    draw.text((cx, 1180), "Confirmar assinatura", fill=ESCURO, font=font(36, True), anchor="mm")
-    draw.text((cx, 1260), "TROCA COPA 2026", fill=ESCURO, font=font(32, True), anchor="mm")
+    draw.text((cx, 1180), "Confirmar compra", fill=ESCURO, font=font(36, True), anchor="mm")
+    draw.text((cx, 1260), APP_NOME.upper(), fill=ESCURO, font=font(32, True), anchor="mm")
     draw.text((cx, 1330), "Liberar Match (consumível)", fill=CINZA, font=font(30), anchor="mm")
     draw.text((cx, 1420), PRECO, fill=ESCURO, font=font(72, True), anchor="mm")
     draw.text((cx, 1500), "por match confirmado", fill=CINZA, font=font(28), anchor="mm")
@@ -204,7 +205,7 @@ def promo_1024() -> Image.Image:
     draw_background(img)
     draw = ImageDraw.Draw(img)
 
-    draw.text((w // 2, 90), "TROCA COPA 2026", fill=BRANCO, font=font(44, True), anchor="mm")
+    draw.text((w // 2, 90), APP_NOME.upper(), fill=BRANCO, font=font(44, True), anchor="mm")
     draw.text((w // 2, 160), "PAGAMENTO IN-APP", fill=AMARELO, font=font(56, True), anchor="mm")
 
     card = (80, 220, w - 80, 780)
@@ -314,7 +315,7 @@ def simular_firebase_pagamento() -> str:
 
 
 def main() -> None:
-    out_dir = DESKTOP / "IAP_REVISAO_APPLE_TROCA_COPA"
+    out_dir = DESKTOP / "IAP_PRINT_APP_STORE_TROCAR_FIGURINHAS"
     out_dir.mkdir(exist_ok=True)
 
     files = {
@@ -332,12 +333,11 @@ def main() -> None:
         msg = simular_firebase_pagamento()
         print(msg)
         (out_dir / "LEIA-ME.txt").write_text(
-            "PRINTS PARA REVISÃO IAP — TROCA COPA 2026\n\n"
-            "Envie no App Store Connect → Compras no app → match_unlock:\n"
-            "  • 04_promo_IAP_1024.png (1024x1024 promocional)\n"
-            "  • 01_tela_pagamento_match.png (tela no app)\n"
-            "  • 02_confirmacao_apple_pay.png (fluxo de compra)\n"
-            "  • 03_pagamento_registrado_firebase.png (após pagamento)\n\n"
+            "PRINTS PARA REVISÃO IAP — TROCAR FIGURINHAS\n\n"
+            "App Store Connect → Compras no app → match_unlock → Screenshot de revisão:\n"
+            "  USE ESTE: 04_promo_IAP_1024.png (1024x1024 — obrigatório promocional)\n"
+            "  OU: 01_tela_pagamento_match.png (tela de compra no app)\n"
+            "  OU: 02_confirmacao_apple_pay.png (diálogo de confirmação)\n\n"
             f"Firebase: {msg}\n\n"
             f"Produto: {PRODUTO}\n"
             f"Conta teste: clienteteste@gmail.com / teste@123\n",
