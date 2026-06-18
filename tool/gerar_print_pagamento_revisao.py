@@ -23,7 +23,7 @@ CINZA = (110, 110, 120)
 
 IPHONE = (1284, 2778)
 PRECO = "R$ 0,99"
-PRODUTO = "com.mycompany.trocafigurinha.match_unlock"
+PRODUTO = "br.com.seusite.trocacopa.taxachat01"
 APP_NOME = "Trocar Figurinhas"
 
 

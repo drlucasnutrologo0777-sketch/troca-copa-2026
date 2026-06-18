@@ -77,6 +77,6 @@ void main() {
   test('pagamento IAP passa nas regras do Firestore', () {
     const valorIap = IapConfig.valorMatch;
     expect(valorIap >= 0.5 && valorIap <= 99.99, isTrue);
-    expect(IapConfig.matchUnlockProductId, 'com.mycompany.trocafigurinha.match_unlock');
+    expect(IapConfig.matchUnlockProductId, 'br.com.seusite.trocacopa.taxachat01');
   });
 }

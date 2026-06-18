@@ -3,7 +3,7 @@ import 'package:troca_copa_app/constants/iap_config.dart';
 
 void main() {
   test('IAP configurado para liberar match', () {
-    expect(IapConfig.matchUnlockProductId, 'com.mycompany.trocafigurinha.match_unlock');
+    expect(IapConfig.matchUnlockProductId, 'br.com.seusite.trocacopa.taxachat01');
     expect(IapConfig.valorMatch, greaterThan(0));
   });
 }

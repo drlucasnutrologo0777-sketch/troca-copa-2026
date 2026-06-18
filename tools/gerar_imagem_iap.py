@@ -114,7 +114,7 @@ def main():
     rounded_rect(draw, (ux + 98, uy - 16, ux + 142, uy + 22), 8, VERDE)
     draw.ellipse((ux + 108, uy - 8, ux + 132, uy + 8), fill=BRANCO)
 
-    draw.text((W // 2, 870), "com.mycompany.trocafigurinha.match_unlock", fill=BRANCO, font=font(20), anchor="mm")
+    draw.text((W // 2, 870), "br.com.seusite.trocacopa.taxachat01", fill=BRANCO, font=font(20), anchor="mm")
     draw.text((W // 2, 905), "Compra consumível — um por match", fill=BRANCO, font=font(22), anchor="mm")
 
     img.save(OUT, "PNG", optimize=True)

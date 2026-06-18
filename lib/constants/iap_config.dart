@@ -6,7 +6,7 @@
 class IapConfig {
   IapConfig._();
 
-  static const matchUnlockProductId = 'com.mycompany.trocafigurinha.match_unlock';
+  static const matchUnlockProductId = 'br.com.seusite.trocacopa.taxachat01';
 
   /// Valor de referência do produto consumível (loja pode localizar o preço).
   static const valorMatch = 0.99;

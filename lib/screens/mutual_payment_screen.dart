@@ -125,7 +125,7 @@ class _MutualPaymentScreenState extends State<MutualPaymentScreen> {
                           const Padding(
                             padding: EdgeInsets.only(bottom: 12),
                             child: Text(
-                              'Produto IAP: com.mycompany.trocafigurinha.match_unlock\n'
+                              'Produto IAP: br.com.seusite.trocacopa.taxachat01\n'
                               'Confirme que está "Pronto para envio" na App Store Connect.',
                               textAlign: TextAlign.center,
                               style: TextStyle(color: Colors.orange, fontWeight: FontWeight.w600),
