@@ -2,38 +2,23 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../theme/copa_theme.dart';
 
-/// Fundo estilo capa Panini — semicírculos coloridos sobrepostos.
 class CopaAlbumBackground extends StatelessWidget {
   const CopaAlbumBackground({
     super.key,
     required this.child,
-    this.showCapa = false,
+    /// Paleta alternativa (ex.: tela de login). Sem foto de álbum.
+    this.circlePalette,
   });
 
   final Widget child;
-  final bool showCapa;
+  final List<Color>? circlePalette;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
       children: [
-        CustomPaint(painter: _CirculosPaniniPainter()),
-        if (showCapa)
-          Align(
-            alignment: Alignment.topCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 48, left: 24, right: 24),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.asset(
-                  'assets/images/album_capa.png',
-                  height: 140,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
+        CustomPaint(painter: _CirculosPaniniPainter(palette: circlePalette)),
         SafeArea(child: child),
       ],
     );
@@ -41,15 +26,20 @@ class CopaAlbumBackground extends StatelessWidget {
 }
 
 class _CirculosPaniniPainter extends CustomPainter {
+  _CirculosPaniniPainter({this.palette});
+
+  final List<Color>? palette;
+
   @override
   void paint(Canvas canvas, Size size) {
     canvas.drawRect(
       Rect.fromLTWH(0, 0, size.width, size.height),
       Paint()..color = const Color(0xFF1E3A5F),
     );
+    final cores = palette ?? CopaColors.circulos;
     final rnd = math.Random(26);
     for (var i = 0; i < 18; i++) {
-      final color = CopaColors.circulos[i % CopaColors.circulos.length];
+      final color = cores[i % cores.length];
       final r = size.width * (0.18 + rnd.nextDouble() * 0.22);
       final cx = rnd.nextDouble() * size.width;
       final cy = rnd.nextDouble() * size.height;
