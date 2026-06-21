@@ -1,54 +1,32 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../theme/copa_theme.dart';
 
+/// Fundo neutro em todas as telas (sem círculos coloridos).
 class CopaAlbumBackground extends StatelessWidget {
   const CopaAlbumBackground({
     super.key,
     required this.child,
-    /// Paleta alternativa (ex.: tela de login). Sem foto de álbum.
-    this.circlePalette,
   });
 
   final Widget child;
-  final List<Color>? circlePalette;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        CustomPaint(painter: _CirculosPaniniPainter(palette: circlePalette)),
-        SafeArea(child: child),
-      ],
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            CopaColors.fundo,
+            Color(0xFF455A64),
+            Color(0xFF546E7A),
+          ],
+        ),
+      ),
+      child: SafeArea(child: child),
     );
   }
-}
-
-class _CirculosPaniniPainter extends CustomPainter {
-  _CirculosPaniniPainter({this.palette});
-
-  final List<Color>? palette;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      Paint()..color = const Color(0xFF1E3A5F),
-    );
-    final cores = palette ?? CopaColors.circulos;
-    final rnd = math.Random(26);
-    for (var i = 0; i < 18; i++) {
-      final color = cores[i % cores.length];
-      final r = size.width * (0.18 + rnd.nextDouble() * 0.22);
-      final cx = rnd.nextDouble() * size.width;
-      final cy = rnd.nextDouble() * size.height;
-      canvas.drawCircle(Offset(cx, cy), r, Paint()..color = color.withValues(alpha: 0.85));
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class CopaCard extends StatelessWidget {
@@ -66,9 +44,9 @@ class CopaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: color ?? CopaColors.branco.withValues(alpha: 0.95),
+      color: color ?? CopaColors.branco.withValues(alpha: 0.98),
       borderRadius: BorderRadius.circular(20),
-      elevation: 6,
+      elevation: 4,
       shadowColor: Colors.black26,
       child: InkWell(
         onTap: onTap,
@@ -84,7 +62,7 @@ class CopaMenuTopico extends StatelessWidget {
     super.key,
     required this.titulo,
     required this.onTap,
-    this.cor = CopaColors.azul,
+    this.cor = CopaColors.primary,
     this.destaque = false,
   });
 
@@ -98,9 +76,9 @@ class CopaMenuTopico extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(
-        color: destaque ? cor : CopaColors.branco.withValues(alpha: 0.95),
+        color: destaque ? cor : CopaColors.branco.withValues(alpha: 0.98),
         borderRadius: BorderRadius.circular(14),
-        elevation: 4,
+        elevation: 3,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(14),

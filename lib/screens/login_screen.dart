@@ -79,14 +79,6 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final app = context.watch<AppState>();
 
     return CopaAlbumBackground(
-      circlePalette: const [
-        Color(0xFF00897B),
-        Color(0xFF3949AB),
-        Color(0xFF66BB6A),
-        Color(0xFF42A5F5),
-        Color(0xFF8E24AA),
-        Color(0xFFFF7043),
-      ],
       child: Column(
         children: [
           const SizedBox(height: 48),

@@ -108,11 +108,11 @@ class _AlbumPickerState extends State<AlbumPicker> {
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: CopaCard(
-            color: CopaColors.amarelo,
+            color: CopaColors.primary,
             onTap: () => _selecionar(anyId),
             child: Row(
               children: [
-                const Icon(Icons.groups, color: CopaColors.textoEscuro, size: 36),
+                const Icon(Icons.groups, color: CopaColors.branco, size: 36),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -123,13 +123,13 @@ class _AlbumPickerState extends State<AlbumPicker> {
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 15,
-                          color: CopaColors.textoEscuro,
+                          color: CopaColors.branco,
                         ),
                       ),
                       Text(
                         _selecao!,
                         style: TextStyle(
-                          color: CopaColors.textoEscuro.withValues(alpha: 0.85),
+                          color: CopaColors.branco.withValues(alpha: 0.9),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -156,8 +156,8 @@ class _AlbumPickerState extends State<AlbumPicker> {
                         width: 44,
                         height: 56,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [CopaColors.amarelo, CopaColors.vermelho],
+                          gradient: const LinearGradient(
+                            colors: [CopaColors.azul, CopaColors.verde],
                           ),
                           borderRadius: BorderRadius.circular(8),
                         ),
