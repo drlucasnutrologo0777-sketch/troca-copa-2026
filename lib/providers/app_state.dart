@@ -40,16 +40,25 @@ class AppState extends ChangeNotifier {
   }
 
   Future<bool> ficarOnline() async {
-    final r = await PresenceService.instance.ficarOnline();
-    if (r.ok) {
-      online = true;
-      profile = await AuthService.instance.carregarPerfil();
+    limparMensagens();
+    try {
+      final r = await PresenceService.instance.ficarOnline();
+      if (r.ok) {
+        online = true;
+        profile = await AuthService.instance.carregarPerfil();
+        notifyListeners();
+        return true;
+      }
+      erro = r.erro;
+      online = false;
       notifyListeners();
-      return true;
+      return false;
+    } catch (e) {
+      erro = 'Erro ao ficar online. Tente novamente.';
+      online = false;
+      notifyListeners();
+      return false;
     }
-    erro = r.erro;
-    notifyListeners();
-    return false;
   }
 
   Future<void> ficarOffline() async {

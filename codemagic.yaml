@@ -60,11 +60,11 @@ workflows:
             --profile ios/codemagic_signing/app_store.mobileprovision
           flutter build ipa --release \
             --build-name=1.0.6 \
-            --build-number=25 \
+            --build-number=26 \
             --export-options-plist=ios/codemagic_signing/ExportOptions.plist
           ls -la build/ios/ipa/
           IPA_CHECK=$(find build/ios/ipa -name "*.ipa" | head -1)
-          echo "=== Build number no IPA (deve ser 25) ==="
+          echo "=== Build number no IPA (deve ser 26) ==="
           unzip -p "$IPA_CHECK" "Payload/*.app/Info.plist" | plutil -extract CFBundleVersion raw -
       - name: Upload to App Store Connect (TestFlight)
         script: |

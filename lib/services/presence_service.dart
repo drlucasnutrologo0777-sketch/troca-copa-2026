@@ -13,40 +13,63 @@ class PresenceService {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return (ok: false, erro: 'Faça login primeiro.');
 
-    var perm = await Geolocator.checkPermission();
-    if (perm == LocationPermission.denied) {
-      perm = await Geolocator.requestPermission();
-    }
-    if (perm == LocationPermission.deniedForever) {
-      return (ok: false, erro: 'Localização bloqueada. Ative nas configurações do navegador/celular.');
-    }
-    if (perm == LocationPermission.denied) {
-      return (ok: false, erro: 'Precisamos da localização para calcular a distância da troca.');
-    }
+    try {
+      var perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
+      }
+      if (perm == LocationPermission.deniedForever) {
+        return (
+          ok: false,
+          erro: 'Localização bloqueada. Abra Ajustes → Trocar Figurinhas → Localização.',
+        );
+      }
+      if (perm == LocationPermission.denied) {
+        return (ok: false, erro: 'Precisamos da localização para calcular a distância da troca.');
+      }
 
-    final pos = await Geolocator.getCurrentPosition();
-    await _db.collection('users').doc(uid).update({
-      'isOnline': true,
-      'lastSeen': FieldValue.serverTimestamp(),
-      'latitude': pos.latitude,
-      'longitude': pos.longitude,
-    });
+      final enabled = await Geolocator.isLocationServiceEnabled();
+      if (!enabled) {
+        return (ok: false, erro: 'Ative o GPS/localização do aparelho e tente novamente.');
+      }
 
-    await _db.collection('offers').doc(uid).update({
-      'latitude': pos.latitude,
-      'longitude': pos.longitude,
-    }).catchError((_) {});
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 20),
+        ),
+      );
 
-    return (ok: true, erro: null);
+      await _db.collection('users').doc(uid).set({
+        'isOnline': true,
+        'lastSeen': FieldValue.serverTimestamp(),
+        'latitude': pos.latitude,
+        'longitude': pos.longitude,
+      }, SetOptions(merge: true));
+
+      await _db.collection('offers').doc(uid).set({
+        'userId': uid,
+        'latitude': pos.latitude,
+        'longitude': pos.longitude,
+      }, SetOptions(merge: true));
+
+      return (ok: true, erro: null);
+    } on FirebaseException catch (e) {
+      return (ok: false, erro: 'Erro ao salvar online: ${e.message ?? e.code}');
+    } catch (e) {
+      return (ok: false, erro: 'Não foi possível ficar online. Verifique GPS e internet.');
+    }
   }
 
   Future<void> ficarOffline() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
-    await _db.collection('users').doc(uid).update({
-      'isOnline': false,
-      'lastSeen': FieldValue.serverTimestamp(),
-    });
+    try {
+      await _db.collection('users').doc(uid).set({
+        'isOnline': false,
+        'lastSeen': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (_) {}
   }
 
   Future<void> atualizarLocalizacao() async {
@@ -55,16 +78,19 @@ class PresenceService {
     final perm = await Geolocator.checkPermission();
     if (perm != LocationPermission.always && perm != LocationPermission.whileInUse) return;
 
-    final pos = await Geolocator.getCurrentPosition();
-    await _db.collection('users').doc(uid).update({
-      'latitude': pos.latitude,
-      'longitude': pos.longitude,
-      'lastSeen': FieldValue.serverTimestamp(),
-    });
-    await _db.collection('offers').doc(uid).update({
-      'latitude': pos.latitude,
-      'longitude': pos.longitude,
-    }).catchError((_) {});
+    try {
+      final pos = await Geolocator.getCurrentPosition();
+      await _db.collection('users').doc(uid).set({
+        'latitude': pos.latitude,
+        'longitude': pos.longitude,
+        'lastSeen': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      await _db.collection('offers').doc(uid).set({
+        'userId': uid,
+        'latitude': pos.latitude,
+        'longitude': pos.longitude,
+      }, SetOptions(merge: true));
+    } catch (_) {}
   }
 
   Stream<bool> observarOnline(String userId) {
@@ -74,6 +100,8 @@ class PresenceService {
   }
 
   static Widget indicadorOnline(bool online, {double size = 10}) {
+    const on = Color(0xFF2563EB);
+    const off = Color(0xFF9CA3AF);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -82,7 +110,7 @@ class PresenceService {
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: online ? const Color(0xFF22C55E) : const Color(0xFF9CA3AF),
+            color: online ? on : off,
           ),
         ),
         const SizedBox(width: 6),
@@ -90,8 +118,8 @@ class PresenceService {
           online ? 'Online' : 'Offline',
           style: TextStyle(
             fontSize: 12,
-            fontWeight: FontWeight.w800,
-            color: online ? const Color(0xFF22C55E) : const Color(0xFF9CA3AF),
+            fontWeight: FontWeight.w600,
+            color: online ? on : off,
           ),
         ),
       ],

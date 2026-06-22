@@ -22,6 +22,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool _dialogMostrado = false;
+  bool _alternandoOnline = false;
 
   @override
   void initState() {
@@ -138,6 +139,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
+  Future<void> _alternarOnline(bool ligar) async {
+    if (_alternandoOnline) return;
+    setState(() => _alternandoOnline = true);
+    final app = context.read<AppState>();
+    try {
+      if (ligar) {
+        final ok = await app.ficarOnline();
+        if (!ok && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(app.erro ?? 'Erro ao ficar online')),
+          );
+        }
+      } else {
+        await app.ficarOffline();
+      }
+    } finally {
+      if (mounted) setState(() => _alternandoOnline = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
@@ -158,40 +179,47 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),
-                  CopaCard(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              PresenceService.indicadorOnline(app.online, size: 12),
-                              const SizedBox(height: 4),
-                              Text(
-                                app.online
-                                    ? 'Você está visível para trocas'
-                                    : 'Você está offline — ative para receber match',
-                                style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
-                              ),
-                            ],
+                  Material(
+                    color: CopaColors.branco,
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: CopaColors.bordaCard),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                PresenceService.indicadorOnline(app.online, size: 12),
+                                const SizedBox(height: 4),
+                                Text(
+                                  app.online
+                                      ? 'Você está visível para trocas'
+                                      : 'Você está offline — ative para receber match',
+                                  style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Switch(
-                          value: app.online,
-                          onChanged: (v) async {
-                            if (v) {
-                              final ok = await app.ficarOnline();
-                              if (!ok && context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(app.erro ?? 'Erro ao ficar online')),
-                                );
-                              }
-                            } else {
-                              await app.ficarOffline();
-                            }
-                          },
-                        ),
-                      ],
+                          if (_alternandoOnline)
+                            const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          else
+                            Switch(
+                              value: app.online,
+                              activeTrackColor: CopaColors.primary.withValues(alpha: 0.45),
+                              activeThumbColor: CopaColors.primary,
+                              onChanged: _alternarOnline,
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),

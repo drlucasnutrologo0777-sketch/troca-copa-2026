@@ -104,11 +104,5 @@ ThemeData buildCopaTheme() {
       ),
       labelStyle: const TextStyle(color: CopaColors.textoSuave, fontWeight: FontWeight.w500),
     ),
-    switchTheme: SwitchThemeData(
-      thumbColor: WidgetStateProperty.resolveWith((s) =>
-          s.contains(WidgetState.selected) ? CopaColors.branco : CopaColors.fundoMedio),
-      trackColor: WidgetStateProperty.resolveWith((s) =>
-          s.contains(WidgetState.selected) ? CopaColors.primary : CopaColors.bordaCard),
-    ),
   );
 }
