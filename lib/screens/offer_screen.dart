@@ -23,12 +23,9 @@ class OfferScreen extends StatelessWidget {
         child: Column(
           children: [
             AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              iconTheme: const IconThemeData(color: CopaColors.branco),
               title: Text(
                 vender ? 'Vender Figurinhas' : 'Oferecer Figurinhas',
-                style: const TextStyle(color: CopaColors.branco, fontWeight: FontWeight.w900),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
             Padding(

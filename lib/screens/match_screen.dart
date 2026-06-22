@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/models.dart';
-import '../services/iap_service.dart';
 import '../providers/app_state.dart';
 import '../theme/copa_theme.dart';
 import '../utils/sticker_token_util.dart';
@@ -50,13 +49,7 @@ class _MatchScreenState extends State<MatchScreen> {
         child: Column(
           children: [
             AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              iconTheme: const IconThemeData(color: CopaColors.branco),
-              title: const Text(
-                'Match',
-                style: TextStyle(color: CopaColors.branco, fontWeight: FontWeight.w900),
-              ),
+              title: const Text('Match'),
             ),
             Expanded(
               child: ListView(
@@ -72,7 +65,7 @@ class _MatchScreenState extends State<MatchScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Um colecionador por vez. Só compra após os dois aceitarem (${IapService.instance.precoExibicao}).',
+                          'Um colecionador por vez. A compra in-app só aparece após os dois aceitarem.',
                           style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
                         ),
                         const SizedBox(height: 12),
@@ -102,7 +95,7 @@ class _MatchScreenState extends State<MatchScreen> {
                             return ChoiceChip(
                               label: Text('${d.toInt()} km'),
                               selected: sel,
-                              selectedColor: CopaColors.roxo.withValues(alpha: 0.35),
+                              selectedColor: CopaColors.primary.withValues(alpha: 0.35),
                               onSelected: (_) => setState(() => _raio = d),
                             );
                           }).toList(),
@@ -118,7 +111,7 @@ class _MatchScreenState extends State<MatchScreen> {
                         const Text('Tipo de busca', style: TextStyle(fontWeight: FontWeight.w900)),
                         RadioListTile<SearchMode>(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Jogador / figurinha específica'),
+                          title: const Text('Figurinha específica'),
                           value: SearchMode.specific,
                           groupValue: _modo,
                           onChanged: (v) => setState(() {
@@ -128,7 +121,7 @@ class _MatchScreenState extends State<MatchScreen> {
                         ),
                         RadioListTile<SearchMode>(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Qualquer jogador de uma seleção'),
+                          title: const Text('Qualquer jogador de um país'),
                           value: SearchMode.selection,
                           groupValue: _modo,
                           onChanged: (v) => setState(() {
@@ -155,7 +148,7 @@ class _MatchScreenState extends State<MatchScreen> {
                       height: 320,
                       child: AlbumPicker(
                         titulo: _modo == SearchMode.selection
-                            ? 'Qual seleção você quer?'
+                            ? 'Qual país você quer?'
                             : 'Qual figurinha você quer?',
                         onSelected: (id) => setState(() => _stickerAlvo = id),
                       ),
@@ -165,13 +158,13 @@ class _MatchScreenState extends State<MatchScreen> {
                         padding: const EdgeInsets.only(top: 8),
                         child: Text(
                           'Selecionado: ${StickerTokenUtil.rotulo(_stickerAlvo!)}',
-                          style: const TextStyle(color: CopaColors.amarelo, fontWeight: FontWeight.w800),
+                          style: const TextStyle(color: CopaColors.primary, fontWeight: FontWeight.w600),
                         ),
                       ),
                   ],
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: CopaColors.roxo),
+                    style: ElevatedButton.styleFrom(backgroundColor: CopaColors.primary),
                     onPressed: app.carregando ? null : () => _buscar(context),
                     child: app.carregando
                         ? const SizedBox(
@@ -193,7 +186,7 @@ class _MatchScreenState extends State<MatchScreen> {
   Future<void> _buscar(BuildContext context) async {
     if (_modo != SearchMode.anyMissing && (_stickerAlvo == null || _stickerAlvo!.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecione a figurinha ou seleção desejada.')),
+        const SnackBar(content: Text('Selecione a figurinha ou país desejado.')),
       );
       return;
     }

@@ -4,7 +4,7 @@ import '../theme/copa_theme.dart';
 import '../utils/sticker_token_util.dart';
 import 'copa_widgets.dart';
 
-/// Navegação álbum: Grupo → Seleção → Figurinha (sem digitar números).
+/// Navegação álbum: Categoria → País → Figurinha (sem digitar números).
 class AlbumPicker extends StatefulWidget {
   const AlbumPicker({
     super.key,
@@ -29,8 +29,8 @@ class _AlbumPickerState extends State<AlbumPicker> {
   String? _grupo;
   String? _selecao;
 
-  Color get _corIcone => widget.fundoClaro ? CopaColors.azul : CopaColors.branco;
-  Color get _corTitulo => widget.fundoClaro ? CopaColors.textoEscuro : CopaColors.branco;
+  Color get _corIcone => CopaColors.textoEscuro;
+  Color get _corTitulo => CopaColors.textoEscuro;
 
   void _selecionar(String id) {
     widget.onSelected(id);
@@ -54,9 +54,9 @@ class _AlbumPickerState extends State<AlbumPicker> {
     final catalog = StickerCatalogService.instance;
     if (_grupo == null) {
       return _lista(
-        titulo: 'Grupo',
+        titulo: 'Conjunto',
         itens: catalog.grupos
-            .map((g) => _Item(g.nome, CopaColors.circulos[g.id.codeUnitAt(0) % 6]))
+            .map((g) => _Item(g.nome, CopaColors.branco))
             .toList(),
         onTap: (i) => setState(() => _grupo = catalog.grupos[i].id),
       );
@@ -66,7 +66,7 @@ class _AlbumPickerState extends State<AlbumPicker> {
       return _lista(
         titulo: g.nome,
         voltar: () => setState(() => _grupo = null),
-        itens: g.selecoes.map((s) => _Item(s.nome, CopaColors.verde)).toList(),
+        itens: g.selecoes.map((s) => _Item(s.nome, CopaColors.branco)).toList(),
         onTap: (i) => setState(() => _selecao = g.selecoes[i].nome),
       );
     }
@@ -81,7 +81,7 @@ class _AlbumPickerState extends State<AlbumPicker> {
             IconButton(
               onPressed: _voltarSelecao,
               icon: Icon(Icons.arrow_back, color: _corIcone),
-              tooltip: 'Voltar seleções',
+              tooltip: 'Voltar países',
             ),
             Expanded(
               child: Text(
@@ -95,7 +95,7 @@ class _AlbumPickerState extends State<AlbumPicker> {
             TextButton(
               onPressed: _voltarGrupo,
               child: Text(
-                'GRUPOS',
+                'PAÍSES',
                 style: TextStyle(
                   color: _corIcone,
                   fontWeight: FontWeight.w900,
@@ -119,7 +119,7 @@ class _AlbumPickerState extends State<AlbumPicker> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'QUALQUER JOGADOR DESTA SELEÇÃO',
+                        'QUALQUER JOGADOR DESTE PAÍS',
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 15,
@@ -136,7 +136,7 @@ class _AlbumPickerState extends State<AlbumPicker> {
                     ],
                   ),
                 ),
-                const Icon(Icons.add_circle, color: CopaColors.verde, size: 32),
+                const Icon(Icons.add_circle_outline, color: CopaColors.primary, size: 32),
               ],
             ),
           ),
@@ -156,17 +156,16 @@ class _AlbumPickerState extends State<AlbumPicker> {
                         width: 44,
                         height: 56,
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [CopaColors.azul, CopaColors.verde],
-                          ),
+                          color: CopaColors.primarySoft,
                           borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: CopaColors.bordaCard),
                         ),
                         alignment: Alignment.center,
                         child: Text(
                           s.idUnico.split('_').last,
                           style: const TextStyle(
-                            fontWeight: FontWeight.w900,
-                            color: CopaColors.branco,
+                            fontWeight: FontWeight.w700,
+                            color: CopaColors.primary,
                           ),
                         ),
                       ),
@@ -194,7 +193,7 @@ class _AlbumPickerState extends State<AlbumPicker> {
                           ],
                         ),
                       ),
-                      const Icon(Icons.add_circle, color: CopaColors.verde),
+                      const Icon(Icons.add_circle_outline, color: CopaColors.primary),
                     ],
                   ),
                 ),
@@ -247,9 +246,9 @@ class _AlbumPickerState extends State<AlbumPicker> {
                   child: Text(
                     item.label,
                     style: const TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 17,
-                      color: CopaColors.branco,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: CopaColors.textoEscuro,
                     ),
                   ),
                 ),

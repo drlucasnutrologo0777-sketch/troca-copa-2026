@@ -22,12 +22,9 @@ class NegocioFechadoScreen extends StatelessWidget {
         child: Column(
           children: [
             AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              iconTheme: const IconThemeData(color: CopaColors.branco),
               title: const Text(
                 'Negócio Fechado',
-                style: TextStyle(color: CopaColors.branco, fontWeight: FontWeight.w900),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
             Expanded(
@@ -39,7 +36,7 @@ class NegocioFechadoScreen extends StatelessWidget {
                   }
                   final match = snap.data!.where((m) => m.id == mutualMatchId).firstOrNull;
                   if (match == null) {
-                    return const Center(child: Text('Match não encontrado', style: TextStyle(color: CopaColors.branco)));
+                    return const Center(child: Text('Match não encontrado', style: TextStyle(color: CopaColors.textoSuave)));
                   }
 
                   final dou = match.meuDou(uid);
@@ -95,9 +92,9 @@ class NegocioFechadoScreen extends StatelessWidget {
                           children: [
                             const Text('Pagamento', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
                             const SizedBox(height: 8),
-                            Text(
-                              'Compra in-app ${IapService.instance.precoExibicao} · libera contato e chat',
-                              style: TextStyle(color: Colors.grey.shade700),
+                            const Text(
+                              'Compra in-app na App Store · libera contato e chat',
+                              style: TextStyle(color: Colors.grey),
                             ),
                             const SizedBox(height: 8),
                             Text('Você: ${paguei ? "✓ Pago" : "Pendente"}'),
@@ -118,7 +115,7 @@ class NegocioFechadoScreen extends StatelessWidget {
                                       builder: (_) => MutualPaymentScreen(mutualMatchId: match.id),
                                     ),
                                   ),
-                                  child: Text('LIBERAR CONTATO · ${IapService.instance.precoExibicao}'),
+                                  child: const Text('LIBERAR CONTATO'),
                                 ),
                               ),
                             ],

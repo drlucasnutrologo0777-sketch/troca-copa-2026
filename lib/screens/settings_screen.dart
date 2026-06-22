@@ -22,12 +22,9 @@ class SettingsScreen extends StatelessWidget {
         child: Column(
           children: [
             AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              iconTheme: const IconThemeData(color: CopaColors.branco),
               title: const Text(
                 'Configurações',
-                style: TextStyle(color: CopaColors.branco, fontWeight: FontWeight.w900),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
             Expanded(

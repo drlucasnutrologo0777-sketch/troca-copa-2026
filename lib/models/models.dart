@@ -142,7 +142,7 @@ class TradeOffer {
 
 enum MatchPrioridade {
   especifica(1, 'Prioridade 1 · Pedido específico'),
-  qualquerSelecao(2, 'Prioridade 2 · Qualquer da seleção'),
+  qualquerSelecao(2, 'Prioridade 2 · Qualquer jogador de um país'),
   qualquerDiferente(3, 'Prioridade 3 · Qualquer que não tenho');
 
   const MatchPrioridade(this.ordem, this.rotulo);

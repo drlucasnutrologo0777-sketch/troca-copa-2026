@@ -29,12 +29,9 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Column(
           children: [
             AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              iconTheme: const IconThemeData(color: CopaColors.branco),
               title: const Text(
                 'Buscar Trocas',
-                style: TextStyle(color: CopaColors.branco, fontWeight: FontWeight.w900),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
             Expanded(
@@ -78,7 +75,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           }),
                         ),
                         RadioListTile<SearchMode>(
-                          title: const Text('Qualquer da seleção'),
+                          title: const Text('Qualquer jogador de um país'),
                           value: SearchMode.selection,
                           groupValue: _modo,
                           onChanged: (v) => setState(() {

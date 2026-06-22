@@ -78,14 +78,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         child: Column(
           children: [
             AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              iconTheme: const IconThemeData(color: CopaColors.branco),
               actions: [
-                IconButton(onPressed: _enviarLocal, icon: const Icon(Icons.location_on, color: CopaColors.branco)),
-                IconButton(onPressed: _concluirTroca, icon: const Icon(Icons.check_circle_outline, color: CopaColors.branco)),
+                IconButton(onPressed: _enviarLocal, icon: const Icon(Icons.location_on_outlined)),
+                IconButton(onPressed: _concluirTroca, icon: const Icon(Icons.check_circle_outline)),
               ],
-              title: const Text('Chat', style: TextStyle(color: CopaColors.branco, fontWeight: FontWeight.w900)),
+              title: const Text('Chat', style: const TextStyle(fontWeight: FontWeight.w600)),
             ),
             Expanded(
               child: StreamBuilder<List<MutualMatch>>(
@@ -96,7 +93,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     return Center(
                       child: CopaCard(
                         child: Text(
-                          'Chat bloqueado até os dois comprarem (${IapService.instance.precoExibicao}).',
+                          'Chat bloqueado até os dois concluírem a compra in-app na App Store.',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.grey.shade700),
                         ),
@@ -112,7 +109,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                         return Center(
                           child: Text(
                             'Combine local e horário da troca.',
-                            style: TextStyle(color: CopaColors.branco.withValues(alpha: 0.9)),
+                            style: TextStyle(color: CopaColors.textoSuave),
                           ),
                         );
                       }

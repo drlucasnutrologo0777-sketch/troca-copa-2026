@@ -154,10 +154,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 children: [
                   Text(
                     AppName.titulo,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: CopaColors.branco,
-                          fontWeight: FontWeight.w900,
-                        ),
+                    style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),
@@ -181,7 +178,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         Switch(
                           value: app.online,
-                          activeThumbColor: CopaColors.verde,
                           onChanged: (v) async {
                             if (v) {
                               final ok = await app.ficarOnline();
@@ -245,7 +241,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 children: [
                   CopaMenuTopico(
                     titulo: 'TROCAR FIGURINHA',
-                    cor: CopaColors.verde,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const TradeScreen()),
@@ -253,7 +248,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   CopaMenuTopico(
                     titulo: 'MINHAS OFERTAS',
-                    cor: CopaColors.azul,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const MyOffersScreen()),
@@ -261,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   CopaMenuTopico(
                     titulo: 'MATCH',
-                    cor: CopaColors.roxo,
+                    cor: CopaColors.primary,
                     destaque: true,
                     onTap: () => Navigator.push(
                       context,

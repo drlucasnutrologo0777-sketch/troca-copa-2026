@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/models.dart';
 import '../providers/app_state.dart';
-import '../services/iap_service.dart';
 import '../services/mutual_match_service.dart';
 import '../services/presence_service.dart';
 import '../theme/copa_theme.dart';
@@ -40,7 +39,7 @@ class _MatchDeckScreenState extends State<MatchDeckScreen> {
           title: const Text('MATCH CONFIRMADO!', style: TextStyle(fontWeight: FontWeight.w900)),
           content: Text(
             'Você e ${candidato.otherUserName} aceitaram a troca.\n\n'
-            'Negócio fechado — compre ${IapService.instance.precoExibicao} na App Store para liberar contato e chat.',
+            'Negócio fechado — faça a compra in-app na App Store para liberar contato e chat.',
           ),
           actions: [
             ElevatedButton(
@@ -69,7 +68,7 @@ class _MatchDeckScreenState extends State<MatchDeckScreen> {
         SnackBar(
           content: Text(
             'Você aceitou ${candidato.otherUserName}. '
-            'A cobrança (${IapService.instance.precoExibicao}) só aparece quando os DOIS aceitarem.',
+            'A compra in-app só aparece quando os DOIS aceitarem.',
           ),
           backgroundColor: CopaColors.azul,
           duration: const Duration(seconds: 5),
@@ -88,12 +87,9 @@ class _MatchDeckScreenState extends State<MatchDeckScreen> {
         child: Column(
           children: [
             AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              iconTheme: const IconThemeData(color: CopaColors.branco),
               title: const Text(
                 'Match',
-                style: TextStyle(color: CopaColors.branco, fontWeight: FontWeight.w900),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
             if (lista.isEmpty || _indice >= lista.length)
@@ -126,7 +122,7 @@ class _MatchDeckScreenState extends State<MatchDeckScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
                   '${lista.length - _indice} restante(s) · Pagamento só após os DOIS aceitarem',
-                  style: TextStyle(color: CopaColors.branco.withValues(alpha: 0.9), fontSize: 12),
+                  style: TextStyle(color: CopaColors.textoSuave, fontSize: 12),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -173,7 +169,7 @@ class _MatchDeckScreenState extends State<MatchDeckScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: CopaCard(
-        color: CopaColors.roxo,
+        color: CopaColors.primary,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,7 +220,7 @@ class _MatchDeckScreenState extends State<MatchDeckScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(titulo, style: const TextStyle(color: CopaColors.branco, fontWeight: FontWeight.w900)),
+          Text(titulo, style: const TextStyle(fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
           ...ids.map(
             (id) => Padding(

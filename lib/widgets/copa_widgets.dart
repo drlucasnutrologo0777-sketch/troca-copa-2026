@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/copa_theme.dart';
 
-/// Fundo neutro em todas as telas (sem círculos coloridos).
+/// Fundo claro uniforme — sem gradiente escuro nem orbes coloridos.
 class CopaAlbumBackground extends StatelessWidget {
   const CopaAlbumBackground({
     super.key,
@@ -12,19 +12,32 @@ class CopaAlbumBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            CopaColors.fundo,
-            Color(0xFF455A64),
-            Color(0xFF546E7A),
-          ],
-        ),
-      ),
+    return ColoredBox(
+      color: CopaColors.fundo,
       child: SafeArea(child: child),
+    );
+  }
+}
+
+/// AppBar padrão de todas as telas internas.
+class CopaAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const CopaAppBar({
+    super.key,
+    required this.title,
+    this.actions,
+  });
+
+  final String title;
+  final List<Widget>? actions;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(title),
+      actions: actions,
     );
   }
 }
@@ -43,15 +56,28 @@ class CopaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bg = color ?? CopaColors.branco;
+
     return Material(
-      color: color ?? CopaColors.branco.withValues(alpha: 0.98),
-      borderRadius: BorderRadius.circular(20),
-      elevation: 4,
-      shadowColor: Colors.black26,
+      color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(padding: const EdgeInsets.all(16), child: child),
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: CopaColors.bordaCard),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Padding(padding: const EdgeInsets.all(16), child: child),
+        ),
       ),
     );
   }
@@ -74,33 +100,39 @@ class CopaMenuTopico extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Material(
-        color: destaque ? cor : CopaColors.branco.withValues(alpha: 0.98),
+        color: destaque ? CopaColors.primary : CopaColors.branco,
         borderRadius: BorderRadius.circular(14),
-        elevation: 3,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(14),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    titulo,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 16,
-                      color: destaque ? CopaColors.branco : CopaColors.textoEscuro,
+          child: Ink(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: destaque ? null : Border.all(color: CopaColors.bordaCard),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      titulo,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: destaque ? CopaColors.branco : CopaColors.textoEscuro,
+                      ),
                     ),
                   ),
-                ),
-                Icon(
-                  Icons.chevron_right,
-                  color: destaque ? CopaColors.branco : cor,
-                ),
-              ],
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 22,
+                    color: destaque ? CopaColors.branco : CopaColors.textoSuave,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -132,8 +164,8 @@ class CopaBotaoGrande extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 36)),
-          const SizedBox(width: 16),
+          Text(emoji, style: const TextStyle(fontSize: 32)),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,8 +173,8 @@ class CopaBotaoGrande extends StatelessWidget {
                 Text(
                   titulo,
                   style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
                     color: CopaColors.branco,
                   ),
                 ),
@@ -150,13 +182,14 @@ class CopaBotaoGrande extends StatelessWidget {
                   subtitulo,
                   style: TextStyle(
                     color: CopaColors.branco.withValues(alpha: 0.9),
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 13,
                   ),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.arrow_forward_ios, color: CopaColors.branco, size: 18),
+          Icon(Icons.chevron_right_rounded, color: CopaColors.branco.withValues(alpha: 0.9), size: 20),
         ],
       ),
     );

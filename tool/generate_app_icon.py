@@ -1,7 +1,6 @@
-"""Gera ícone TROCA COPA 2026 (círculos coloridos + 26)."""
+"""Gera ícone Trocar Figurinhas — verde + símbolo de troca (sem FIFA/Panini/26)."""
 from __future__ import annotations
 
-import math
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -9,65 +8,62 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parent.parent
 IOS_ICON_DIR = ROOT / "ios" / "Runner" / "Assets.xcassets" / "AppIcon.appiconset"
 ANDROID_RES = ROOT / "android" / "app" / "src" / "main" / "res"
+LAUNCH_DIR = ROOT / "ios" / "Runner" / "Assets.xcassets" / "LaunchImage.imageset"
 DESKTOP = Path.home() / "OneDrive" / "Desktop"
 if not DESKTOP.exists():
     DESKTOP = Path.home() / "Desktop"
 
-COLORS = [
-    (0xE8, 0x4C, 0x3D),  # vermelho
-    (0x3D, 0xAA, 0x7D),  # verde
-    (0x2B, 0x9E, 0xD8),  # azul
-    (0xF5, 0xC5, 0x18),  # amarelo
-    (0x8B, 0x5C, 0xF6),  # roxo
-    (0xE8, 0x79, 0xF9),  # rosa
-]
-BG = (0x12, 0x1A, 0x3A)
+BG = (0x2E, 0x7D, 0x52)
+BG_DARK = (0x1A, 0x4D, 0x32)
+WHITE = (255, 255, 255)
 
 
 def draw_icon(size: int) -> Image.Image:
     img = Image.new("RGBA", (size, size), BG + (255,))
     draw = ImageDraw.Draw(img)
-    circles = [
-        (0.28, 0.22, 0.38, COLORS[3]),
-        (0.62, 0.18, 0.34, COLORS[0]),
-        (0.18, 0.52, 0.36, COLORS[2]),
-        (0.58, 0.50, 0.40, COLORS[4]),
-        (0.35, 0.68, 0.32, COLORS[1]),
-        (0.72, 0.70, 0.28, COLORS[5]),
-    ]
-    for cx, cy, r, color in circles:
-        x0 = (cx - r) * size
-        y0 = (cy - r) * size
-        x1 = (cx + r) * size
-        y1 = (cy + r) * size
-        overlay = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-        odraw = ImageDraw.Draw(overlay)
-        odraw.ellipse((x0, y0, x1, y1), fill=color + (190,))
-        img = Image.alpha_composite(img, overlay)
+    margin = int(size * 0.08)
+    draw.rounded_rectangle(
+        (margin, margin, size - margin, size - margin),
+        radius=int(size * 0.18),
+        fill=BG_DARK + (255,),
+    )
 
-    draw = ImageDraw.Draw(img)
-    font_size = max(12, int(size * 0.28))
-    try:
-        font = ImageFont.truetype("arialbd.ttf", font_size)
-    except OSError:
+    cx, cy = size // 2, size // 2
+    arrow = int(size * 0.14)
+    gap = int(size * 0.06)
+    lw = max(2, size // 32)
+
+    # Setas de troca (↔)
+    draw.line((cx - arrow, cy - gap, cx + arrow, cy - gap), fill=WHITE, width=lw)
+    draw.polygon(
+        [(cx + arrow, cy - gap), (cx + arrow - lw * 3, cy - gap - lw * 2), (cx + arrow - lw * 3, cy - gap + lw * 2)],
+        fill=WHITE,
+    )
+    draw.polygon(
+        [(cx - arrow, cy - gap), (cx - arrow + lw * 3, cy - gap - lw * 2), (cx - arrow + lw * 3, cy - gap + lw * 2)],
+        fill=WHITE,
+    )
+
+    draw.line((cx - arrow, cy + gap, cx + arrow, cy + gap), fill=WHITE, width=lw)
+    draw.polygon(
+        [(cx - arrow, cy + gap), (cx - arrow + lw * 3, cy + gap - lw * 2), (cx - arrow + lw * 3, cy + gap + lw * 2)],
+        fill=WHITE,
+    )
+    draw.polygon(
+        [(cx + arrow, cy + gap), (cx + arrow - lw * 3, cy + gap - lw * 2), (cx + arrow - lw * 3, cy + gap + lw * 2)],
+        fill=WHITE,
+    )
+
+    if size >= 128:
         try:
-            font = ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", font_size)
+            font = ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", max(10, int(size * 0.09)))
         except OSError:
             font = ImageFont.load_default()
+        text = "TF"
+        bbox = draw.textbbox((0, 0), text, font=font)
+        tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        draw.text(((size - tw) // 2, int(size * 0.68)), text, fill=WHITE, font=font)
 
-    text = "26"
-    bbox = draw.textbbox((0, 0), text, font=font)
-    tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    tx = (size - tw) // 2
-    ty = (size - th) // 2 - int(size * 0.02)
-    draw.text((tx + 2, ty + 2), text, fill=(0, 0, 0, 120), font=font)
-    draw.text((tx, ty), text, fill=(255, 255, 255, 255), font=font)
-
-    ball_r = max(3, int(size * 0.045))
-    bx = tx + tw + ball_r
-    by = ty + th - ball_r
-    draw.ellipse((bx - ball_r, by - ball_r, bx + ball_r, by + ball_r), fill=(255, 255, 255, 255))
-    draw.line((bx - ball_r * 0.6, by, bx + ball_r * 0.6, by), fill=(30, 30, 30, 255), width=max(1, size // 128))
     return img.convert("RGB")
 
 
@@ -111,7 +107,14 @@ def main() -> None:
         draw_icon(px).save(out, "PNG", optimize=True)
         print("Android", rel, px)
 
-    app_store = DESKTOP / "TROCA_COPA_icone_1024.png"
+    LAUNCH_DIR.mkdir(parents=True, exist_ok=True)
+    launch = draw_icon(512)
+    launch.save(LAUNCH_DIR / "LaunchImage.png", "PNG", optimize=True)
+    launch.save(LAUNCH_DIR / "LaunchImage@2x.png", "PNG", optimize=True)
+    launch.save(LAUNCH_DIR / "LaunchImage@3x.png", "PNG", optimize=True)
+    print("LaunchImage OK")
+
+    app_store = DESKTOP / "TROCAR_FIGURINHAS_icone_1024.png"
     draw_icon(1024).save(app_store, "PNG", optimize=True)
     print("Desktop", app_store)
 

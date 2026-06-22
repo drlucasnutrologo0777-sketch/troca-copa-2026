@@ -90,13 +90,7 @@ class _MutualPaymentScreenState extends State<MutualPaymentScreen> {
         child: Column(
           children: [
             AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              iconTheme: const IconThemeData(color: CopaColors.branco),
-              title: const Text(
-                'Compra in-app — Match confirmado',
-                style: TextStyle(color: CopaColors.branco, fontWeight: FontWeight.w900, fontSize: 16),
-              ),
+              title: const Text('Compra in-app — Match confirmado'),
             ),
             Expanded(
               child: Padding(

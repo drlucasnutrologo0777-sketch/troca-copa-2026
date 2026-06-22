@@ -44,7 +44,7 @@ class AvisoService {
           titulo: 'MATCH CONFIRMADO!',
           mensagem:
               'Você e ${m.otherUserName(uid)} aceitaram a troca.\n\n'
-              'Negócio fechado — compre ${IapService.instance.precoExibicao} para liberar contato.',
+              'Negócio fechado — faça a compra in-app na App Store para liberar contato.',
           acao: 'VER NEGÓCIO FECHADO',
           onAcao: () => Navigator.push(
             context,
@@ -85,7 +85,7 @@ class AvisoService {
             titulo: 'Outro colecionador pagou',
             mensagem:
                 '${m.otherUserName(uid)} já pagou.\n'
-                'Compre ${IapService.instance.precoExibicao} para liberar o chat.',
+                'Faça a compra in-app na App Store para liberar o chat.',
             acao: 'COMPRAR AGORA',
             onAcao: () => Navigator.push(
               context,
