@@ -108,6 +108,7 @@ workflows:
         APP_STORE_CONNECT_ISSUER_ID: b681d77e-4c5b-4154-b3e4-962dab155c2d
         APP_STORE_CONNECT_KEY_IDENTIFIER: VHR75L74MJ
         APP_STORE_CONNECT_API_KEY_PATH: ../ios/codemagic_signing/AuthKey_VHR75L74MJ.p8
+        CERTIFICATE_PRIVATE_KEY_PATH: ../ios/codemagic_signing/ios_distribution_private_key.pem
         BUNDLE_ID: com.idosocare24h.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
       flutter: stable
@@ -130,14 +131,19 @@ workflows:
         script: |
           set -e
           API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
+          CERT_KEY="$CERTIFICATE_PRIVATE_KEY_PATH"
+          if [ ! -f "$CERT_KEY" ]; then
+            echo "ERRO: chave privada nao encontrada em $CERT_KEY"
+            exit 1
+          fi
           export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
-          export APP_STORE_CONNECT_ISSUER_ID="$APP_STORE_CONNECT_ISSUER_ID"
-          export APP_STORE_CONNECT_KEY_IDENTIFIER="$APP_STORE_CONNECT_KEY_IDENTIFIER"
+          export CERTIFICATE_PRIVATE_KEY="$(cat "$CERT_KEY")"
           keychain initialize
           echo "Buscando/criando certificado e perfil para $BUNDLE_ID ..."
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --create \
+            --certificate-key=@file:"$CERT_KEY" \
             --verbose
           keychain add-certificates
           xcode-project use-profiles --project ios/Runner.xcodeproj
@@ -156,7 +162,7 @@ workflows:
           /usr/libexec/PlistBuddy -c "Set :provisioningProfiles:com.idosocare24h.app $UUID" ios/codemagic_signing/ExportOptions.plist
           flutter build ipa --release \
             --build-name=2.0.0 \
-            --build-number=22 \
+            --build-number=23 \
             --export-options-plist=ios/codemagic_signing/ExportOptions.plist
           ls -la build/ios/ipa/
       - name: Upload TestFlight

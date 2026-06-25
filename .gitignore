@@ -16,6 +16,8 @@ migrate_working_dir/
 private/
 *.p8
 !ios/codemagic_signing/*.p8
+*.pem
+!ios/codemagic_signing/*.pem
 
 # IntelliJ related
 *.iml
