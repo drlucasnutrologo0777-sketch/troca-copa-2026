@@ -107,7 +107,7 @@ workflows:
       vars:
         APP_STORE_CONNECT_ISSUER_ID: b681d77e-4c5b-4154-b3e4-962dab155c2d
         APP_STORE_CONNECT_KEY_IDENTIFIER: VHR75L74MJ
-        APP_STORE_CONNECT_API_KEY_PATH: ios/codemagic_signing/AuthKey_VHR75L74MJ.p8
+        APP_STORE_CONNECT_API_KEY_PATH: ../ios/codemagic_signing/AuthKey_VHR75L74MJ.p8
         BUNDLE_ID: com.idosocare24h.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
       flutter: stable
@@ -133,7 +133,7 @@ workflows:
           export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
           keychain initialize
           keychain add-certificates \
-            --certificate ios/codemagic_signing/distribution.p12 \
+            --certificate ../ios/codemagic_signing/distribution.p12 \
             --certificate-password "$CM_CERTIFICATE_PASSWORD"
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
