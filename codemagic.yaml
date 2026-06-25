@@ -105,6 +105,7 @@ workflows:
 
     environment:
       vars:
+        APP_STORE_APPLE_ID: 6784313862
         APP_STORE_CONNECT_ISSUER_ID: b681d77e-4c5b-4154-b3e4-962dab155c2d
         APP_STORE_CONNECT_KEY_IDENTIFIER: VHR75L74MJ
         APP_STORE_CONNECT_API_KEY_PATH: ../ios/codemagic_signing/AuthKey_VHR75L74MJ.p8
@@ -168,7 +169,7 @@ workflows:
           echo "Export options: $EXPORT_PLIST"
           flutter build ipa --release \
             --build-name=2.0.0 \
-            --build-number=26 \
+            --build-number=27 \
             --export-options-plist="$EXPORT_PLIST"
           ls -la build/ios/ipa/
       - name: Upload TestFlight
@@ -181,10 +182,11 @@ workflows:
           fi
           API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
           export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
-          echo "Enviando Idoso Care para App Store Connect: $IPA"
+          echo "Enviando Idoso Care para App Store Connect (Apple ID $APP_STORE_APPLE_ID): $IPA"
           app-store-connect publish \
             --path "$IPA" \
             --private-key "@file:$API_KEY" \
+            --altool-additional-arguments "--apple-id $APP_STORE_APPLE_ID" \
             --max-find-build-wait 900 \
             --max-build-processing-wait 3600 \
             --verbose
