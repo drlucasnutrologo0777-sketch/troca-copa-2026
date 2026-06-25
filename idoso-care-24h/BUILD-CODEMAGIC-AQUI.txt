@@ -1,15 +1,23 @@
 # Idoso Care 24H — build no Codemagic (repo troca-copa-2026)
 
-O Codemagic ja esta conectado ao repo **troca-copa-2026**.
-O app Idoso Care ficou na pasta **idoso-care-24h/** deste mesmo repo.
+## Codemagic
 
-## So 2 cliques
+1. https://codemagic.io/apps → **troca-copa-2026**
+2. **Start new build** → **Idoso Care 24H — iOS TestFlight**
 
-1. https://codemagic.io/apps → abra **troca-copa-2026**
-2. **Start new build** → escolha **Idoso Care 24H — iOS TestFlight**
+## URGENTE — App Store Connect (bundle ID errado)
 
-Nao precisa adicionar repo novo.
+Seu app **"IDOSO CARE 24 H"** (Apple ID 6784313862) foi criado com bundle ID **com.drlucasceo07.freteon** (Freteon).
+O IPA do Idoso Care usa **com.idosocare24h.app**. A Apple **nao permite trocar** bundle ID depois de criado.
 
-## App Store Connect (1 vez)
+### Faca isto (5 min):
 
-Crie o app com Bundle ID **com.idosocare24h.app** e SKU **idoso-care-24h**.
+1. https://appstoreconnect.apple.com → **Apps** → **+** → **Novo app**
+2. Nome: **Idoso Care 24H**
+3. Bundle ID: **com.idosocare24h.app** (escolha na lista — ja existe no Developer)
+4. SKU: **idoso-care-24h**
+5. Idioma: Portugues (Brasil)
+
+O app antigo com freteon pode ficar la ou ser removido — **nao use ele** para este IPA.
+
+Depois rode o build de novo. O Codemagic acha o Apple ID certo sozinho pelo bundle ID.
