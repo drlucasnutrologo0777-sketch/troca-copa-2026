@@ -168,7 +168,7 @@ workflows:
           echo "Export options: $EXPORT_PLIST"
           flutter build ipa --release \
             --build-name=2.0.0 \
-            --build-number=25 \
+            --build-number=26 \
             --export-options-plist="$EXPORT_PLIST"
           ls -la build/ios/ipa/
       - name: Upload TestFlight
