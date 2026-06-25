@@ -1,0 +1,16 @@
+# Assinatura Android — Idoso Care 24H
+
+Coloque nesta pasta:
+
+| Arquivo | Como gerar |
+|---------|------------|
+| `upload-keystore.jks` | `keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload` |
+
+No `codemagic.yaml` (workflow `idoso-care-android`), defina:
+- `CM_KEYSTORE_PASSWORD`
+- `CM_KEY_PASSWORD`
+- `CM_KEY_ALIAS` (padrão: `upload`)
+
+Também adicione `android/app/google-services.json` do Firebase Console.
+
+Para publicar na Play Store: faça upload do `.aab` em Play Console → Produção ou Teste interno.

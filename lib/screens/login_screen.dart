@@ -47,14 +47,26 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final completo = app.profile?.cadastroCompleto ?? false;
     if (completo) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login realizado com sucesso!')),
+        const SnackBar(
+          content: Text(
+            'Login realizado com sucesso!',
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
+          backgroundColor: CopaColors.verde,
+        ),
       );
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const AvisoListener(child: HomeScreen())),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Complete seu cadastro para continuar.')),
+        const SnackBar(
+          content: Text(
+            'Complete seu cadastro para continuar.',
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
+          backgroundColor: CopaColors.amarelo,
+        ),
       );
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const RegisterScreen(completarCadastro: true)),
@@ -67,62 +79,138 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final app = context.watch<AppState>();
 
     return CopaAlbumBackground(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 32, 20, 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              AppName.titulo,
-              style: Theme.of(context).textTheme.headlineLarge,
-              textAlign: TextAlign.center,
+      child: Column(
+        children: [
+          const SizedBox(height: 48),
+          Text(
+            AppName.titulo,
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: CopaColors.branco),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            AppName.disclaimer,
+            style: TextStyle(
+              color: CopaColors.branco.withValues(alpha: 0.9),
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
             ),
-            const SizedBox(height: 8),
-            Text(
-              AppName.disclaimer,
-              style: const TextStyle(color: CopaColors.textoSuave, fontSize: 12, height: 1.4),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            OutlinedButton.icon(
-              onPressed: _irCadastro,
-              icon: const Icon(Icons.person_add_alt_1_outlined),
-              label: const Text('Criar conta'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: CopaColors.primary,
-                side: const BorderSide(color: CopaColors.primary),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
-            const SizedBox(height: 20),
-            CopaCard(
-              child: Column(
-                children: [
-                  TabBar(
-                    controller: _tabs,
-                    indicatorColor: CopaColors.primary,
-                    labelColor: CopaColors.primary,
-                    unselectedLabelColor: CopaColors.textoSuave,
-                    labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-                    tabs: const [
-                      Tab(text: 'Login'),
-                      Tab(text: 'Cadastro'),
-                      Tab(text: 'Esqueci'),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Material(
+              color: CopaColors.verde,
+              borderRadius: BorderRadius.circular(16),
+              elevation: 8,
+              child: InkWell(
+                onTap: _irCadastro,
+                borderRadius: BorderRadius.circular(16),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                  child: Row(
+                    children: [
+                      Icon(Icons.person_add_alt_1, color: CopaColors.branco, size: 28),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'PRIMEIRA VEZ? CRIE SUA CONTA',
+                              style: TextStyle(
+                                color: CopaColors.branco,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Text(
+                              'Nome, e-mail e foto (opcional)',
+                              style: TextStyle(color: CopaColors.branco, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward, color: CopaColors.branco),
                     ],
                   ),
-                  SizedBox(
-                    height: 360,
-                    child: TabBarView(
-                      controller: _tabs,
-                      children: [
-                        _abaLogin(app),
-                        _abaCadastro(),
-                        _abaEsqueci(app),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: CopaColors.branco.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TabBar(
+              controller: _tabs,
+              indicator: BoxDecoration(
+                color: _tabs.index == 1 ? CopaColors.amarelo : CopaColors.azul,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: CopaColors.textoEscuro,
+              unselectedLabelColor: CopaColors.branco,
+              labelStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+              tabs: const [
+                Tab(text: 'LOGIN'),
+                Tab(text: 'CADASTRO'),
+                Tab(text: 'ESQUECI'),
+              ],
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabs,
+              children: [
+                _abaLogin(app),
+                _abaCadastro(),
+                _abaEsqueci(app),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _abaLogin(AppState app) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: CopaCard(
+        child: Column(
+          children: [
+            _campo(_emailLogin, 'E-mail', Icons.email, obscure: false),
+            const SizedBox(height: 12),
+            _campo(_senhaLogin, 'Senha', Icons.lock, obscure: true),
+            if (app.erro != null && _tabs.index == 0) ...[
+              const SizedBox(height: 12),
+              Text(app.erro!, style: const TextStyle(color: Colors.red)),
+            ],
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: app.carregando
+                    ? null
+                    : () async {
+                        context.read<AppState>().limparMensagens();
+                        final ok = await app.loginEmail(
+                          email: _emailLogin.text,
+                          senha: _senhaLogin.text,
+                        );
+                        if (ok && context.mounted) {
+                          _irParaDestinoPosLogin(context.read<AppState>());
+                        }
+                      },
+                child: app.carregando && _tabs.index == 0
+                    ? const SizedBox(
+                        height: 22, width: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text('ENTRAR'),
               ),
             ),
           ],
@@ -131,108 +219,74 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     );
   }
 
-  Widget _abaLogin(AppState app) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 16, 4, 0),
-      child: Column(
-        children: [
-          _campo(_emailLogin, 'E-mail', Icons.email_outlined, obscure: false),
-          const SizedBox(height: 12),
-          _campo(_senhaLogin, 'Senha', Icons.lock_outline, obscure: true),
-          if (app.erro != null && _tabs.index == 0) ...[
-            const SizedBox(height: 12),
-            Text(app.erro!, style: const TextStyle(color: CopaColors.vermelho)),
-          ],
-          const Spacer(),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: app.carregando
-                  ? null
-                  : () async {
-                      context.read<AppState>().limparMensagens();
-                      final ok = await app.loginEmail(
-                        email: _emailLogin.text,
-                        senha: _senhaLogin.text,
-                      );
-                      if (ok && context.mounted) {
-                        _irParaDestinoPosLogin(context.read<AppState>());
-                      }
-                    },
-              child: app.carregando && _tabs.index == 0
-                  ? const SizedBox(
-                      height: 22, width: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Entrar'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _abaCadastro() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.how_to_reg_outlined, size: 48, color: CopaColors.textoSuave),
-          const SizedBox(height: 12),
-          const Text(
-            'Cadastro completo',
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Nome e e-mail obrigatórios. Demais campos opcionais.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: CopaColors.textoSuave),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _irCadastro,
-              child: const Text('Abrir formulário'),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: CopaCard(
+        color: CopaColors.amarelo,
+        child: Column(
+          children: [
+            const Icon(Icons.how_to_reg, size: 64, color: CopaColors.textoEscuro),
+            const SizedBox(height: 12),
+            const Text(
+              'CADASTRO COMPLETO',
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: CopaColors.textoEscuro),
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            const Text(
+              'Nome, endereço, foto de perfil e conta salva no Firebase para calcular distância do match.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: CopaColors.verde,
+                  foregroundColor: CopaColors.branco,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                onPressed: _irCadastro,
+                child: const Text('ABRIR FORMULÁRIO DE CADASTRO', style: TextStyle(fontWeight: FontWeight.w900)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _abaEsqueci(AppState app) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 16, 4, 0),
-      child: Column(
-        children: [
-          const Text(
-            'Informe seu e-mail para receber o link de recuperação.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: CopaColors.textoSuave),
-          ),
-          const SizedBox(height: 16),
-          _campo(_emailReset, 'E-mail', Icons.email_outlined, obscure: false),
-          if (app.erro != null && _tabs.index == 2) ...[
-            const SizedBox(height: 12),
-            Text(app.erro!, style: const TextStyle(color: CopaColors.vermelho)),
-          ],
-          if (app.sucesso != null && _tabs.index == 2) ...[
-            const SizedBox(height: 12),
-            Text(app.sucesso!, style: const TextStyle(color: CopaColors.primary, fontWeight: FontWeight.w600)),
-          ],
-          const Spacer(),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: app.carregando ? null : () async {
-                context.read<AppState>().limparMensagens();
-                await app.esqueciSenha(_emailReset.text);
-              },
-              child: const Text('Enviar e-mail'),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: CopaCard(
+        child: Column(
+          children: [
+            const Text('Informe seu e-mail para receber o link de recuperação.', textAlign: TextAlign.center),
+            const SizedBox(height: 16),
+            _campo(_emailReset, 'E-mail', Icons.email, obscure: false),
+            if (app.erro != null && _tabs.index == 2) ...[
+              const SizedBox(height: 12),
+              Text(app.erro!, style: const TextStyle(color: Colors.red)),
+            ],
+            if (app.sucesso != null && _tabs.index == 2) ...[
+              const SizedBox(height: 12),
+              Text(app.sucesso!, style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w700)),
+            ],
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: app.carregando ? null : () async {
+                  context.read<AppState>().limparMensagens();
+                  await app.esqueciSenha(_emailReset.text);
+                },
+                child: const Text('ENVIAR E-MAIL'),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -244,7 +298,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       keyboardType: label == 'E-mail' ? TextInputType.emailAddress : TextInputType.text,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: CopaColors.textoSuave),
+        prefixIcon: Icon(icon, color: CopaColors.azul),
       ),
     );
   }

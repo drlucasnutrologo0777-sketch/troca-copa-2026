@@ -96,3 +96,95 @@ workflows:
         notify:
           success: true
           failure: true
+
+  idoso-care-ios:
+    name: Idoso Care 24H — iOS TestFlight
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    working_directory: idoso-care-24h
+
+    environment:
+      vars:
+        APP_STORE_CONNECT_ISSUER_ID: b681d77e-4c5b-4154-b3e4-962dab155c2d
+        APP_STORE_CONNECT_KEY_IDENTIFIER: VHR75L74MJ
+        APP_STORE_CONNECT_API_KEY_PATH: ios/codemagic_signing/AuthKey_VHR75L74MJ.p8
+        BUNDLE_ID: com.idosocare24h.app
+        CM_CERTIFICATE_PASSWORD: TrocaCopa2026
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+
+    scripts:
+      - name: Verificar credenciais Apple
+        script: |
+          set -e
+          API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
+          if [ ! -f "$API_KEY" ]; then
+            echo "ERRO: AuthKey nao encontrada em $API_KEY"
+            exit 1
+          fi
+          export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
+          openssl pkey -in "$API_KEY" -noout
+          echo "Chave API Apple OK"
+      - name: Perfil App Store (cria se nao existir)
+        script: |
+          set -e
+          API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
+          export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
+          keychain initialize
+          keychain add-certificates \
+            --certificate ios/codemagic_signing/distribution.p12 \
+            --certificate-password "$CM_CERTIFICATE_PASSWORD"
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --create \
+            --verbose
+          xcode-project use-profiles --project ios/Runner.xcodeproj
+      - name: Flutter pub get
+        script: flutter pub get
+      - name: CocoaPods
+        script: |
+          cd ios
+          pod install
+      - name: Build IPA
+        script: |
+          set -e
+          xcode-project use-profiles --project ios/Runner.xcodeproj
+          PROFILE=$(find "$HOME/Library/MobileDevice/Provisioning Profiles" -name "*.mobileprovision" | head -1)
+          UUID=$(security cms -D -i "$PROFILE" | plutil -extract UUID raw -)
+          /usr/libexec/PlistBuddy -c "Set :provisioningProfiles:com.idosocare24h.app $UUID" ios/codemagic_signing/ExportOptions.plist
+          flutter build ipa --release \
+            --build-name=2.0.0 \
+            --build-number=21 \
+            --export-options-plist=ios/codemagic_signing/ExportOptions.plist
+          ls -la build/ios/ipa/
+      - name: Upload TestFlight
+        script: |
+          set -e
+          IPA=$(find build/ios/ipa -name "*.ipa" | head -1)
+          if [ -z "$IPA" ]; then
+            echo "ERRO: .ipa nao encontrado"
+            exit 1
+          fi
+          API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
+          export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
+          echo "Enviando Idoso Care para App Store Connect: $IPA"
+          app-store-connect publish \
+            --path "$IPA" \
+            --private-key "@file:$API_KEY" \
+            --max-find-build-wait 900 \
+            --max-build-processing-wait 3600 \
+            --verbose
+          echo "Upload concluido. TestFlight no App Store Connect."
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      email:
+        recipients:
+          - drlucasnutrologo0777@gmail.com
+        notify:
+          success: true
+          failure: true

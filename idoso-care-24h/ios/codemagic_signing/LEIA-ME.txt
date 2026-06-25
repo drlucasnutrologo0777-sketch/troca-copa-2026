@@ -1,0 +1,17 @@
+# Assinatura iOS — Idoso Care 24H
+
+Coloque nesta pasta (não commitar senhas em texto aberto em repositório público):
+
+| Arquivo | Origem |
+|---------|--------|
+| `distribution.p12` | Certificado Apple Distribution exportado do Keychain |
+| `app_store.mobileprovision` | Perfil App Store para `com.idosocare24h.app` |
+| `AuthKey_XXXXXX.p8` | App Store Connect → Users and Access → Keys |
+| `ExportOptions.plist` | Já no repo — atualize `teamID` e UUID do profile |
+
+No `codemagic.yaml`, substitua:
+- `APP_STORE_APPLE_ID` — ID numérico do app no App Store Connect
+- `APP_STORE_CONNECT_ISSUER_ID`, `KEY_IDENTIFIER`
+- `CM_CERTIFICATE_PASSWORD` — senha do .p12
+
+Também adicione `ios/Runner/GoogleService-Info.plist` do Firebase Console.

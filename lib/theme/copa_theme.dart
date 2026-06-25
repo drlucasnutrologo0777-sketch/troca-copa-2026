@@ -1,108 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Paleta única: zinc + azul. Sem verde/amarelo/roxo de álbum/Copa.
+/// Cores extraídas da capa Panini Copa 2026 (círculos coloridos).
 abstract final class CopaColors {
-  static const primary = Color(0xFF2563EB);
-  static const primaryDark = Color(0xFF1D4ED8);
-  static const primarySoft = Color(0xFFEFF6FF);
-
-  /// Compatibilidade com código existente — mesma família de cor.
-  static const verde = primary;
-  static const azul = primary;
-  static const amarelo = Color(0xFF52525B);
-  static const roxo = primary;
-  static const rosa = Color(0xFF71717A);
-
-  static const vermelho = Color(0xFFDC2626);
+  static const vermelho = Color(0xFFE84C3D);
+  static const verde = Color(0xFF3DAA7D);
+  static const azul = Color(0xFF2B9ED8);
+  static const amarelo = Color(0xFFF5C518);
+  static const roxo = Color(0xFF8B5CF6);
+  static const rosa = Color(0xFFE879F9);
   static const branco = Color(0xFFFFFFFF);
-  static const textoEscuro = Color(0xFF18181B);
-  static const textoSuave = Color(0xFF71717A);
-  static const fundo = Color(0xFFF4F4F5);
-  static const fundoMedio = Color(0xFFE4E4E7);
-  static const fundoClaro = Color(0xFFF4F4F5);
-  static const bordaCard = Color(0xFFE4E4E7);
+  static const textoEscuro = Color(0xFF1A1A2E);
 
   static const List<Color> circulos = [
-    Color(0xFF52525B),
-    Color(0xFF71717A),
-    Color(0xFF3F3F46),
-    Color(0xFFA1A1AA),
-    Color(0xFF2563EB),
-    Color(0xFF1D4ED8),
+    vermelho,
+    verde,
+    azul,
+    amarelo,
+    roxo,
+    rosa,
   ];
 }
 
 ThemeData buildCopaTheme() {
-  final base = GoogleFonts.interTextTheme();
+  final base = GoogleFonts.nunitoTextTheme();
   return ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: CopaColors.primary,
-      primary: CopaColors.primary,
+      seedColor: CopaColors.azul,
+      primary: CopaColors.azul,
+      secondary: CopaColors.amarelo,
       surface: CopaColors.branco,
-      brightness: Brightness.light,
-    ),
-    scaffoldBackgroundColor: CopaColors.fundo,
-    appBarTheme: const AppBarTheme(
-      backgroundColor: CopaColors.branco,
-      foregroundColor: CopaColors.textoEscuro,
-      surfaceTintColor: CopaColors.branco,
-      elevation: 0,
-      centerTitle: true,
-      titleTextStyle: TextStyle(
-        color: CopaColors.textoEscuro,
-        fontWeight: FontWeight.w600,
-        fontSize: 17,
-      ),
-      iconTheme: IconThemeData(color: CopaColors.textoEscuro),
     ),
     textTheme: base.copyWith(
       headlineLarge: base.headlineLarge?.copyWith(
-        fontWeight: FontWeight.w700,
-        color: CopaColors.textoEscuro,
-        letterSpacing: -0.5,
-      ),
-      headlineSmall: base.headlineSmall?.copyWith(
-        fontWeight: FontWeight.w700,
-        color: CopaColors.textoEscuro,
+        fontWeight: FontWeight.w900,
+        color: CopaColors.branco,
+        letterSpacing: 1.2,
       ),
       titleLarge: base.titleLarge?.copyWith(
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w800,
         color: CopaColors.textoEscuro,
       ),
       bodyLarge: base.bodyLarge?.copyWith(
         color: CopaColors.textoEscuro,
-        fontWeight: FontWeight.w400,
+        fontWeight: FontWeight.w600,
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: CopaColors.primary,
-        foregroundColor: CopaColors.branco,
-        elevation: 0,
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+        backgroundColor: CopaColors.amarelo,
+        foregroundColor: CopaColors.textoEscuro,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        textStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: CopaColors.branco,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: CopaColors.bordaCard),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: CopaColors.bordaCard),
-      ),
+      fillColor: CopaColors.branco.withValues(alpha: 0.92),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: CopaColors.primary, width: 2),
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: CopaColors.amarelo, width: 2),
       ),
-      labelStyle: const TextStyle(color: CopaColors.textoSuave, fontWeight: FontWeight.w500),
     ),
   );
 }

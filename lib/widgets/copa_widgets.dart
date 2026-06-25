@@ -1,45 +1,64 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../theme/copa_theme.dart';
 
-/// Fundo claro uniforme — sem gradiente escuro nem orbes coloridos.
+/// Fundo estilo capa Panini — semicírculos coloridos sobrepostos.
 class CopaAlbumBackground extends StatelessWidget {
   const CopaAlbumBackground({
     super.key,
     required this.child,
+    this.showCapa = false,
   });
 
   final Widget child;
+  final bool showCapa;
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: CopaColors.fundo,
-      child: SafeArea(child: child),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        CustomPaint(painter: _CirculosPaniniPainter()),
+        if (showCapa)
+          Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 48, left: 24, right: 24),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  'assets/images/album_capa.png',
+                  height: 140,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        SafeArea(child: child),
+      ],
     );
   }
 }
 
-/// AppBar padrão de todas as telas internas.
-class CopaAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CopaAppBar({
-    super.key,
-    required this.title,
-    this.actions,
-  });
-
-  final String title;
-  final List<Widget>? actions;
-
+class _CirculosPaniniPainter extends CustomPainter {
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      title: Text(title),
-      actions: actions,
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = const Color(0xFF1E3A5F),
     );
+    final rnd = math.Random(26);
+    for (var i = 0; i < 18; i++) {
+      final color = CopaColors.circulos[i % CopaColors.circulos.length];
+      final r = size.width * (0.18 + rnd.nextDouble() * 0.22);
+      final cx = rnd.nextDouble() * size.width;
+      final cy = rnd.nextDouble() * size.height;
+      canvas.drawCircle(Offset(cx, cy), r, Paint()..color = color.withValues(alpha: 0.85));
+    }
   }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class CopaCard extends StatelessWidget {
@@ -56,28 +75,15 @@ class CopaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = color ?? CopaColors.branco;
-
     return Material(
-      color: Colors.transparent,
+      color: color ?? CopaColors.branco.withValues(alpha: 0.95),
+      borderRadius: BorderRadius.circular(20),
+      elevation: 6,
+      shadowColor: Colors.black26,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: CopaColors.bordaCard),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Padding(padding: const EdgeInsets.all(16), child: child),
-        ),
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(padding: const EdgeInsets.all(16), child: child),
       ),
     );
   }
@@ -88,7 +94,7 @@ class CopaMenuTopico extends StatelessWidget {
     super.key,
     required this.titulo,
     required this.onTap,
-    this.cor = CopaColors.primary,
+    this.cor = CopaColors.azul,
     this.destaque = false,
   });
 
@@ -100,39 +106,33 @@ class CopaMenuTopico extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Material(
-        color: destaque ? CopaColors.primary : CopaColors.branco,
+        color: destaque ? cor : CopaColors.branco.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(14),
+        elevation: 4,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(14),
-          child: Ink(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              border: destaque ? null : Border.all(color: CopaColors.bordaCard),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      titulo,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        color: destaque ? CopaColors.branco : CopaColors.textoEscuro,
-                      ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    titulo,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16,
+                      color: destaque ? CopaColors.branco : CopaColors.textoEscuro,
                     ),
                   ),
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    size: 22,
-                    color: destaque ? CopaColors.branco : CopaColors.textoSuave,
-                  ),
-                ],
-              ),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  color: destaque ? CopaColors.branco : cor,
+                ),
+              ],
             ),
           ),
         ),
@@ -164,8 +164,8 @@ class CopaBotaoGrande extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 32)),
-          const SizedBox(width: 14),
+          Text(emoji, style: const TextStyle(fontSize: 36)),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,8 +173,8 @@ class CopaBotaoGrande extends StatelessWidget {
                 Text(
                   titulo,
                   style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 18,
                     color: CopaColors.branco,
                   ),
                 ),
@@ -182,14 +182,13 @@ class CopaBotaoGrande extends StatelessWidget {
                   subtitulo,
                   style: TextStyle(
                     color: CopaColors.branco.withValues(alpha: 0.9),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
           ),
-          Icon(Icons.chevron_right_rounded, color: CopaColors.branco.withValues(alpha: 0.9), size: 20),
+          const Icon(Icons.arrow_forward_ios, color: CopaColors.branco, size: 18),
         ],
       ),
     );

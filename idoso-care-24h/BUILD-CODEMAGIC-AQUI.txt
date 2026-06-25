@@ -1,0 +1,15 @@
+# Idoso Care 24H — build no Codemagic (repo troca-copa-2026)
+
+O Codemagic ja esta conectado ao repo **troca-copa-2026**.
+O app Idoso Care ficou na pasta **idoso-care-24h/** deste mesmo repo.
+
+## So 2 cliques
+
+1. https://codemagic.io/apps → abra **troca-copa-2026**
+2. **Start new build** → escolha **Idoso Care 24H — iOS TestFlight**
+
+Nao precisa adicionar repo novo.
+
+## App Store Connect (1 vez)
+
+Crie o app com Bundle ID **com.idosocare24h.app** e SKU **idoso-care-24h**.
