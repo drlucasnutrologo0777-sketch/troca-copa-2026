@@ -110,7 +110,6 @@ async function ic24SalvarCuidador() {
   const hourRate = hourRaw ? parseFloat(hourRaw.replace(',', '.')) : null;
   const dailyRate = dailyRaw ? parseFloat(dailyRaw.replace(',', '.')) : null;
   const cpf = document.getElementById('cuid-cpf')?.value?.trim() || '';
-  const cursoExperienciaTexto = document.getElementById('curso-exp-texto')?.value?.trim() || '';
   await ic24Db.collection('caregivers').doc(uid).set(
     {
       fullName: nome,
@@ -121,7 +120,6 @@ async function ic24SalvarCuidador() {
       hourRate,
       dailyRate,
       cpf: cpf || undefined,
-      cursoExperienciaTexto: cursoExperienciaTexto || undefined,
       approved: false,
       rating: 4.5,
       kycStatus: 'incomplete',
@@ -279,19 +277,7 @@ async function ic24MatchChatUnlocked(chatId) {
   return snap.exists && snap.data().chatUnlocked === true;
 }
 
-const IC24_DOCS_OBRIGATORIOS = ['rg', 'cpf', 'comprovante', 'ctps', 'antecedentes'];
-
-function ic24CadastroFaltaCursoOuExperiencia(d, docsMap) {
-  if (typeof ic24HasCursoOuExperiencia === 'function') {
-    return !ic24HasCursoOuExperiencia(
-      Object.fromEntries(Object.entries(docsMap || {}).map(([k, v]) => [k, { url: v.fileUrl }])),
-      d,
-    );
-  }
-  const temCurso = docsMap?.curso?.fileUrl;
-  const temExp = String(d?.cursoExperienciaTexto || '').trim().length >= 20;
-  return !temCurso && !temExp;
-}
+const IC24_DOCS_OBRIGATORIOS = ['rg', 'cpf', 'comprovante', 'ctps', 'antecedentes', 'curso'];
 
 async function ic24CarregarDadosCuidador(uid) {
   ic24InitFirebase();
@@ -327,14 +313,6 @@ function ic24AvaliarCadastroCuidador(d, docsMap) {
       screen: 'documentos',
       message: 'Envie os documentos pendentes (fotos)',
       missingDocs,
-    };
-  }
-  if (ic24CadastroFaltaCursoOuExperiencia(d, docsMap)) {
-    return {
-      complete: false,
-      screen: 'documentos',
-      message: 'Anexe o curso de cuidador ou descreva seu tempo de experiência',
-      missingDocs: ['curso_ou_experiencia'],
     };
   }
   return { complete: true, screen: 'cuidador-painel', message: '' };

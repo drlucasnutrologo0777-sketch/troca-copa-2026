@@ -7,7 +7,7 @@ grep -q 'WebAppScreen' lib/main.dart || { echo "ERRO: lib/main.dart nao usa WebA
 grep -q 'OnboardingGate' lib/main.dart && { echo "ERRO: main.dart ainda referencia OnboardingGate (app antigo)"; exit 1; } || true
 grep -q 'HomeShell' lib/main.dart && { echo "ERRO: main.dart ainda referencia HomeShell (app antigo)"; exit 1; } || true
 test -f web_app/index.html || { echo "ERRO: web_app/index.html ausente"; exit 1; }
-grep -q 'Build 37 · Web' web_app/index.html || { echo "ERRO: badge Build 37 ausente em web_app/index.html"; exit 1; }
+grep -q 'Protótipo Web' web_app/index.html || { echo "ERRO: web_app/index.html nao e o prototipo 8888"; exit 1; }
 echo "OK: fonte aponta para WebAppScreen + web_app/"
 
 if [ "${1:-}" = "--ipa" ]; then
