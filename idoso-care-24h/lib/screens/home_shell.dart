@@ -37,10 +37,7 @@ class _HomeShellState extends State<HomeShell> {
     final isCaregiver = role == UserRole.caregiver;
 
     final tabs = <Widget>[
-      if (isCaregiver)
-        CaregiverStatusScreen(onSelectTab: (i) => setState(() => _index = i))
-      else
-        const CaregiverListScreen(),
+      if (isCaregiver) const CaregiverStatusScreen() else const CaregiverListScreen(),
       const ChatListScreen(),
       if (isAdmin) const AdminPanelScreen(),
       _ProfileTab(role: role),
@@ -48,8 +45,8 @@ class _HomeShellState extends State<HomeShell> {
 
     final destinations = <NavigationDestination>[
       NavigationDestination(
-        icon: Icon(isCaregiver ? Icons.badge_outlined : Icons.search),
-        label: isCaregiver ? 'Cadastro' : 'Buscar',
+        icon: Icon(isCaregiver ? Icons.home_outlined : Icons.search),
+        label: isCaregiver ? 'Início' : 'Buscar',
       ),
       const NavigationDestination(icon: Icon(Icons.chat_bubble_outline), label: 'Chat'),
       if (isAdmin)

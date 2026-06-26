@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/user_profile.dart';
 import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
 import '../theme/app_theme.dart';
@@ -25,6 +26,7 @@ class ChatListScreen extends StatelessWidget {
 
     final fs = context.read<FirestoreService>();
     final demo = Firebase.apps.isEmpty;
+    final isCaregiver = auth.profile?.role == UserRole.caregiver;
 
     return AppScaffold(
       title: 'Conversas',
@@ -38,7 +40,7 @@ class ChatListScreen extends StatelessWidget {
 
                 final chats = snapshot.data ?? [];
                 if (chats.isEmpty) {
-                  return _empty();
+                  return _empty(isCaregiver);
                 }
                 return ListView.separated(
                   itemCount: chats.length,
@@ -72,7 +74,7 @@ class ChatListScreen extends StatelessWidget {
                 }
 
                 final docs = snapshot.data ?? [];
-                if (docs.isEmpty) return _empty();
+                if (docs.isEmpty) return _empty(isCaregiver);
 
                 return ListView.separated(
                   itemCount: docs.length,
@@ -102,12 +104,14 @@ class ChatListScreen extends StatelessWidget {
     );
   }
 
-  Widget _empty() {
-    return const Center(
+  Widget _empty(bool isCaregiver) {
+    return Center(
       child: Text(
-        'Nenhuma conversa ainda.\nSolicite contato com um cuidador para iniciar.',
+        isCaregiver
+            ? 'Nenhuma solicitação ainda.\nQuando uma família pedir contato, aparece aqui.'
+            : 'Nenhuma conversa ainda.\nBusque um cuidador e toque em Solicitar contato.',
         textAlign: TextAlign.center,
-        style: TextStyle(color: AppColors.textSecondary),
+        style: const TextStyle(color: AppColors.textSecondary),
       ),
     );
   }

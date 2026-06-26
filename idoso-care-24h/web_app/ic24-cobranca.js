@@ -9,11 +9,11 @@ const IC24_PIX_BENEFICIARIO = {
   city: 'SAO PAULO',
 };
 
-function ic24PixCopiaColaValor(amount, txid, pixKeyOverride) {
+function ic24PixCopiaColaValor(amount, txid, pixKeyOverride, beneficiaryNameOverride) {
   const rawKey = (pixKeyOverride || IC24_PIX_BENEFICIARIO.key).replace(/\s/g, '');
   const key = rawKey.startsWith('+') ? rawKey : rawKey.replace(/\D/g, '');
-  const keyDisplay = pixKeyOverride || IC24_PIX_BENEFICIARIO.keyDisplay;
-  const name = IC24_PIX_BENEFICIARIO.name
+  const nameSource = beneficiaryNameOverride || IC24_PIX_BENEFICIARIO.name;
+  const name = nameSource
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-zA-Z0-9 ]/g, '')
@@ -59,6 +59,75 @@ async function ic24AcumularTaxaPlataforma(caregiverId, valorServico) {
     { merge: true },
   );
   return pending;
+}
+
+const IC24_DIAS_SEMANA = {
+  dom: 'domingo',
+  seg: 'segunda-feira',
+  ter: 'terça-feira',
+  qua: 'quarta-feira',
+  qui: 'quinta-feira',
+  sex: 'sexta-feira',
+  sab: 'sábado',
+};
+
+function ic24CalcularPropostaPagamento(dailyRate, freq, weekDay) {
+  const rate = Number(dailyRate) || 0;
+  if (!rate || rate <= 0) throw new Error('Informe um valor diário válido');
+  if (freq === 'diaria') {
+    return {
+      paymentSchedule: 'diaria',
+      diariasCount: 1,
+      totalAmount: rate,
+      description: '1 diária — pagamento ao fim do plantão',
+      scheduleLabel: 'Diária (ao fim do plantão)',
+    };
+  }
+  if (freq === 'semanal') {
+    const dia = IC24_DIAS_SEMANA[weekDay] || weekDay || 'dia escolhido';
+    return {
+      paymentSchedule: 'semanal',
+      paymentWeekDay: weekDay || 'seg',
+      diariasCount: 7,
+      totalAmount: Math.round(rate * 7 * 100) / 100,
+      description: '7 diárias — pagamento semanal (' + dia + ')',
+      scheduleLabel: 'Semanal — ' + dia,
+    };
+  }
+  if (freq === 'quinzenal') {
+    return {
+      paymentSchedule: 'quinzenal',
+      diariasCount: 14,
+      totalAmount: Math.round(rate * 14 * 100) / 100,
+      description: '14 diárias — pagamento quinzenal',
+      scheduleLabel: 'Quinzenal',
+    };
+  }
+  throw new Error('Selecione a forma de recebimento');
+}
+
+async function ic24GerarPixPropostaOferta({ dailyRate, paymentSchedule, paymentWeekDay }) {
+  ic24InitFirebase();
+  const caregiverId = ic24Auth.currentUser?.uid;
+  if (!caregiverId) throw new Error('Faça login como cuidador');
+  const calc = ic24CalcularPropostaPagamento(dailyRate, paymentSchedule, paymentWeekDay);
+  const cgSnap = await ic24Db.collection('caregivers').doc(caregiverId).get();
+  const cg = cgSnap.data() || {};
+  const chavePix = (cg.pixKey || '').trim();
+  const titular = (cg.pixTitular || cg.fullName || '').trim();
+  if (!chavePix) {
+    throw new Error('Cadastre sua chave PIX em Faturamento antes de aceitar ou enviar proposta');
+  }
+  const txid = 'PROP' + Date.now().toString(36).toUpperCase().slice(-8);
+  const pixCopiaCola = ic24PixCopiaColaValor(calc.totalAmount, txid, chavePix, titular);
+  return {
+    ...calc,
+    pixKey: chavePix,
+    pixTitular: titular,
+    pixCopiaCola,
+    txid,
+    dailyRate: Number(dailyRate),
+  };
 }
 
 async function ic24GerarCobrancaCliente({ valor, descricao, metodo, linkCartao, familyId, pixKey, pixTitular }) {
