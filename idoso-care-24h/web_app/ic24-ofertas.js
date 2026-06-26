@@ -98,7 +98,7 @@ async function ic24ListarOfertasFamilia() {
   return ic24SortByCreated(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
 }
 
-async function ic24ResponderOferta(offerId, { action, proposedDailyRate, message, paymentSchedule, paymentWeekDay, diariasCount, totalAmount, pixDescription, pixCopiaCola, pixKey, pixTitular, dailyRateUsed }) {
+async function ic24ResponderOferta(offerId, { action, proposedDailyRate, message, paymentSchedule, paymentWeekDay, scheduleLabel, diariasCount, dailyRateUsed }) {
   ic24InitFirebase();
   const caregiverId = ic24Auth.currentUser?.uid;
   if (!caregiverId) throw new Error('Faça login como cuidador');
@@ -116,12 +116,8 @@ async function ic24ResponderOferta(offerId, { action, proposedDailyRate, message
     message: message || '',
     paymentSchedule: paymentSchedule || null,
     paymentWeekDay: paymentWeekDay || null,
+    scheduleLabel: scheduleLabel || null,
     diariasCount: diariasCount || null,
-    totalAmount: totalAmount || null,
-    pixDescription: pixDescription || null,
-    pixCopiaCola: pixCopiaCola || null,
-    pixKey: pixKey || null,
-    pixTitular: pixTitular || null,
     dailyRateUsed: dailyRateUsed || null,
     status:
       action === 'accept'
@@ -139,9 +135,8 @@ async function ic24ResponderOferta(offerId, { action, proposedDailyRate, message
       paymentSchedule: paymentSchedule || null,
       paymentWeekDay: paymentWeekDay || null,
       agreedDailyRate: dailyRateUsed || proposedDailyRate || offer.dailyRate,
+      scheduleLabel: scheduleLabel || null,
       diariasCount: diariasCount || null,
-      totalAmount: totalAmount || null,
-      pixDescription: pixDescription || null,
       firstPaymentRequiresPontoSign: true,
     });
     await ic24VincularFamiliaAtiva(caregiverId, offer.familyId);

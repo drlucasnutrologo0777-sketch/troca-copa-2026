@@ -1163,25 +1163,24 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <div id="oferta-pag-dia-semana" style="display:none;margin-top:8px">
           <label class="lbl">Dia da semana para recebimento</label>
           <div class="chip-row" id="oferta-pag-dia">
-            <button type="button" class="chip on" data-v="seg" onclick="selChip(this,'oferta-pag-dia');atualizarPreviewPixOferta()">Seg</button>
-            <button type="button" class="chip" data-v="ter" onclick="selChip(this,'oferta-pag-dia');atualizarPreviewPixOferta()">Ter</button>
-            <button type="button" class="chip" data-v="qua" onclick="selChip(this,'oferta-pag-dia');atualizarPreviewPixOferta()">Qua</button>
-            <button type="button" class="chip" data-v="qui" onclick="selChip(this,'oferta-pag-dia');atualizarPreviewPixOferta()">Qui</button>
-            <button type="button" class="chip" data-v="sex" onclick="selChip(this,'oferta-pag-dia');atualizarPreviewPixOferta()">Sex</button>
-            <button type="button" class="chip" data-v="sab" onclick="selChip(this,'oferta-pag-dia');atualizarPreviewPixOferta()">Sáb</button>
-            <button type="button" class="chip" data-v="dom" onclick="selChip(this,'oferta-pag-dia');atualizarPreviewPixOferta()">Dom</button>
+            <button type="button" class="chip on" data-v="seg" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Seg</button>
+            <button type="button" class="chip" data-v="ter" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Ter</button>
+            <button type="button" class="chip" data-v="qua" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Qua</button>
+            <button type="button" class="chip" data-v="qui" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Qui</button>
+            <button type="button" class="chip" data-v="sex" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Sex</button>
+            <button type="button" class="chip" data-v="sab" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Sáb</button>
+            <button type="button" class="chip" data-v="dom" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Dom</button>
           </div>
         </div>
+        <p class="hint" id="oferta-pag-resumo" style="margin-top:8px"></p>
         <label class="lbl">Contra-proposta diária (R$) — opcional</label>
-        <input class="inp" id="oferta-contra-valor" type="number" placeholder="Deixe vazio para aceitar valor da família" oninput="atualizarPreviewPixOferta()"/>
+        <input class="inp" id="oferta-contra-valor" type="number" placeholder="Deixe vazio para aceitar valor da família"/>
         <label class="lbl">Mensagem</label>
         <input class="inp" id="oferta-contra-msg" placeholder="Ex.: Posso iniciar às 19h"/>
         <div class="note" style="margin-top:12px;font-size:12px;line-height:1.5">
           <p><strong>Aviso:</strong> O Idoso Care 24H é uma plataforma de conexão e registro seguro de atividades entre famílias e cuidadores. <strong>Não nos responsabilizamos por inadimplência</strong> — o pagamento é acordado diretamente entre as partes.</p>
           <p style="margin-top:8px"><strong>Primeiro pagamento:</strong> somente após o preenchimento e a <strong>assinatura eletrônica do primeiro dia de serviço</strong> pelo contratante (cartão de ponto / diário do idoso).</p>
         </div>
-        <div id="oferta-pix-preview" class="cob-box" style="display:none;margin-top:12px"></div>
-        <button class="btn btn-o" type="button" style="margin-top:8px" onclick="atualizarPreviewPixOferta()">Gerar PIX da proposta</button>
         <button class="btn btn-p" type="button" onclick="aceitarOfertaCuidador()">Aceitar oferta</button>
         <button class="btn btn-o" type="button" style="margin-top:8px" onclick="contraOfertaCuidador()">Enviar nova proposta</button>
         <button class="btn btn-g" type="button" style="margin-top:8px;background:#fef2f2;color:var(--err);border:1px solid #fecaca" onclick="recusarOfertaCuidador()">Recusar oferta</button>
@@ -1981,14 +1980,14 @@ function selecionarOfertaCuidador(id){
   ic24InitFirebase();
   ic24Db.collection('job_offers').doc(id).get().then(snap=>{
     window._ofertaAtual=snap.exists?{id,...snap.data()}:null;
-    atualizarPreviewPixOferta();
+    atualizarResumoPagOferta();
   }).catch(()=>{ window._ofertaAtual=null; });
 }
 function toggleOfertaPagSemanal(){
   const freq=chipVal('oferta-pag-freq')||'diaria';
   const box=document.getElementById('oferta-pag-dia-semana');
   if(box) box.style.display=freq==='semanal'?'block':'none';
-  atualizarPreviewPixOferta();
+  atualizarResumoPagOferta();
 }
 function taxaDiariaOfertaAtual(){
   const v=parseFloat(document.getElementById('oferta-contra-valor')?.value);
@@ -1996,55 +1995,33 @@ function taxaDiariaOfertaAtual(){
   const o=window._ofertaAtual||{};
   return parseFloat(o.dailyRate)||parseFloat(window._cuidPainel?.dailyRate)||0;
 }
-async function atualizarPreviewPixOferta(){
-  const box=document.getElementById('oferta-pix-preview');
-  if(!box) return;
+function atualizarResumoPagOferta(){
+  const el=document.getElementById('oferta-pag-resumo');
+  if(!el) return;
   try{
     const freq=chipVal('oferta-pag-freq')||'diaria';
     const weekDay=chipVal('oferta-pag-dia')||'seg';
-    const rate=taxaDiariaOfertaAtual();
-    if(!rate){ box.style.display='none'; return; }
-    const pix=await ic24GerarPixPropostaOferta({ dailyRate:rate, paymentSchedule:freq, paymentWeekDay:weekDay });
-    window._ofertaPixAtual=pix;
-    box.style.display='block';
-    box.innerHTML='<strong>'+escapeHtml(pix.scheduleLabel)+'</strong><br/>'+
-      escapeHtml(pix.description)+'<br/>'+
-      '<strong>Total: '+fmtMoeda(pix.totalAmount)+'</strong> ('+pix.diariasCount+' diária(s) × '+fmtMoeda(rate)+')<br/>'+
-      'Chave PIX: '+escapeHtml(pix.pixKey)+' · '+escapeHtml(pix.pixTitular)+'<br/>'+
-      '<code style="font-size:11px;word-break:break-all">'+escapeHtml(pix.pixCopiaCola)+'</code>'+
-      '<button class="btn btn-o" type="button" style="margin-top:8px;height:40px" onclick="copiarTextoOfertaPix()">Copiar código PIX</button>';
-  }catch(e){
-    box.style.display='block';
-    box.innerHTML='<span style="color:var(--err)">'+escapeHtml(e.message||'Erro ao gerar PIX')+'</span>';
-    window._ofertaPixAtual=null;
-  }
-}
-async function copiarTextoOfertaPix(){
-  const p=window._ofertaPixAtual;
-  if(!p||!p.pixCopiaCola){ toast('Gere o PIX primeiro'); return; }
-  await ic24CopyText(p.pixCopiaCola);
-  toast('Código PIX copiado');
+    const rate=taxaDiariaOfertaAtual()||1;
+    const calc=ic24CalcularPropostaPagamento(rate,freq,weekDay);
+    el.textContent='Recebimento: '+calc.scheduleLabel+(calc.diariasCount>1?' · '+calc.diariasCount+' diárias por ciclo':'');
+  }catch(_){ el.textContent=''; }
 }
 function payloadPropostaOferta(action){
   const freq=chipVal('oferta-pag-freq')||'diaria';
   const weekDay=chipVal('oferta-pag-dia')||'seg';
-  const rate=taxaDiariaOfertaAtual();
-  if(!rate) throw new Error('Informe ou aceite um valor diário');
-  const pix=window._ofertaPixAtual;
-  if(!pix||pix.paymentSchedule!==freq) throw new Error('Toque em Gerar PIX da proposta antes de enviar');
   const contra=parseFloat(document.getElementById('oferta-contra-valor')?.value);
+  const rate=(contra&&contra>0)?contra:taxaDiariaOfertaAtual();
+  if(!rate||rate<=0) throw new Error('Informe ou aceite um valor diário');
+  if(action==='counter'&&(!contra||contra<=0)) throw new Error('Informe valor da contra-proposta');
+  const calc=ic24CalcularPropostaPagamento(rate,freq,weekDay);
   return {
     action,
-    proposedDailyRate: action==='counter'?(contra||rate):null,
+    proposedDailyRate: action==='counter'?contra:null,
     message: document.getElementById('oferta-contra-msg')?.value||'',
-    paymentSchedule: pix.paymentSchedule,
-    paymentWeekDay: pix.paymentWeekDay||null,
-    diariasCount: pix.diariasCount,
-    totalAmount: pix.totalAmount,
-    pixDescription: pix.description,
-    pixCopiaCola: pix.pixCopiaCola,
-    pixKey: pix.pixKey,
-    pixTitular: pix.pixTitular,
+    paymentSchedule: calc.paymentSchedule,
+    paymentWeekDay: calc.paymentWeekDay||null,
+    scheduleLabel: calc.scheduleLabel,
+    diariasCount: calc.diariasCount,
     dailyRateUsed: rate,
   };
 }
@@ -2053,10 +2030,9 @@ async function aceitarOfertaCuidador(){
   const id=document.getElementById('oferta-acao-id').value;
   if(!id){ toast('Selecione uma oferta'); return; }
   try{
-    await atualizarPreviewPixOferta();
     const payload=payloadPropostaOferta('accept');
     await ic24ResponderOferta(id,payload);
-    toast('Oferta aceita — PIX: '+fmtMoeda(payload.totalAmount)+' ('+payload.diariasCount+' diária(s))');
+    toast('Oferta aceita — '+payload.scheduleLabel);
     await carregarPainelCuidador();
     renderOfertas();
   }catch(e){ toast(e.message||'Erro'); }
@@ -2067,10 +2043,9 @@ async function contraOfertaCuidador(){
   const v=document.getElementById('oferta-contra-valor').value;
   if(!id||!v){ toast('Informe valor da contra-proposta'); return; }
   try{
-    await atualizarPreviewPixOferta();
     const payload=payloadPropostaOferta('counter');
     await ic24ResponderOferta(id,payload);
-    toast('Nova proposta enviada — '+payload.pixDescription);
+    toast('Nova proposta enviada — '+payload.scheduleLabel);
     renderOfertas();
   }catch(e){ toast(e.message||'Erro'); }
 }
