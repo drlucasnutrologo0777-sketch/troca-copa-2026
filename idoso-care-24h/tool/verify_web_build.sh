@@ -16,11 +16,17 @@ if [ "${1:-}" = "--ipa" ]; then
     exit 1
   fi
   echo "=== Verificar IPA: $IPA ==="
-  unzip -l "$IPA" | grep -q 'flutter_assets' || { echo "ERRO: flutter_assets ausente"; exit 1; }
-  MANIFEST=$(unzip -p "$IPA" 'Payload/*.app/Frameworks/App.framework/flutter_assets/AssetManifest.json' 2>/dev/null || true)
-  echo "$MANIFEST" | grep -q 'web_app/index.html' || {
-    echo "ERRO: web_app/index.html nao esta no AssetManifest do IPA"
+  LISTING=$(unzip -l "$IPA")
+  echo "$LISTING" | grep -q 'flutter_assets' || { echo "ERRO: flutter_assets ausente no IPA"; exit 1; }
+  echo "$LISTING" | grep -q 'web_app/index.html' || {
+    echo "ERRO: web_app/index.html nao encontrado dentro do IPA"
     exit 1
   }
-  echo "OK: IPA contem web_app/index.html"
+  echo "$LISTING" | grep -q 'flutter_inappwebview' || {
+    echo "ERRO: flutter_inappwebview ausente no IPA"
+    exit 1
+  }
+  BUILD_NUM=$(unzip -p "$IPA" 'Payload/Runner.app/Info.plist' | plutil -extract CFBundleVersion raw - 2>/dev/null || true)
+  echo "CFBundleVersion no IPA: ${BUILD_NUM:-desconhecido}"
+  echo "OK: IPA contem web_app/index.html (Flutter usa AssetManifest.bin, nao .json)"
 fi
