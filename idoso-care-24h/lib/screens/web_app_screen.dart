@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-/// Carrega o protótipo web completo (mesmo do `python scripts/serve_web.py`).
+import '../services/web_app_bundle.dart';
+
+/// Protótipo web completo (mesmo conteúdo do serve_web.py / TestFlight build 35+).
 class WebAppScreen extends StatefulWidget {
   const WebAppScreen({super.key});
 
@@ -22,12 +24,13 @@ class _WebAppScreenState extends State<WebAppScreen> {
 
   Future<void> _start() async {
     try {
-      final server = InAppLocalhostServer(documentRoot: 'web_app');
+      final root = await WebAppBundle.ensureOnDisk();
+      final server = InAppLocalhostServer(documentRoot: root.path);
       await server.start();
       _server = server;
       if (!mounted) return;
       setState(() {
-        _initialUrl = WebUri('http://localhost:${server.port}/index.html');
+        _initialUrl = WebUri('http://127.0.0.1:${server.port}/index.html');
       });
     } catch (e) {
       if (!mounted) return;
@@ -45,10 +48,19 @@ class _WebAppScreenState extends State<WebAppScreen> {
   Widget build(BuildContext context) {
     if (_error != null) {
       return Scaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text('Não foi possível abrir o app.\n\n$_error', textAlign: TextAlign.center),
+        backgroundColor: const Color(0xFFF5F7FA),
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                'App web não carregou.\n\n$_error\n\n'
+                'Se vir Buscar/Chat/Perfil, o TestFlight instalou build antigo (Flutter). '
+                'Apague o app e instale o build 35.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 15, height: 1.45),
+              ),
+            ),
           ),
         ),
       );
@@ -61,7 +73,6 @@ class _WebAppScreenState extends State<WebAppScreen> {
       );
     }
 
-    // Tela cheia: safe-area fica no CSS do web (viewport-fit=cover + env(safe-area-inset-*)).
     return ColoredBox(
       color: const Color(0xFFF5F7FA),
       child: InAppWebView(
