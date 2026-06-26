@@ -37,7 +37,10 @@ class _HomeShellState extends State<HomeShell> {
     final isCaregiver = role == UserRole.caregiver;
 
     final tabs = <Widget>[
-      if (isCaregiver) const CaregiverStatusScreen() else const CaregiverListScreen(),
+      if (isCaregiver)
+        CaregiverStatusScreen(onSelectTab: (i) => setState(() => _index = i))
+      else
+        const CaregiverListScreen(),
       const ChatListScreen(),
       if (isAdmin) const AdminPanelScreen(),
       _ProfileTab(role: role),
