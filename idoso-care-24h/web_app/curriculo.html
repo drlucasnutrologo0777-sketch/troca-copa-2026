@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="theme-color" content="#2E8B57"/>
+<title>Currículo Lates — Idoso Care 24H</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--p:#2E8B57;--pd:#267A4C;--pl:#E8F5EE;--soft:#F5F7FA;--line:#E0E0E0;--t:#2D2D2D;--m:#666;--gold:#D4AF37}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--t);line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+.hero{background:linear-gradient(145deg,var(--p),var(--pd));color:#fff;border-radius:20px;padding:24px;margin-bottom:20px}
+.hero h1{font-size:22px;margin:8px 0 4px}
+.hero .sub{opacity:.9;font-size:14px}
+.badge{display:inline-block;background:rgba(255,255,255,.2);padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;margin-top:8px}
+.stars{color:#F9A825;font-size:15px;margin-top:6px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.card h2{font-size:15px;color:var(--p);margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px}
+.card p{font-size:14px;margin-bottom:6px}
+.class-box{background:var(--pl);border-left:4px solid var(--p);padding:14px;border-radius:0 12px 12px 0;margin-bottom:14px}
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.doc-item{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;text-decoration:none;color:inherit}
+.doc-item img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--soft)}
+.doc-item span{display:block;padding:8px;font-size:11px;font-weight:600;text-align:center}
+.doc-item .ok{color:var(--p);font-size:10px}
+.err{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:16px;border-radius:12px;text-align:center}
+.loading{text-align:center;padding:60px 20px;color:var(--m)}
+.brand{text-align:center;margin-top:24px;font-size:13px;color:var(--m)}
+.brand b{color:var(--p)}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="loading" id="loading">Carregando currículo…</div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-ic24.js"></script>
+<script src="ic24-curriculo.js"></script>
+<script>
+(async function(){
+  const app=document.getElementById('app');
+  const token=new URLSearchParams(location.search).get('t');
+  if(!token){
+    app.innerHTML='<div class="err">Link inválido. O contratante deve solicitar o currículo pelo app.</div>';
+    return;
+  }
+  try{
+    const { request, curriculum: c }=await ic24CarregarCurriculoPorToken(token);
+    const cls=c.classification||{};
+    const docs=(c.documents||[]).filter(d=>d.url);
+    document.title='Currículo — '+(c.fullName||'Cuidador');
+    app.innerHTML=
+      '<div class="hero">'+
+        '<div style="font-size:12px;opacity:.85">Currículo Lates · Idoso Care 24H</div>'+
+        '<h1>'+esc(c.fullName)+'</h1>'+
+        '<div class="sub">'+esc(c.city)+(c.state?', '+esc(c.state):'')+' · CPF '+esc(c.cpfMasked)+'</div>'+
+        '<div class="stars">'+(cls.stars||'★★★★☆')+'</div>'+
+        '<span class="badge">'+esc(cls.label||'Classificação pendente')+'</span>'+
+      '</div>'+
+      '<div class="class-box"><strong>Classificação automática pelo app</strong><br/>'+
+        'Score documental: <strong>'+(cls.score||0)+'/100</strong> · '+(cls.documentsCount||0)+' documento(s) enviado(s)'+
+        (cls.missingRequired&&cls.missingRequired.length?'<br/><small style="color:var(--m)">Pendente: '+esc(cls.missingRequired.join(', '))+'</small>':'')+
+      '</div>'+
+      '<div class="card"><h2>Sobre</h2><p>'+esc(c.bio||'—')+'</p></div>'+
+      '<div class="card"><h2>Especialidades</h2><p>'+esc((c.specialties||[]).join(' · ')||'—')+'</p></div>'+
+      '<div class="card"><h2>Valores</h2>'+
+        '<p><strong>Hora:</strong> '+fmt(c.hourRate)+' &nbsp; <strong>Diária:</strong> '+fmt(c.dailyRate)+'</p>'+
+        '<p><strong>Endereço base:</strong> '+esc(c.address||'—')+'</p>'+
+      '</div>'+
+      '<div class="card"><h2>Documentos verificados</h2>'+
+        '<p style="font-size:13px;color:var(--m);margin-bottom:12px">Fotos enviadas no cadastro — validadas pela plataforma.</p>'+
+        '<div class="doc-grid">'+
+          (docs.length?docs.map(d=>'<a class="doc-item" href="'+esc(d.url)+'" target="_blank" rel="noopener">'+
+            '<img src="'+esc(d.url)+'" alt="'+esc(d.label)+'"/>'+
+            '<span>'+esc(d.label)+'<br/><span class="ok">'+(d.verified?'✓ Verificado':'Em análise')+'</span></span></a>').join(''):
+            '<p>Nenhum documento anexado ainda.</p>')+
+        '</div>'+
+      '</div>'+
+      '<div class="card" style="font-size:13px;color:var(--m)">'+
+        'Solicitado por: <strong>'+esc(request.familyName||'Contratante')+'</strong><br/>'+
+        'Este currículo é confidencial — uso exclusivo para contratação de cuidador.'+
+      '</div>'+
+      '<p class="brand"><b>Idoso Care 24H</b> — Cuidadores de idosos com segurança e confiança</p>';
+  }catch(e){
+    app.innerHTML='<div class="err">'+esc(e.message||'Erro ao carregar currículo')+'</div>';
+  }
+})();
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function fmt(v){return v!=null&&v!==''?'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}
+</script>
+</body>
+</html>

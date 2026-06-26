@@ -1,0 +1,11 @@
+{
+  "name": "Idoso Care 24H",
+  "short_name": "Idoso Care",
+  "description": "Cuidadores de idosos com segurança e confiança",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F5F7FA",
+  "theme_color": "#2E8B57",
+  "lang": "pt-BR"
+}
+

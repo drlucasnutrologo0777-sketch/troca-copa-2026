@@ -1,0 +1,2486 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<meta name="theme-color" content="#2E8B57"/>
+<title>Idoso Care 24H</title>
+<link rel="manifest" href="manifest.json"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  /* Idoso Care 24H — design system (NAO usar paleta Troca Copa) */
+  --p:#2E8B57;--pd:#267A4C;--pl:#E8F5EE;
+  --s:#1E88E5;--gold:#D4AF37;
+  --bg:#FFF;--soft:#F5F7FA;--line:#E0E0E0;
+  --t:#2D2D2D;--m:#666666;--err:#D32F2F;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--t)}
+#app{max-width:430px;margin:0 auto;min-height:100%;background:var(--bg);display:flex;flex-direction:column}
+.pad{padding:24px 20px 32px;flex:1}
+.logo-wrap{text-align:center;padding:32px 0 24px}
+.logo{
+  width:72px;height:72px;margin:0 auto 16px;border-radius:20px;
+  background:linear-gradient(145deg,var(--p),var(--pd));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 24px rgba(46,139,87,.25);
+}
+.logo svg{width:36px;height:36px;fill:#fff}
+.brand{font-size:24px;font-weight:700;color:var(--p)}
+.brand-sub{font-size:14px;color:var(--m);margin-top:6px;line-height:1.4}
+.screen{display:none}
+.screen.on{display:block}
+.lbl{display:block;font-size:13px;font-weight:600;color:var(--t);margin-bottom:6px}
+.inp{
+  width:100%;height:50px;padding:0 14px;border:1px solid var(--line);
+  border-radius:10px;font-size:15px;font-family:inherit;background:var(--bg);
+  margin-bottom:14px;outline:none;
+}
+.inp:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(46,139,87,.12)}
+.sel{width:100%;height:50px;padding:0 14px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:inherit;background:var(--bg);margin-bottom:14px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{
+  width:100%;height:52px;border:none;border-radius:12px;
+  font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;
+}
+.btn-p{background:var(--p);color:#fff}
+.btn-p:active{background:var(--pd)}
+.link-row{display:flex;justify-content:space-between;align-items:center;margin:4px 0 20px;font-size:14px}
+.link-row a{color:var(--s);text-decoration:none;font-weight:500}
+.link-row a:active{opacity:.7}
+.register-line{text-align:center;margin-top:20px;font-size:15px;color:var(--m)}
+.register-line a{color:var(--p);font-weight:600;text-decoration:none}
+.step{font-size:12px;font-weight:600;color:var(--p);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.h1{font-size:22px;font-weight:700;margin-bottom:6px}
+.hint{font-size:14px;color:var(--m);margin-bottom:20px;line-height:1.45}
+.photo-pick{
+  width:110px;height:110px;border-radius:50%;margin:0 auto 20px;
+  border:3px dashed var(--p);background:var(--pl);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;overflow:hidden;position:relative;
+}
+.photo-pick img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.photo-pick span{font-size:11px;color:var(--p);font-weight:600;margin-top:4px;text-align:center;padding:0 8px}
+.photo-pick input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.photo-pick.has img+span{display:none}
+.progress{display:flex;gap:6px;margin-bottom:20px}
+.progress i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.progress i.done{background:var(--p)}
+.doc{
+  display:flex;align-items:center;gap:14px;padding:14px;
+  border:1px solid var(--line);border-radius:12px;margin-bottom:10px;
+  background:var(--bg);cursor:pointer;position:relative;
+}
+.doc:hover{border-color:var(--p)}
+.doc.done{border-color:var(--p);background:var(--pl)}
+.doc .ic{
+  width:44px;height:44px;border-radius:10px;background:var(--soft);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;
+}
+.doc.done .ic{background:var(--p);color:#fff}
+.doc b{font-size:15px;display:block}
+.doc small{font-size:12px;color:var(--m)}
+.doc input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.doc .ok{margin-left:auto;color:var(--p);font-weight:700;font-size:18px;display:none}
+.doc.done .ok{display:block}
+.note{background:var(--soft);border-radius:10px;padding:14px;font-size:13px;color:var(--m);line-height:1.5;margin-bottom:20px;border-left:4px solid var(--p)}
+.topbar{
+  display:flex;align-items:center;gap:12px;padding:14px 16px;
+  border-bottom:1px solid var(--line);background:var(--bg);
+}
+.topbar button{border:none;background:var(--soft);width:40px;height:40px;border-radius:10px;cursor:pointer;font-size:18px;color:var(--p)}
+.topbar h2{font-size:17px;font-weight:600;flex:1}
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:#222;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;
+  opacity:0;transition:opacity .3s;z-index:99;max-width:90%;text-align:center;
+}
+.toast.on{opacity:1}
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.gal-item{border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;background:var(--soft);aspect-ratio:1}
+.gal-item img{width:100%;height:100%;object-fit:cover}
+.gal-item .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:8px;font-size:11px;font-weight:600;color:var(--p);text-align:center}
+.cv{background:var(--soft);border-radius:12px;padding:16px;margin:12px 0;border:1px solid var(--line)}
+.cv p{font-size:14px;line-height:1.5;margin-bottom:6px}
+.badge-v{display:inline-block;background:#FBF6E8;color:#9A7B0A;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;margin-left:6px}
+.modal{display:none;position:fixed;inset:0;background:#000c;z-index:100;align-items:center;justify-content:center;padding:20px}
+.modal.on{display:flex}
+.modal img{max-width:100%;max-height:80vh;border-radius:12px}
+.modal-close{position:absolute;top:20px;right:20px;background:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer}
+.role-card{
+  display:flex;align-items:center;gap:14px;padding:18px;border:2px solid var(--line);
+  border-radius:16px;margin-bottom:12px;cursor:pointer;background:var(--bg);text-align:left;width:100%;
+  font-family:inherit;
+}
+.role-card:active,.role-card.sel{border-color:var(--p);background:var(--pl)}
+.role-card .ic{font-size:28px;width:44px;text-align:center}
+.role-card b{display:block;font-size:16px;color:var(--t)}
+.role-card small{font-size:13px;color:var(--m)}
+.btn-s{background:var(--s);color:#fff;margin-top:8px}
+.btn-o{background:transparent;color:var(--s);border:2px solid var(--s)}
+.btn-g{background:var(--soft);color:var(--t);border:1px solid var(--line)}
+.nav-login{
+  position:fixed;bottom:12px;left:50%;transform:translateX(-50%);
+  z-index:50;background:#fff;border:1px solid var(--line);border-radius:999px;
+  padding:8px 16px;font-size:13px;font-weight:600;color:var(--p);cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);font-family:inherit;
+}
+.ver-badge{position:fixed;top:10px;right:10px;z-index:60;background:var(--p);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;opacity:.92}
+.pix-box{text-align:center;background:var(--pl);border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0}
+.pix-box canvas{border-radius:12px;background:#fff;margin:12px auto;display:block}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px 0;min-height:280px;max-height:50vh}
+.chat-msg{max-width:85%;padding:10px 14px;border-radius:14px;margin-bottom:8px;font-size:14px;line-height:1.4}
+.chat-msg.me{margin-left:auto;background:var(--p);color:#fff;border-bottom-right-radius:4px}
+.chat-msg.them{background:var(--soft);border-bottom-left-radius:4px}
+.chat-bar{display:flex;gap:8px;margin-top:12px}
+.chat-bar input{flex:1;margin:0;height:48px}
+.chat-bar button{width:auto;padding:0 20px;height:48px;white-space:nowrap}
+.cuid-hero{background:linear-gradient(145deg,var(--p),var(--pd));color:#fff;padding:20px;margin:-24px -20px 20px;border-radius:0 0 20px 20px}
+.cuid-hero-top{display:flex;gap:14px;align-items:center}
+.cuid-avatar{width:72px;height:72px;border-radius:50%;border:3px solid rgba(255,255,255,.35);background:var(--pl);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--p)}
+.cuid-avatar img{width:100%;height:100%;object-fit:cover}
+.cuid-hero h1{font-size:18px;font-weight:700;margin:0 0 4px}
+.cuid-hero .meta{font-size:12px;opacity:.9;line-height:1.4}
+.cuid-stars{color:#F9A825;font-size:14px;letter-spacing:1px;margin-top:4px}
+.cuid-badge{display:inline-block;background:rgba(255,255,255,.2);padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;margin-top:6px}
+.menu-topic{display:flex;align-items:center;gap:12px;width:100%;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--bg);margin-bottom:10px;cursor:pointer;text-align:left;font-family:inherit}
+.menu-topic:active{background:var(--pl);border-color:var(--p)}
+.menu-topic .menu-ic{font-size:22px;width:36px;text-align:center;flex-shrink:0}
+.menu-topic b{display:block;font-size:15px;color:var(--t)}
+.menu-topic small{display:block;font-size:12px;color:var(--m);margin-top:2px;line-height:1.35}
+.menu-topic .menu-arr{margin-left:auto;color:var(--m);font-size:20px}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{padding:8px 12px;border:1px solid var(--line);border-radius:999px;font-size:13px;background:var(--bg);cursor:pointer;font-family:inherit}
+.chip.on{background:var(--p);color:#fff;border-color:var(--p)}
+.chip-row input[type=checkbox]{display:none}
+.day-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.day-btn{padding:10px 4px;border:1px solid var(--line);border-radius:10px;font-size:12px;font-weight:600;background:var(--bg);cursor:pointer;font-family:inherit}
+.day-btn.on{background:var(--pl);border-color:var(--p);color:var(--pd)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-box{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.stat-box b{display:block;font-size:20px;color:var(--p)}
+.stat-box small{font-size:12px;color:var(--m)}
+.ponto-log{background:var(--soft);border-radius:12px;padding:12px;font-size:13px;line-height:1.6;margin-top:12px;max-height:180px;overflow-y:auto}
+.ponto-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.ponto-btns button{height:46px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-weight:600;cursor:pointer;font-family:inherit;font-size:13px}
+.ponto-btns button:active{background:var(--pl);border-color:var(--p)}
+.ponto-row{display:grid;grid-template-columns:88px 1fr;gap:8px;align-items:center;margin-bottom:10px}
+.ponto-row label{font-size:12px;font-weight:600;color:var(--m)}
+.obs-balloon{background:#FFF9E6;border:1px solid #F0E0A0;border-radius:14px;padding:14px;margin:12px 0}
+.obs-balloon .lbl{margin-bottom:8px;color:#8B6914}
+.fee-warn{background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:14px;margin-bottom:12px;font-size:13px;color:#991B1B}
+.fee-ok{background:var(--pl);border:1px solid var(--p);border-radius:12px;padding:14px;margin-bottom:12px;font-size:13px;color:var(--pd)}
+.cob-box{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:12px;word-break:break-all;font-size:12px}
+.list-item{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px;background:var(--bg)}
+.list-item b{font-size:14px;display:block}
+.list-item small{font-size:12px;color:var(--m)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:12px}
+.sig-box{border:2px dashed var(--p);border-radius:12px;padding:16px;text-align:center;background:var(--pl);margin-top:12px}
+.sig-box.signed{border-style:solid;background:#E8F5EE}
+</style>
+</head>
+<body>
+<div class="ver-badge">Protótipo Web</div>
+<div id="app">
+
+  <!-- ========== BOAS-VINDAS ========== -->
+  <section class="screen on" id="welcome">
+    <div class="pad">
+      <div class="logo-wrap">
+        <div class="logo">
+          <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        </div>
+        <div class="brand">Idoso Care 24H</div>
+        <p class="brand-sub">Cuidadores de idosos com segurança e confiança</p>
+      </div>
+      <button class="btn btn-p" type="button" onclick="irLogin()">Entrar</button>
+      <button class="btn btn-o" type="button" style="margin-top:12px" onclick="irEscolhaPerfil()">Criar conta</button>
+    </div>
+  </section>
+
+  <!-- ========== LOGIN ========== -->
+  <section class="screen" id="login">
+    <div class="topbar">
+      <button type="button" onclick="irWelcome()">←</button>
+      <h2>Entrar</h2>
+    </div>
+    <div class="pad">
+      <label class="lbl" for="email">E-mail</label>
+      <input class="inp" id="email" type="email" placeholder="seu@email.com" autocomplete="email"/>
+
+      <label class="lbl" for="senha">Senha</label>
+      <input class="inp" id="senha" type="password" placeholder="Sua senha" autocomplete="current-password"/>
+
+      <div class="link-row">
+        <span></span>
+        <a href="#" onclick="toast('Recuperação por e-mail');return false">Esqueceu a senha?</a>
+      </div>
+
+      <button class="btn btn-p" type="button" onclick="entrar()">Entrar</button>
+
+      <button class="btn btn-g" type="button" style="margin-top:10px" onclick="irFamiliaPainel()">Demo: área do contratante</button>
+
+      <p class="register-line">
+        Não tem conta?<br/>
+        <a href="#" onclick="irEscolhaPerfil();return false" style="display:inline-block;margin-top:8px">Criar conta — escolher perfil</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ========== ESCOLHA PERFIL ========== -->
+  <section class="screen" id="escolha-perfil">
+    <div class="topbar">
+      <button type="button" onclick="irLogin()">←</button>
+      <h2>Criar conta</h2>
+    </div>
+    <div class="pad">
+      <h1 class="h1">Como você vai usar?</h1>
+      <p class="hint">Escolha uma opção para continuar o cadastro.</p>
+
+      <button type="button" class="role-card" onclick="escolherPerfil('caregiver')">
+        <span class="ic">🩺</span>
+        <div>
+          <b>Sou Cuidador</b>
+          <small>Ofereço plantões e cuidados profissionais</small>
+        </div>
+      </button>
+
+      <button type="button" class="role-card" onclick="escolherPerfil('family')">
+        <span class="ic">👨‍👩‍👧</span>
+        <div>
+          <b>Preciso de Cuidador</b>
+          <small>Sou familiar ou responsável por um idoso</small>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <!-- ========== CRIAR CONTA (email + senha) ========== -->
+  <section class="screen" id="criar-conta">
+    <div class="topbar">
+      <button type="button" onclick="irEscolhaPerfil()">←</button>
+      <h2 id="criar-conta-titulo">Criar conta</h2>
+    </div>
+    <div class="pad">
+      <p class="hint" id="criar-conta-sub">E-mail e senha para acessar o app.</p>
+      <label class="lbl">Nome completo</label>
+      <input class="inp" id="acc-nome" placeholder="Seu nome"/>
+      <label class="lbl">E-mail</label>
+      <input class="inp" id="acc-email" type="email" placeholder="seu@email.com"/>
+      <label class="lbl">Criar senha (mín. 6)</label>
+      <input class="inp" id="acc-senha" type="password" placeholder="Senha"/>
+      <label class="lbl">Repetir senha</label>
+      <input class="inp" id="acc-senha2" type="password" placeholder="Repita a senha"/>
+      <button class="btn btn-p" type="button" style="margin-top:8px" onclick="salvarConta()">Criar conta e continuar</button>
+    </div>
+  </section>
+
+  <!-- ========== CUIDADOR ETAPA 1 — ENDEREÇO ========== -->
+  <section class="screen" id="cuidador-etapa1">
+    <div class="topbar">
+      <button type="button" onclick="show('criar-conta')">←</button>
+      <h2>Cadastro Cuidador</h2>
+    </div>
+    <div class="pad">
+      <p class="step">Etapa 1 de 3 — Endereço</p>
+      <div class="progress"><i class="done"></i><i></i><i></i></div>
+      <h1 class="h1">Onde você atende?</h1>
+      <p class="hint">Digite o CEP (ex.: <strong>39400-000</strong>) — rua, bairro, cidade e UF preenchem sozinhos.</p>
+
+      <label class="lbl">CEP</label>
+      <div class="row2" style="margin-bottom:14px">
+        <input class="inp" id="cad-cep" placeholder="39400-000" maxlength="9" style="margin:0" oninput="maskCep(this)" onblur="buscarCep('cad')"/>
+        <button class="btn btn-o" type="button" style="height:50px;margin:0" onclick="buscarCep('cad')">Buscar CEP</button>
+      </div>
+      <label class="lbl">Rua / logradouro</label>
+      <input class="inp" id="cad-rua" placeholder="Preenchido pelo CEP"/>
+      <div class="row2">
+        <div><label class="lbl">Número</label><input class="inp" id="cad-num" placeholder="123" style="margin:0"/></div>
+        <div><label class="lbl">Complemento</label><input class="inp" id="cad-comp" placeholder="Apto, bloco..." style="margin:0"/></div>
+      </div>
+      <label class="lbl" style="margin-top:14px">Bairro</label>
+      <input class="inp" id="cad-bairro" placeholder="Bairro"/>
+      <div class="row2" style="margin-top:14px">
+        <div><label class="lbl">Cidade</label><input class="inp" id="cad-cidade" placeholder="Cidade" style="margin:0"/></div>
+        <div><label class="lbl">UF</label><input class="inp" id="cad-uf" placeholder="MG" maxlength="2" style="margin:0"/></div>
+      </div>
+      <button class="btn btn-p" type="button" style="margin-top:16px" onclick="irCuidadorEtapa2()">Continuar — Sobre você</button>
+    </div>
+  </section>
+
+  <!-- ========== CUIDADOR ETAPA 2 — SOBRE / ESPECIALIDADES ========== -->
+  <section class="screen" id="cuidador-etapa2">
+    <div class="topbar">
+      <button type="button" onclick="show('cuidador-etapa1')">←</button>
+      <h2>Cadastro Cuidador</h2>
+    </div>
+    <div class="pad">
+      <p class="step">Etapa 2 de 3 — Perfil</p>
+      <div class="progress"><i class="done"></i><i class="done"></i><i></i></div>
+      <h1 class="h1">Sobre você</h1>
+      <p class="hint">Conte sua experiência e especialidades (Alzheimer, Parkinson, medicação…).</p>
+
+      <label class="lbl">Sobre mim</label>
+      <textarea class="inp" id="cuid-bio" rows="4" style="height:auto;padding:12px 14px" placeholder="Ex.: 8 anos de experiência, plantões diurnos e 12x36…"></textarea>
+
+      <label class="lbl">Foto de perfil (opcional)</label>
+      <div class="photo-pick" id="etapa2-foto-box" style="width:100px;height:100px;margin:0 0 16px;position:relative" onclick="document.getElementById('etapa2-foto-inp').click()">
+        <img id="etapa2-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
+        <span id="etapa2-foto-txt">📷 Toque para enviar foto</span>
+        <input type="file" id="etapa2-foto-inp" accept="image/*" capture="user" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilEtapa2(this)"/>
+      </div>
+
+      <label class="lbl">Especialidades</label>
+      <div class="row2" style="margin-bottom:8px">
+        <input class="inp" id="cuid-spec" placeholder="Ex.: Alzheimer" style="margin:0"/>
+        <button class="btn btn-o" type="button" style="height:50px;margin:0" onclick="addEspecialidade()">+ Add</button>
+      </div>
+      <div id="cuid-spec-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
+
+      <button class="btn btn-p" type="button" onclick="irCuidadorEtapa3()">Continuar — Valores</button>
+    </div>
+  </section>
+
+  <!-- ========== CUIDADOR ETAPA 3 — VALORES ========== -->
+  <section class="screen" id="cuidador-etapa3">
+    <div class="topbar">
+      <button type="button" onclick="show('cuidador-etapa2')">←</button>
+      <h2>Cadastro Cuidador</h2>
+    </div>
+    <div class="pad">
+      <p class="step">Etapa 3 de 3 — Valores</p>
+      <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i></div>
+      <h1 class="h1">Quanto você cobra?</h1>
+      <p class="hint">Famílias verão estes valores no seu perfil após aprovação.</p>
+
+      <label class="lbl">Valor por hora (R$)</label>
+      <input class="inp" id="cuid-hour" type="number" step="0.01" placeholder="Ex.: 35"/>
+
+      <label class="lbl">Valor por dia / diária (R$)</label>
+      <input class="inp" id="cuid-daily" type="number" step="0.01" placeholder="Ex.: 220"/>
+
+      <div class="note" style="margin-top:8px">Seu perfil será analisado pela equipe antes de aparecer para famílias.</div>
+
+      <button class="btn btn-p" type="button" style="margin-top:16px" onclick="finalizarCuidador()">Enviar cadastro — abrir meu painel</button>
+    </div>
+  </section>
+
+  <!-- ========== CADASTRO FAMÍLIA ========== -->
+  <section class="screen" id="cadastro-familia">
+    <div class="topbar">
+      <button type="button" onclick="irEscolhaPerfil()">←</button>
+      <h2>Cadastro Família</h2>
+    </div>
+    <div class="pad">
+      <p class="step">Responsável + idoso</p>
+      <h1 class="h1">Preciso de cuidador</h1>
+      <p class="hint">Cadastro para família que busca cuidador para um familiar idoso.</p>
+
+      <label class="lbl">Seu nome completo</label>
+      <input class="inp" id="fam-nome" placeholder="Nome do responsável"/>
+
+      <label class="lbl">E-mail</label>
+      <input class="inp" id="fam-email" type="email" placeholder="seu@email.com" autocomplete="email"/>
+
+      <label class="lbl">Criar senha (mín. 6)</label>
+      <input class="inp" id="fam-senha" type="password" placeholder="Criar senha" autocomplete="new-password"/>
+
+      <label class="lbl">Repetir senha</label>
+      <input class="inp" id="fam-senha2" type="password" placeholder="Repita a senha" autocomplete="new-password"/>
+
+      <label class="lbl">Telefone</label>
+      <input class="inp" id="fam-tel" placeholder="(00) 00000-0000"/>
+
+      <label class="lbl">CEP</label>
+      <div class="row2" style="margin-bottom:14px">
+        <input class="inp" id="fam-cep" placeholder="00000-000" maxlength="9" style="margin:0" oninput="maskCep(this)" onblur="buscarCep('fam')"/>
+        <button class="btn btn-o" type="button" style="height:50px;margin:0" onclick="buscarCep('fam')">Buscar CEP</button>
+      </div>
+      <label class="lbl">Rua / logradouro</label>
+      <input class="inp" id="fam-rua" placeholder="Preenchido pelo CEP"/>
+      <div class="row2">
+        <div><label class="lbl">Número</label><input class="inp" id="fam-num" placeholder="123" style="margin:0"/></div>
+        <div><label class="lbl">Complemento</label><input class="inp" id="fam-comp" placeholder="Apto, bloco..." style="margin:0"/></div>
+      </div>
+      <label class="lbl" style="margin-top:14px">Bairro</label>
+      <input class="inp" id="fam-bairro" placeholder="Bairro"/>
+      <div class="row2" style="margin-top:14px">
+        <div><label class="lbl">Cidade</label><input class="inp" id="fam-cidade" placeholder="Cidade" style="margin:0"/></div>
+        <div><label class="lbl">UF</label><input class="inp" id="fam-uf" placeholder="MG" maxlength="2" style="margin:0"/></div>
+      </div>
+
+      <label class="lbl" style="margin-top:8px">Nome do idoso (opcional)</label>
+      <input class="inp" id="fam-idoso" placeholder="Ex.: Maria, 82 anos"/>
+
+      <label class="lbl">Necessidades de cuidado</label>
+      <input class="inp" id="fam-necessidades" placeholder="Ex.: Alzheimer, medicação, banho..."/>
+
+      <button class="btn btn-s" type="button" style="margin-top:8px" onclick="finalizarFamilia()">Concluir cadastro — Família</button>
+    </div>
+  </section>
+
+  <!-- ========== CADASTRO ========== -->
+  <section class="screen" id="cadastro">
+    <div class="topbar">
+      <button type="button" onclick="irEscolhaPerfil()">←</button>
+      <h2>Cadastro Cuidador</h2>
+    </div>
+    <div class="pad">
+      <p class="step">Etapa 1 de 2</p>
+      <div class="progress"><i class="done"></i><i></i></div>
+      <h1 class="h1">Seus dados</h1>
+      <p class="hint">Preencha suas informações pessoais. Todos os campos são obrigatórios.</p>
+
+      <label class="photo-pick" id="fotoBox">
+        <img id="fotoPreview" alt="" style="display:none"/>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2E8B57" stroke-width="2" id="fotoIcon"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span id="fotoTxt">Toque para<br/>foto do perfil</span>
+        <input type="file" accept="image/*" capture="environment" onchange="fotoPerfil(this)"/>
+      </label>
+
+      <label class="lbl">Nome completo</label>
+      <input class="inp" id="nome" placeholder="Nome como no documento"/>
+
+      <label class="lbl">E-mail</label>
+      <input class="inp" id="cad-email" type="email" placeholder="seu@email.com" autocomplete="email"/>
+
+      <label class="lbl">Criar senha (mín. 6)</label>
+      <input class="inp" id="cad-senha" type="password" placeholder="Criar senha" autocomplete="new-password"/>
+
+      <label class="lbl">Repetir senha</label>
+      <input class="inp" id="cad-senha2" type="password" placeholder="Repita a senha" autocomplete="new-password"/>
+
+      <label class="lbl">CEP</label>
+      <div class="row2" style="margin-bottom:14px">
+        <input class="inp" id="cad-cep" placeholder="00000-000" maxlength="9" style="margin:0" oninput="maskCep(this)" onblur="buscarCep('cad')"/>
+        <button class="btn btn-o" type="button" style="height:50px;margin:0" onclick="buscarCep('cad')">Buscar CEP</button>
+      </div>
+      <label class="lbl">Rua / logradouro</label>
+      <input class="inp" id="cad-rua" placeholder="Preenchido pelo CEP"/>
+      <div class="row2">
+        <div><label class="lbl">Número</label><input class="inp" id="cad-num" placeholder="123" style="margin:0"/></div>
+        <div><label class="lbl">Complemento</label><input class="inp" id="cad-comp" placeholder="Apto, bloco..." style="margin:0"/></div>
+      </div>
+      <label class="lbl" style="margin-top:14px">Bairro</label>
+      <input class="inp" id="cad-bairro" placeholder="Bairro"/>
+      <div class="row2" style="margin-top:14px">
+        <div><label class="lbl">Cidade</label><input class="inp" id="cad-cidade" placeholder="Cidade" style="margin:0"/></div>
+        <div><label class="lbl">UF</label><input class="inp" id="cad-uf" placeholder="MG" maxlength="2" style="margin:0"/></div>
+      </div>
+
+      <div class="row2" style="margin-top:14px">
+        <div>
+          <label class="lbl">Data de nascimento</label>
+          <input class="inp" id="nasc" type="date" style="margin:0"/>
+        </div>
+        <div>
+          <label class="lbl">Sexo</label>
+          <select class="sel" id="sexo" style="margin:0">
+            <option value="">Selecione</option>
+            <option>Feminino</option>
+            <option>Masculino</option>
+            <option>Outro</option>
+            <option>Prefiro não informar</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row2" style="margin-top:14px">
+        <div>
+          <label class="lbl">CPF</label>
+          <input class="inp" id="cpf" placeholder="000.000.000-00" style="margin:0"/>
+        </div>
+        <div>
+          <label class="lbl">RG</label>
+          <input class="inp" id="rg" placeholder="Número do RG" style="margin:0"/>
+        </div>
+      </div>
+
+      <label class="lbl" style="margin-top:14px">Grau de formação</label>
+      <select class="sel" id="formacao">
+        <option value="">Selecione</option>
+        <option>Ensino Fundamental</option>
+        <option>Ensino Médio</option>
+        <option>Técnico em Enfermagem</option>
+        <option>Curso de Cuidador de Idosos</option>
+        <option>Graduação — Enfermagem</option>
+        <option>Graduação — Outra área</option>
+        <option>Pós-graduação</option>
+      </select>
+
+      <button class="btn btn-p" type="button" style="margin-top:8px" onclick="irDocumentos()">Continuar — Anexar documentos</button>
+    </div>
+  </section>
+
+  <!-- ========== DOCUMENTOS ========== -->
+  <section class="screen" id="documentos">
+    <div class="topbar">
+      <button type="button" onclick="voltarDeDocumentos()">←</button>
+      <h2>Documentos</h2>
+    </div>
+    <div class="pad">
+      <p class="step">Etapa 2 de 2</p>
+      <div class="progress"><i class="done"></i><i class="done"></i></div>
+      <h1 class="h1">Anexar documentos</h1>
+      <p class="hint">Envie fotos legíveis de cada documento. Exigência de agências de cuidadores de idosos.</p>
+
+      <div class="note">
+        Aceito: foto da câmera ou galeria. Formatos JPG e PNG. Documento inteiro visível, sem cortes.<br><br>
+        <strong>Importante:</strong> após aprovação, famílias poderão ver todas estas fotos e seu currículo <em>antes</em> de dar match — para pesquisar com segurança.
+      </div>
+
+      <div class="doc" data-doc="rg">
+        <div class="ic">🪪</div>
+        <div><b>RG — Registro Geral</b><small>Frente e verso (se aplicável)</small></div>
+        <span class="ok">✓</span>
+        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+      </div>
+
+      <div class="doc" data-doc="cpf">
+        <div class="ic">📋</div>
+        <div><b>CPF</b><small>Documento ou cartão do CPF</small></div>
+        <span class="ok">✓</span>
+        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+      </div>
+
+      <div class="doc" data-doc="comprovante">
+        <div class="ic">🏠</div>
+        <div><b>Comprovante de endereço</b><small>Conta de luz, água ou telefone (até 90 dias)</small></div>
+        <span class="ok">✓</span>
+        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+      </div>
+
+      <div class="doc" data-doc="ctps">
+        <div class="ic">💼</div>
+        <div><b>Carteira de Trabalho</b><small>Página de identificação e contrato atual</small></div>
+        <span class="ok">✓</span>
+        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+      </div>
+
+      <div class="doc" data-doc="diploma">
+        <div class="ic">🎓</div>
+        <div><b>Diploma / Certificado de formação</b><small>Curso de cuidador, técnico ou graduação</small></div>
+        <span class="ok">✓</span>
+        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+      </div>
+
+      <div class="doc" data-doc="antecedentes">
+        <div class="ic">🛡️</div>
+        <div><b>Certidão de antecedentes criminais</b><small>Emitida nos últimos 90 dias</small></div>
+        <span class="ok">✓</span>
+        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+      </div>
+
+      <div class="doc" data-doc="curso">
+        <div class="ic">📜</div>
+        <div><b>Certificado — Curso de Cuidador de Idosos</b><small>Primeiros socorros, medicação, etc.</small></div>
+        <span class="ok">✓</span>
+        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+      </div>
+
+      <div class="doc" data-doc="inss">
+        <div class="ic">🔢</div>
+        <div><b>Número do INSS / PIS</b><small>Cartão ou extrato</small></div>
+        <span class="ok">✓</span>
+        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+      </div>
+
+      <div class="doc" data-doc="titulo">
+        <div class="ic">🗳️</div>
+        <div><b>Título de eleitor</b><small>Opcional, se disponível</small></div>
+        <span class="ok">✓</span>
+        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+      </div>
+
+      <div class="doc" data-doc="reservista">
+        <div class="ic">⚔️</div>
+        <div><b>Certificado de reservista</b><small>Quando aplicável</small></div>
+        <span class="ok">✓</span>
+        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+      </div>
+
+      <div class="doc" data-doc="referencia">
+        <div class="ic">📞</div>
+        <div><b>Comprovante de experiência / referência</b><small>Declaração ou contracheque anterior</small></div>
+        <span class="ok">✓</span>
+        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+      </div>
+
+      <button class="btn btn-p" type="button" style="margin-top:16px" onclick="finalizar()">Enviar cadastro para análise</button>
+    </div>
+  </section>
+
+  <!-- ========== FAMÍLIA PESQUISA CUIDADOR (antes do match) ========== -->
+  <section class="screen" id="pesquisa">
+    <div class="topbar">
+      <button type="button" onclick="voltarDePesquisa()">←</button>
+      <h2>Perfil do cuidador</h2>
+    </div>
+    <div class="pad">
+      <div style="text-align:center;margin-bottom:16px">
+        <div class="photo-pick has" style="width:90px;height:90px;margin:0 auto 10px">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Crect fill='%232E8B57' width='90' height='90'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='28' font-family='sans-serif'%3EMS%3C/text%3E%3C/svg%3E" alt=""/>
+        </div>
+        <h1 class="h1" style="font-size:20px">Maria Silva <span class="badge-v">✓ Verificado</span></h1>
+        <p style="color:var(--m);font-size:14px">★★★★★ 4.9 · São Paulo, SP</p>
+      </div>
+
+      <div class="note" style="margin-bottom:16px">
+        Solicite o <strong>Currículo Lates</strong> com fotos dos documentos e classificação automática antes do match.
+      </div>
+
+      <label class="lbl">ID do cuidador (Firebase UID)</label>
+      <input class="inp" id="pesquisa-cuidador-id" placeholder="Cole o UID ou use demo_caregiver_maria"/>
+
+      <button class="btn btn-o" type="button" style="margin-bottom:12px" onclick="solicitarCurriculoContratante()">Solicitar currículo Lates</button>
+      <div class="note" id="pesquisa-curriculo-link" style="display:none;margin-bottom:16px;font-size:12px;word-break:break-all"></div>
+
+      <p class="step">Prévia do perfil</p>
+      <div class="cv">
+        <p><strong>Formação:</strong> Curso de Cuidador de Idosos + Primeiros Socorros</p>
+        <p><strong>Experiência:</strong> 8 anos · Alzheimer, Parkinson, medicação</p>
+        <p><strong>Sobre:</strong> Profissional dedicada, referências disponíveis. Plantões diurnos e 12x36.</p>
+        <p><strong>Valor:</strong> R$ 220/diária</p>
+      </div>
+
+      <p class="step">Documentos verificados — toque para ampliar</p>
+      <div class="gallery" id="galeria">
+        <div class="gal-item" onclick="verFoto('RG')"><div class="ph">📄<br/>RG</div></div>
+        <div class="gal-item" onclick="verFoto('CPF')"><div class="ph">📄<br/>CPF</div></div>
+        <div class="gal-item" onclick="verFoto('Comprovante')"><div class="ph">📄<br/>Endereço</div></div>
+        <div class="gal-item" onclick="verFoto('CTPS')"><div class="ph">📄<br/>CTPS</div></div>
+        <div class="gal-item" onclick="verFoto('Antecedentes')"><div class="ph">📄<br/>Antecedentes</div></div>
+        <div class="gal-item" onclick="verFoto('Diploma')"><div class="ph">📄<br/>Diploma</div></div>
+        <div class="gal-item" onclick="verFoto('Curso')"><div class="ph">📄<br/>Curso</div></div>
+        <div class="gal-item" onclick="verFoto('Referência')"><div class="ph">📄<br/>Experiência</div></div>
+      </div>
+
+      <button class="btn btn-p" type="button" onclick="solicitarMatch()">Dar match / Solicitar contratação</button>
+      <p class="hint" style="margin-top:12px;text-align:center;font-size:12px">Revise currículo e todas as fotos acima antes de confirmar.</p>
+    </div>
+  </section>
+
+  <!-- ========== PAINEL CONTRATANTE / FAMÍLIA ========== -->
+  <section class="screen" id="familia-painel">
+    <div class="topbar">
+      <button type="button" onclick="irLogin()">←</button>
+      <h2>Área do contratante</h2>
+    </div>
+    <div class="pad" style="padding-top:0">
+      <div class="cuid-hero">
+        <div class="cuid-hero-top">
+          <div class="cuid-avatar">👨‍👩‍👧</div>
+          <div>
+            <h1 id="fam-nome-display">Contratante</h1>
+            <div class="meta" id="fam-sub-display">Família / responsável pelo idoso</div>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="menu-topic" onclick="show('familia-proximos')">
+        <span class="menu-ic">📍</span>
+        <div><b>Cuidadores próximos</b><small>Disponíveis hoje — cruza com plantão oferecido</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('familia-urgente')">
+        <span class="menu-ic">🔴</span>
+        <div><b>Plantão urgente</b><small>Publicar necessidade imediata — ofertas cruzadas</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('familia-ofertas')">
+        <span class="menu-ic">📋</span>
+        <div><b>Minhas ofertas de serviço</b><small>Diária, semanal, quinzenal — propostas dos cuidadores</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('familia-ponto')">
+        <span class="menu-ic">🕐</span>
+        <div><b>Cartão de ponto</b><small>Autenticar diária do cuidador após expediente</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('familia-diario')">
+        <span class="menu-ic">📝</span>
+        <div><b>Assinar diário do idoso</b><small>Sumário diário do cuidador — ciência da família</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('familia-pagamentos')">
+        <span class="menu-ic">💳</span>
+        <div><b>Pagamentos e cuidados anteriores</b><small>Histórico financeiro e plantões concluídos</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('familia-avaliar')">
+        <span class="menu-ic">⭐</span>
+        <div><b>Avaliar cuidador</b><small>Nota e comentário após o plantão</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('familia-recomendacao')">
+        <span class="menu-ic">✉️</span>
+        <div><b>Carta de recomendação</b><small>Solicitar carta formal ao cuidador</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('familia-curriculo')">
+        <span class="menu-ic">📄</span>
+        <div><b>Solicitar currículo Lates</b><small>Documentos verificados + classificação</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('familia-irregularidade')">
+        <span class="menu-ic">⚠️</span>
+        <div><b>Notificar irregularidades</b><small>Relato de conduta inadequada do cuidador</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('familia-contato')">
+        <span class="menu-ic">💬</span>
+        <div><b>Fale conosco</b><small>Suporte Idoso Care 24H</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" style="border-color:#fecaca;background:#fef2f2" onclick="show('familia-denunciar')">
+        <span class="menu-ic">🆘</span>
+        <div><b>Denunciar cuidador</b><small>Canal formal + órgãos de proteção</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="screen" id="familia-proximos">
+    <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Cuidadores próximos</h2></div>
+    <div class="pad">
+      <p class="hint">Cuidadores com <strong>plantão hoje</strong> ativo — cruzamento com disponibilidade publicada.</p>
+      <div id="fam-proximos-list"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="familia-urgente">
+    <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Plantão urgente</h2></div>
+    <div class="pad">
+      <p class="hint">Publica oferta urgente — aparece para cuidadores disponíveis hoje.</p>
+      <label class="lbl">Tipo de cuidado / idoso</label>
+      <input class="inp" id="urg-elderly" placeholder="Ex.: Idoso 82a, Alzheimer leve"/>
+      <label class="lbl">Necessidades</label>
+      <input class="inp" id="urg-needs" placeholder="Medicação, banho, mobilidade…"/>
+      <label class="lbl">Valor diária (R$)</label>
+      <input class="inp" id="urg-valor" type="number" placeholder="Ex.: 250"/>
+      <label class="lbl">Escala</label>
+      <div class="chip-row" id="urg-schedule">
+        <button type="button" class="chip on" data-v="urgente_hoje" onclick="selChip(this,'urg-schedule')">Urgente hoje</button>
+        <button type="button" class="chip" data-v="diaria" onclick="selChip(this,'urg-schedule')">Diária</button>
+        <button type="button" class="chip" data-v="semanal" onclick="selChip(this,'urg-schedule')">Semanal</button>
+        <button type="button" class="chip" data-v="quinzenal" onclick="selChip(this,'urg-schedule')">Quinzenal</button>
+      </div>
+      <button class="btn btn-p" type="button" onclick="publicarOfertaUrgente()">Publicar plantão urgente</button>
+    </div>
+  </section>
+
+  <section class="screen" id="familia-ofertas">
+    <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Minhas ofertas</h2></div>
+    <div class="pad">
+      <p class="hint">Propostas dos cuidadores: aceitar, recusar ou negociar.</p>
+      <div id="fam-ofertas-list"></div>
+      <button class="btn btn-o" type="button" style="margin-top:12px" onclick="show('familia-urgente')">+ Nova oferta de serviço</button>
+    </div>
+  </section>
+
+  <section class="screen" id="familia-ponto">
+    <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Cartão de ponto</h2></div>
+    <div class="pad">
+      <p class="hint">Confirme entrada, intervalo e saída registrados pelo cuidador após o expediente.</p>
+      <div id="fam-ponto-list"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="familia-diario">
+    <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Diário do idoso</h2></div>
+    <div class="pad">
+      <p class="hint">Leia o sumário do cuidador e assine eletronicamente.</p>
+      <div id="fam-diario-list"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="familia-pagamentos">
+    <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Pagamentos</h2></div>
+    <div class="pad">
+      <p class="step">Cuidados anteriores</p>
+      <div id="fam-historico-list"></div>
+      <p class="step" style="margin-top:16px">Pagamentos</p>
+      <div id="fam-pagamentos-list"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="familia-avaliar">
+    <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Avaliar cuidador</h2></div>
+    <div class="pad">
+      <label class="lbl">ID do cuidador</label>
+      <input class="inp" id="avaliar-cuid-id" placeholder="UID do cuidador"/>
+      <label class="lbl">Nota (1 a 5)</label>
+      <input class="inp" id="avaliar-nota" type="number" min="1" max="5" placeholder="5"/>
+      <label class="lbl">Comentário</label>
+      <textarea class="inp" id="avaliar-texto" rows="3" style="height:auto;padding:12px"></textarea>
+      <button class="btn btn-p" type="button" onclick="enviarAvaliacaoFamilia()">Enviar avaliação</button>
+    </div>
+  </section>
+
+  <section class="screen" id="familia-recomendacao">
+    <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Carta de recomendação</h2></div>
+    <div class="pad">
+      <label class="lbl">ID do cuidador</label>
+      <input class="inp" id="rec-cuid-id" placeholder="UID do cuidador"/>
+      <label class="lbl">Mensagem</label>
+      <textarea class="inp" id="rec-texto" rows="4" style="height:auto;padding:12px" placeholder="Descreva o serviço prestado…"></textarea>
+      <button class="btn btn-p" type="button" onclick="solicitarCartaFamilia()">Solicitar carta de recomendação</button>
+    </div>
+  </section>
+
+  <section class="screen" id="familia-curriculo">
+    <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Solicitar currículo</h2></div>
+    <div class="pad">
+      <label class="lbl">ID do cuidador</label>
+      <input class="inp" id="fam-curriculo-cuid-id" placeholder="UID do cuidador"/>
+      <button class="btn btn-p" type="button" onclick="solicitarCurriculoFamilia()">Gerar link Currículo Lates</button>
+      <div class="note" id="fam-curriculo-link" style="display:none;margin-top:12px;font-size:12px;word-break:break-all"></div>
+      <button class="btn btn-o" type="button" style="margin-top:12px" onclick="irPesquisaDe('familia-curriculo')">Ver perfil completo</button>
+    </div>
+  </section>
+
+  <section class="screen" id="familia-irregularidade">
+    <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Notificar irregularidades</h2></div>
+    <div class="pad">
+      <label class="lbl">ID do cuidador</label>
+      <input class="inp" id="irr-cuid-id" placeholder="UID (se souber)"/>
+      <label class="lbl">Descrição</label>
+      <textarea class="inp" id="irr-texto" rows="4" style="height:auto;padding:12px"></textarea>
+      <button class="btn btn-p" type="button" onclick="enviarIrregularidade()">Enviar notificação</button>
+    </div>
+  </section>
+
+  <section class="screen" id="familia-contato">
+    <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Fale conosco</h2></div>
+    <div class="pad">
+      <label class="lbl">Assunto</label>
+      <input class="inp" id="contato-assunto" placeholder="Ex.: Dúvida sobre pagamento"/>
+      <label class="lbl">Mensagem</label>
+      <textarea class="inp" id="contato-msg" rows="4" style="height:auto;padding:12px"></textarea>
+      <button class="btn btn-p" type="button" onclick="enviarFaleConosco()">Enviar</button>
+    </div>
+  </section>
+
+  <section class="screen" id="familia-denunciar">
+    <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Denunciar cuidador</h2></div>
+    <div class="pad">
+      <label class="lbl">ID do cuidador</label>
+      <input class="inp" id="den-cuid-id" placeholder="UID do cuidador"/>
+      <label class="lbl">Motivo</label>
+      <textarea class="inp" id="den-texto" rows="4" style="height:auto;padding:12px"></textarea>
+      <button class="btn btn-p" type="button" style="background:var(--err)" onclick="denunciarCuidadorFamilia()">Registrar denúncia</button>
+      <div class="note" style="margin-top:12px">Em risco imediato: ligue <strong>190</strong> ou <strong>100</strong>.</div>
+    </div>
+  </section>
+
+  <!-- ========== PIX — liberar chat (R$ 0,50) ========== -->
+  <section class="screen" id="pix-pay">
+    <div class="topbar">
+      <button type="button" onclick="voltarDePesquisa()">←</button>
+      <h2>PIX para liberar chat</h2>
+    </div>
+    <div class="pad">
+      <p class="hint">Pague R$ 0,50 via PIX para iniciar a conversa com o cuidador após o match.</p>
+      <div class="pix-box">
+        <canvas id="pixQrCanvas"></canvas>
+        <p style="font-size:13px;color:var(--m);margin-top:8px"><span>Beneficiário</span>: <strong id="pixName">Eder Lucas Santos Tiago</strong></p>
+        <p style="font-size:13px;color:var(--m)"><span>Chave PIX (telefone)</span>: <strong id="pixKey">11968362005</strong></p>
+        <p style="font-size:15px;font-weight:700;color:var(--p);margin-top:8px"><span>Valor</span>: <span id="pixAmount">R$ 0,50</span></p>
+      </div>
+      <button class="btn btn-o" type="button" onclick="copiarPixChave()">Copiar chave PIX</button>
+      <button class="btn btn-g" type="button" style="margin-top:8px" onclick="copiarPixCodigo()">Copiar código PIX</button>
+      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="confirmarPix()">Já paguei — liberar chat</button>
+    </div>
+  </section>
+
+  <!-- ========== CHAT DO MATCH ========== -->
+  <section class="screen" id="chat-match">
+    <div class="topbar">
+      <button type="button" onclick="voltarDePesquisa()">←</button>
+      <h2>Chat do match</h2>
+    </div>
+    <div class="pad" style="display:flex;flex-direction:column;min-height:70vh">
+      <div class="note" id="chatLockNote">Chat bloqueado — conclua o pagamento PIX.</div>
+      <div class="chat-msgs" id="chatMsgs"></div>
+      <div class="chat-bar">
+        <input class="inp" id="chatInput" placeholder="Digite sua mensagem..." style="margin:0"/>
+        <button class="btn btn-p" type="button" onclick="enviarChat()">Enviar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PAINEL CUIDADOR — TELA PRINCIPAL ========== -->
+  <section class="screen" id="cuidador-painel">
+    <div class="topbar">
+      <button type="button" onclick="irLogin()">←</button>
+      <h2>Área do cuidador</h2>
+    </div>
+    <div class="pad" style="padding-top:0">
+      <div class="cuid-hero">
+        <div class="cuid-hero-top">
+          <div class="cuid-avatar" id="cuid-avatar">👤</div>
+          <div>
+            <h1 id="cuid-nome-display">Cuidador</h1>
+            <div class="meta">CPF: <span id="cuid-cpf-display">—</span></div>
+            <div class="cuid-stars" id="cuid-stars-display">★★★★★ 4,9</div>
+            <span class="cuid-badge" id="cuid-class-display">Classificação: —</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="menu-topic" onclick="show('cuidador-curriculo')">
+        <span class="menu-ic">📋</span>
+        <div><b>Currículo Lates</b><small>Dados, certificados e formação — enviar ao contratante</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('cuidador-recomendacoes')">
+        <span class="menu-ic">⭐</span>
+        <div><b>Recomendações</b><small>Avaliações positivas — relatório para o contratante</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('cuidador-agenda')">
+        <span class="menu-ic">📅</span>
+        <div><b>Disponibilizar agenda</b><small>Dias, horários 07h/19h, escalas 4–48h, viagem e raio km</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('cuidador-ponto')">
+        <span class="menu-ic">🕐</span>
+        <div><b>Cartão de ponto</b><small>Entrada, saída e intervalo — confirmação do patrão</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('cuidador-diario')">
+        <span class="menu-ic">📝</span>
+        <div><b>Diário do paciente</b><small>Sumário diário, assinatura e repasse ao próximo cuidador</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('cuidador-ofertas')">
+        <span class="menu-ic">🔔</span>
+        <div><b>Ofertas de serviço</b><small>Plantões urgentes hoje e outras oportunidades</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('cuidador-plantao-hoje')">
+        <span class="menu-ic">✅</span>
+        <div><b>Oferecer plantão hoje</b><small>Aparece em “cuidadores disponíveis próximos” da família</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('cuidador-faturamento')">
+        <span class="menu-ic">💰</span>
+        <div><b>Faturamento</b><small>Quanto você faturou e histórico financeiro</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('cuidador-taxa')">
+        <span class="menu-ic">📊</span>
+        <div><b>Taxa do app (7%)</b><small>Manutenção da plataforma sobre serviços adquiridos</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('cuidador-historico')">
+        <span class="menu-ic">📁</span>
+        <div><b>Trabalhos anteriores</b><small>Registro de plantões e serviços prestados</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" style="border-color:#fecaca;background:#fef2f2" onclick="show('cuidador-denuncia')">
+        <span class="menu-ic">🆘</span>
+        <div><b>Denunciar maus-tratos</b><small>Disque Denúncia e Conselho da Pessoa Idosa</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ========== CURRÍCULO LATES ========== -->
+  <section class="screen" id="cuidador-curriculo">
+    <div class="topbar">
+      <button type="button" onclick="show('cuidador-painel')">←</button>
+      <h2>Currículo Lates</h2>
+    </div>
+    <div class="pad">
+      <p class="hint">Currículo validado pelo app: formação, antecedentes e cursos geram a classificação automática.</p>
+      <label class="lbl">Foto de perfil</label>
+      <div class="photo-pick" id="cuid-foto-box" style="width:100px;height:100px;margin:0 0 16px;position:relative" onclick="document.getElementById('cuid-foto-inp').click()">
+        <img id="cuid-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
+        <span id="cuid-foto-txt">📷 Toque para enviar foto</span>
+        <input type="file" id="cuid-foto-inp" accept="image/*" capture="environment" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilPainel(this)"/>
+      </div>
+      <label class="lbl">CPF</label>
+      <input class="inp" id="cuid-cpf" placeholder="000.000.000-00" maxlength="14" oninput="maskCpf(this)"/>
+      <div class="cv" id="cuid-curriculo-dados"></div>
+      <div class="note" style="margin-top:12px">
+        <strong>Certificados verificados pelo app</strong><br/>
+        ✓ Antecedentes criminais &nbsp; ✓ Curso cuidador de idosos<br/>
+        ✓ Primeiros socorros &nbsp; ✓ CTPS / documentos
+      </div>
+      <p class="lbl" style="margin-top:14px">Classificação automática</p>
+      <div class="cv" id="cuid-classificacao-box">—</div>
+      <p class="step" style="margin-top:16px">Enviar fotos dos documentos</p>
+      <p class="hint">Cada foto vai para o Firebase Storage e atualiza sua classificação.</p>
+      <div id="cuid-docs-upload"></div>
+      <p class="hint" style="margin-top:8px">Toque em um documento pendente para enviar foto (JPG/PNG).</p>
+      <button class="btn btn-o" type="button" style="margin-top:12px" onclick="abrirDocumentosCompleto('cuidador-curriculo')">Abrir tela completa de documentos</button>
+      <button class="btn btn-s" type="button" style="margin-top:12px" onclick="baixarCurriculoCadastro()">⬇ Baixar meu cadastro (currículo)</button>
+      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="salvarCpfEClassificar()">Salvar CPF e atualizar classificação</button>
+      <div class="note" style="margin-top:12px;font-size:12px" id="cuid-curriculo-link"></div>
+    </div>
+  </section>
+
+  <!-- ========== RECOMENDAÇÕES ========== -->
+  <section class="screen" id="cuidador-recomendacoes">
+    <div class="topbar">
+      <button type="button" onclick="show('cuidador-painel')">←</button>
+      <h2>Recomendações</h2>
+    </div>
+    <div class="pad">
+      <p class="hint">Avaliações positivas dos contratantes. Envie um relatório consolidado.</p>
+      <div id="cuid-recomendacoes-list"></div>
+      <button class="btn btn-p" type="button" style="margin-top:16px" onclick="enviarRelatorioAvaliacoes()">Enviar relatório de avaliações ao contratante</button>
+    </div>
+  </section>
+
+  <!-- ========== AGENDA ========== -->
+  <section class="screen" id="cuidador-agenda">
+    <div class="topbar">
+      <button type="button" onclick="show('cuidador-painel')">←</button>
+      <h2>Disponibilizar agenda</h2>
+    </div>
+    <div class="pad">
+      <p class="hint">Plantão sempre inicia às <strong>07:00</strong> ou <strong>19:00</strong>. Escalas: 4, 6, 8 (comercial), 12, 24 e 48 h.</p>
+      <label class="lbl">Período de visualização</label>
+      <div class="chip-row" id="agenda-periodo">
+        <button type="button" class="chip on" data-v="semana" onclick="selChip(this,'agenda-periodo')">Semana</button>
+        <button type="button" class="chip" data-v="quinzena" onclick="selChip(this,'agenda-periodo')">Quinzena</button>
+        <button type="button" class="chip" data-v="mes" onclick="selChip(this,'agenda-periodo')">Mês</button>
+      </div>
+      <label class="lbl">Dias disponíveis na semana</label>
+      <div class="day-grid" id="agenda-dias">
+        <button type="button" class="day-btn" data-d="seg" onclick="toggleDay(this)">Seg</button>
+        <button type="button" class="day-btn" data-d="ter" onclick="toggleDay(this)">Ter</button>
+        <button type="button" class="day-btn" data-d="qua" onclick="toggleDay(this)">Qua</button>
+        <button type="button" class="day-btn" data-d="qui" onclick="toggleDay(this)">Qui</button>
+        <button type="button" class="day-btn" data-d="sex" onclick="toggleDay(this)">Sex</button>
+        <button type="button" class="day-btn" data-d="sab" onclick="toggleDay(this)">Sáb</button>
+        <button type="button" class="day-btn" data-d="dom" onclick="toggleDay(this)">Dom</button>
+      </div>
+      <label class="lbl">Início do plantão</label>
+      <div class="chip-row" id="agenda-inicio">
+        <button type="button" class="chip on" data-v="07:00" onclick="selChip(this,'agenda-inicio')">07:00 (manhã)</button>
+        <button type="button" class="chip" data-v="19:00" onclick="selChip(this,'agenda-inicio')">19:00 (noite)</button>
+      </div>
+      <label class="lbl">Duração da escala</label>
+      <div class="chip-row" id="agenda-escala">
+        <button type="button" class="chip" data-v="4" onclick="selChip(this,'agenda-escala')">4 h</button>
+        <button type="button" class="chip" data-v="6" onclick="selChip(this,'agenda-escala')">6 h</button>
+        <button type="button" class="chip on" data-v="8" onclick="selChip(this,'agenda-escala')">8 h comercial</button>
+        <button type="button" class="chip" data-v="12" onclick="selChip(this,'agenda-escala')">12 h</button>
+        <button type="button" class="chip" data-v="24" onclick="selChip(this,'agenda-escala')">24 h</button>
+        <button type="button" class="chip" data-v="48" onclick="selChip(this,'agenda-escala')">48 h</button>
+      </div>
+      <div class="note">Escala de <strong>8 horas</strong> = horário comercial (seg–sex, 8h–18h).</div>
+      <div class="toggle-row">
+        <span><b>Disponível para viajar</b><br/><small style="color:var(--m)">Aceita plantões fora da cidade</small></span>
+        <input type="checkbox" id="agenda-viagem"/>
+      </div>
+      <label class="lbl">Raio de busca (km da residência)</label>
+      <input class="inp" id="agenda-raio" type="number" min="0" placeholder="0 = sem limite de km"/>
+      <p class="hint" style="margin-top:-8px">Digite quantos km aceita a partir do seu endereço. <strong>0</strong> = sem limite.</p>
+      <label class="lbl">Período — data início e fim</label>
+      <div class="row2">
+        <div><label class="lbl" style="font-size:11px">Data entrada</label><input class="inp" id="agenda-data-inicio" type="date"/></div>
+        <div><label class="lbl" style="font-size:11px">Data saída</label><input class="inp" id="agenda-data-fim" type="date"/></div>
+      </div>
+      <label class="lbl">Horário entrada e saída (padrão do plantão)</label>
+      <div class="row2">
+        <div><label class="lbl" style="font-size:11px">Hora entrada</label><input class="inp" id="agenda-hora-entrada" type="time" value="07:00"/></div>
+        <div><label class="lbl" style="font-size:11px">Hora saída</label><input class="inp" id="agenda-hora-saida" type="time" value="19:00"/></div>
+      </div>
+      <button class="btn btn-p" type="button" onclick="salvarAgenda()">Salvar agenda</button>
+    </div>
+  </section>
+
+  <!-- ========== CARTÃO DE PONTO ========== -->
+  <section class="screen" id="cuidador-ponto">
+    <div class="topbar">
+      <button type="button" onclick="show('cuidador-painel')">←</button>
+      <h2>Cartão de ponto</h2>
+    </div>
+    <div class="pad">
+      <p class="hint">Registre entrada, intervalo (saída/retorno), saída final e observações do dia.</p>
+      <div class="ponto-row"><label>Entrada</label><button type="button" class="btn btn-o" style="height:44px" onclick="registrarPonto('entrada')">▶ Registrar entrada</button></div>
+      <div class="ponto-row"><label>Saída intervalo</label><button type="button" class="btn btn-o" style="height:44px" onclick="registrarPonto('intervalo_saida')">⏸ Saída p/ intervalo</button></div>
+      <div class="ponto-row"><label>Retorno intervalo</label><button type="button" class="btn btn-o" style="height:44px" onclick="registrarPonto('intervalo_retorno')">▶ Retorno intervalo</button></div>
+      <div class="ponto-row"><label>Saída final</label><button type="button" class="btn btn-p" style="height:44px" onclick="registrarPonto('saida')">⏹ Registrar saída</button></div>
+      <label class="lbl">Horário manual (opcional — sobrescreve hora automática)</label>
+      <input class="inp" id="ponto-hora-manual" type="time"/>
+      <div class="obs-balloon">
+        <label class="lbl">💬 Observações do plantão</label>
+        <textarea class="inp" id="ponto-obs" rows="3" style="height:auto;padding:12px;margin-bottom:0" placeholder="Ex.: Idoso dormiu após almoço, medicação 14h aplicada…"></textarea>
+      </div>
+      <div class="note">Status: <span id="ponto-status">Aguardando entrada</span></div>
+      <div class="ponto-log" id="ponto-log">Nenhum registro hoje.</div>
+      <button class="btn btn-s" type="button" style="margin-top:12px" onclick="salvarObsPonto()">Salvar observações no registro</button>
+    </div>
+  </section>
+
+  <!-- ========== DIÁRIO DO PACIENTE ========== -->
+  <section class="screen" id="cuidador-diario">
+    <div class="topbar">
+      <button type="button" onclick="show('cuidador-painel')">←</button>
+      <h2>Diário do paciente</h2>
+    </div>
+    <div class="pad">
+      <p class="hint">Sumário dos cuidados do dia. O familiar acessa no menu dele e pode repassar ao próximo cuidador.</p>
+      <label class="lbl">Sumário de cuidados — hoje</label>
+      <textarea class="inp" id="diario-texto" rows="6" style="height:auto;padding:12px 14px" placeholder="Medicação, alimentação, humor, mobilidade, observações…"></textarea>
+      <div class="sig-box" id="diario-assinatura">
+        <p style="font-size:13px;color:var(--m);margin-bottom:8px">Assinatura eletrônica (fim do dia)</p>
+        <button class="btn btn-o" type="button" onclick="assinarDiario()">Assinar sumário do dia</button>
+      </div>
+      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="salvarDiario()">Salvar diário</button>
+      <button class="btn btn-s" type="button" style="margin-top:8px" onclick="enviarDiarioProximoCuidador()">Enviar ao próximo cuidador</button>
+    </div>
+  </section>
+
+  <!-- ========== OFERTAS DE SERVIÇO ========== -->
+  <section class="screen" id="cuidador-ofertas">
+    <div class="topbar">
+      <button type="button" onclick="show('cuidador-painel')">←</button>
+      <h2>Ofertas de serviço</h2>
+    </div>
+    <div class="pad">
+      <div id="ofertas-taxa-bloqueio"></div>
+      <p class="step">Urgente — hoje</p>
+      <div id="ofertas-urgentes"></div>
+      <p class="step" style="margin-top:16px">Ofertas de famílias (diária, semanal, quinzenal)</p>
+      <div id="ofertas-outras"></div>
+      <div id="oferta-acao-box" style="display:none;margin-top:12px" class="cv">
+        <p class="lbl" id="oferta-acao-titulo">Responder oferta</p>
+        <input type="hidden" id="oferta-acao-id"/>
+        <label class="lbl">Contra-proposta diária (R$) — opcional</label>
+        <input class="inp" id="oferta-contra-valor" type="number" placeholder="Deixe vazio para aceitar valor da família"/>
+        <label class="lbl">Mensagem</label>
+        <input class="inp" id="oferta-contra-msg" placeholder="Ex.: Posso iniciar às 19h"/>
+        <button class="btn btn-p" type="button" onclick="aceitarOfertaCuidador()">Aceitar oferta</button>
+        <button class="btn btn-o" type="button" style="margin-top:8px" onclick="contraOfertaCuidador()">Enviar nova proposta</button>
+        <button class="btn btn-g" type="button" style="margin-top:8px;background:#fef2f2;color:var(--err);border:1px solid #fecaca" onclick="recusarOfertaCuidador()">Recusar oferta</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PLANTÃO HOJE ========== -->
+  <section class="screen" id="cuidador-plantao-hoje">
+    <div class="topbar">
+      <button type="button" onclick="show('cuidador-painel')">←</button>
+      <h2>Oferecer plantão hoje</h2>
+    </div>
+    <div class="pad">
+      <p class="hint">Ative para aparecer no menu <strong>Cuidadores disponíveis próximos</strong> das famílias cadastradas.</p>
+      <div class="toggle-row">
+        <span><b>Disponível para plantão hoje</b></span>
+        <input type="checkbox" id="plantao-hoje-ativo" onchange="togglePlantaoHoje()"/>
+      </div>
+      <label class="lbl">Escala oferecida hoje</label>
+      <div class="chip-row" id="plantao-hoje-escala">
+        <button type="button" class="chip on" data-v="12" onclick="selChip(this,'plantao-hoje-escala')">12 h</button>
+        <button type="button" class="chip" data-v="24" onclick="selChip(this,'plantao-hoje-escala')">24 h</button>
+      </div>
+      <label class="lbl">Início preferencial</label>
+      <div class="chip-row" id="plantao-hoje-inicio">
+        <button type="button" class="chip on" data-v="07:00" onclick="selChip(this,'plantao-hoje-inicio')">07:00</button>
+        <button type="button" class="chip" data-v="19:00" onclick="selChip(this,'plantao-hoje-inicio')">19:00</button>
+      </div>
+      <button class="btn btn-p" type="button" onclick="salvarPlantaoHoje()">Publicar disponibilidade</button>
+      <div class="note" style="margin-top:12px" id="plantao-hoje-status">Status: inativo</div>
+    </div>
+  </section>
+
+  <!-- ========== FATURAMENTO ========== -->
+  <section class="screen" id="cuidador-faturamento">
+    <div class="topbar">
+      <button type="button" onclick="show('cuidador-painel')">←</button>
+      <h2>Faturamento</h2>
+    </div>
+    <div class="pad">
+      <div class="stat-grid">
+        <div class="stat-box"><b id="fat-total">R$ 0</b><small>Total faturado</small></div>
+        <div class="stat-box"><b id="fat-mes">R$ 0</b><small>Este mês</small></div>
+        <div class="stat-box"><b id="fat-pendente">R$ 0</b><small>A receber</small></div>
+        <div class="stat-box"><b id="fat-plantoes">0</b><small>Plantões concluídos</small></div>
+      </div>
+      <p class="lbl">Movimentação recente</p>
+      <div id="fat-lista"></div>
+      <p class="step" style="margin-top:20px">Gerar cobrança / boleto para o cliente</p>
+      <p class="hint">Cadastre sua chave PIX, cole link de cartão (opcional) e gere boleto para enviar.</p>
+      <label class="lbl">Sua chave PIX (recebe o pagamento)</label>
+      <input class="inp" id="cob-pix-key" placeholder="CPF, e-mail, telefone ou chave aleatória"/>
+      <label class="lbl">Titular da chave PIX</label>
+      <input class="inp" id="cob-pix-titular" placeholder="Nome completo"/>
+      <label class="lbl">Valor (R$)</label>
+      <input class="inp" id="cob-valor" type="number" placeholder="Ex.: 280"/>
+      <label class="lbl">Descrição</label>
+      <input class="inp" id="cob-desc" placeholder="Ex.: Plantão 12h — 24/06"/>
+      <label class="lbl">Link pagamento cartão (cole aqui — Mercado Pago, Stripe…)</label>
+      <input class="inp" id="cob-link-cartao" placeholder="https://… (opcional para PIX puro)"/>
+      <label class="lbl">Forma de cobrança</label>
+      <div class="chip-row" id="cob-metodo">
+        <button type="button" class="chip on" data-v="boleto" onclick="selChip(this,'cob-metodo')">Boleto PIX+cartão</button>
+        <button type="button" class="chip" data-v="pix" onclick="selChip(this,'cob-metodo')">Só PIX</button>
+        <button type="button" class="chip" data-v="cartao" onclick="selChip(this,'cob-metodo')">Só cartão</button>
+      </div>
+      <button class="btn btn-p" type="button" onclick="gerarCobrancaCliente()">Gerar cobrança / boleto</button>
+      <div id="cob-resultado" class="cob-box" style="display:none"></div>
+      <button class="btn btn-o" type="button" style="margin-top:8px;display:none" id="cob-copiar-btn" onclick="copiarCobranca()">Copiar PIX/link para enviar</button>
+      <button class="btn btn-s" type="button" style="margin-top:8px;display:none" id="cob-boleto-btn" onclick="baixarBoletoGerado()">⬇ Baixar boleto</button>
+      <p class="step" style="margin-top:20px">Cobranças geradas</p>
+      <div id="cob-historico"></div>
+    </div>
+  </section>
+
+  <!-- ========== TAXA DO APP ========== -->
+  <section class="screen" id="cuidador-taxa">
+    <div class="topbar">
+      <button type="button" onclick="show('cuidador-painel')">←</button>
+      <h2>Taxa do app (7%)</h2>
+    </div>
+    <div class="pad">
+      <div class="note">
+        Taxa de <strong>manutenção da plataforma</strong>: <strong>7%</strong> sobre cada serviço. Quando a taxa pendente atinge <strong>R$ 50,00</strong>, você continua vendo ofertas mas <strong>não pode aceitar nem enviar propostas</strong> até quitar.
+      </div>
+      <div id="taxa-alerta"></div>
+      <div class="stat-grid" style="margin-top:16px">
+        <div class="stat-box"><b id="taxa-bruto">R$ 0</b><small>Serviços brutos</small></div>
+        <div class="stat-box"><b id="taxa-valor">R$ 0</b><small>Taxa 7% devida</small></div>
+        <div class="stat-box"><b id="taxa-pendente" style="color:var(--err)">R$ 0</b><small>Pendente (limite R$ 50)</small></div>
+      </div>
+      <div class="cv" id="taxa-detalhe" style="margin-top:12px"></div>
+      <p class="step" style="margin-top:16px">Pagar taxa pendente</p>
+      <div class="chip-row" id="taxa-pag-metodo">
+        <button type="button" class="chip on" data-v="pix" onclick="selChip(this,'taxa-pag-metodo')">PIX</button>
+        <button type="button" class="chip" data-v="google_play_iap" onclick="selChip(this,'taxa-pag-metodo')">Google Play (IAP)</button>
+        <button type="button" class="chip" data-v="apple_iap" onclick="selChip(this,'taxa-pag-metodo')">Apple App Store (IAP)</button>
+      </div>
+      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="pagarTaxaPlataforma()">Gerar pagamento da taxa</button>
+      <button class="btn btn-o" type="button" style="margin-top:8px" onclick="confirmarTaxaPix()">Confirmar PIX da taxa pago</button>
+      <div id="taxa-pix-box" class="cob-box" style="display:none;margin-top:12px"></div>
+      <div class="note" style="margin-top:12px;font-size:12px">
+        <strong>Lojas:</strong> Google Play Billing e Apple StoreKit — produto <code>ic24_taxa_manutencao</code>. Pagamentos IAP registrados em <code>platform_fee_payments</code> no Firebase.
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== TRABALHOS ANTERIORES ========== -->
+  <section class="screen" id="cuidador-historico">
+    <div class="topbar">
+      <button type="button" onclick="show('cuidador-painel')">←</button>
+      <h2>Trabalhos anteriores</h2>
+    </div>
+    <div class="pad">
+      <p class="hint">Histórico de plantões e serviços prestados na plataforma.</p>
+      <div id="historico-lista"></div>
+    </div>
+  </section>
+
+  <!-- ========== DENUNCIAR MAUS-TRATOS ========== -->
+  <section class="screen" id="cuidador-denuncia">
+    <div class="topbar">
+      <button type="button" onclick="show('cuidador-painel')">←</button>
+      <h2>Denunciar maus-tratos</h2>
+    </div>
+    <div class="pad">
+      <p class="hint">Se suspeitar de violência ou negligência contra idoso, denuncie imediatamente.</p>
+      <div class="list-item">
+        <b>Disque 100 — Direitos Humanos</b>
+        <small>Ligação gratuita, 24 h — denúncias de violações de direitos</small>
+        <button class="btn btn-p" type="button" style="margin-top:10px;height:44px" onclick="window.location.href='tel:100'">Ligar 100</button>
+      </div>
+      <div class="list-item">
+        <b>Disque Denúncia — Ministério dos Direitos Humanos</b>
+        <small>Canal oficial do governo federal</small>
+        <button class="btn btn-o" type="button" style="margin-top:10px;height:44px" onclick="window.open('https://www.gov.br/mdh/pt-br/acesso-a-informacao-acoes-e-programas/direitos-humanos/disque-100','_blank')">Abrir site oficial</button>
+      </div>
+      <div class="list-item">
+        <b>Conselho da Pessoa Idosa</b>
+        <small>Órgão municipal de proteção — busque o conselho da sua cidade</small>
+        <button class="btn btn-o" type="button" style="margin-top:10px;height:44px" onclick="window.open('https://www.gov.br/mdh/pt-br/assuntos/assuntos-institucionais/conselho-da-pessoa-idosa','_blank')">Conselho da Pessoa Idosa</button>
+      </div>
+      <div class="note" style="margin-top:12px">Em emergência, ligue <strong>190</strong> (Polícia) ou <strong>192</strong> (SAMU).</div>
+    </div>
+  </section>
+
+  <!-- ========== SUCESSO ========== -->
+  <section class="screen" id="sucesso">
+    <div class="pad" style="text-align:center;padding-top:80px">
+      <div class="logo" style="margin-bottom:24px">✓</div>
+      <h1 class="h1">Cadastro enviado</h1>
+      <p class="hint">Seus documentos serão analisados pela equipe em até 48 horas. Você receberá um e-mail quando for aprovado.</p>
+      <button class="btn btn-p" type="button" onclick="irLogin()">Voltar ao login</button>
+    </div>
+  </section>
+
+</div>
+<button type="button" class="nav-login" id="btnIrLogin" onclick="irLogin()" style="display:none">Ir para login</button>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal" onclick="fecharFoto()">
+  <button class="modal-close" type="button" onclick="fecharFoto();event.stopPropagation()">✕</button>
+  <div id="modalContent" style="text-align:center;color:#fff"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="pix.js"></script>
+<script src="firebase-ic24.js"></script>
+<script src="ic24-curriculo.js"></script>
+<script src="ic24-ofertas.js"></script>
+<script src="ic24-cobranca.js"></script>
+<script>
+let _chatUnsub=null;
+window._cuidSpecs=[];
+window._docVoltar='cadastro';
+window._pesquisaVoltar='familia-painel';
+function voltarDeDocumentos(){ show(window._docVoltar||'cadastro'); }
+function abrirDocumentosCompleto(deOnde){
+  window._docVoltar=deOnde||'cadastro';
+  syncDocumentosUI();
+  show('documentos');
+}
+async function syncDocumentosUI(){
+  try{
+    ic24InitFirebase();
+    const uid=ic24Auth.currentUser?.uid;
+    if(!uid) return;
+    const docsMap=await ic24ListDocumentos(uid);
+    document.querySelectorAll('#documentos .doc[data-doc]').forEach(el=>{
+      const k=el.getAttribute('data-doc');
+      if(docsMap[k]?.fileUrl) el.classList.add('done');
+      else el.classList.remove('done');
+    });
+  }catch(e){ /* ignore */ }
+}
+function irPesquisaDe(deOnde){
+  window._pesquisaVoltar=deOnde||'familia-painel';
+  show('pesquisa');
+}
+function voltarDePesquisa(){ show(window._pesquisaVoltar||'familia-painel'); }
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  const btn=document.getElementById('btnIrLogin');
+  if(btn) btn.style.display=(id==='login'||id==='welcome')?'none':'block';
+  window.scrollTo(0,0);
+}
+function irWelcome(){ show('welcome'); }
+function escolherPerfil(role){
+  window._signupRole=role;
+  if(role==='caregiver'){
+    document.getElementById('criar-conta-titulo').textContent='Cuidador — criar conta';
+    document.getElementById('criar-conta-sub').textContent='E-mail e senha. Depois: endereço → perfil → valores.';
+    show('criar-conta');
+  } else {
+    show('cadastro-familia');
+  }
+}
+async function salvarConta(){
+  const nome=document.getElementById('acc-nome').value.trim();
+  const email=document.getElementById('acc-email').value.trim();
+  const senha=document.getElementById('acc-senha').value;
+  const senha2=document.getElementById('acc-senha2').value;
+  if(!nome){ toast('Informe seu nome'); return; }
+  try{
+    await ic24CriarConta({nome,email,senha,senha2,role:window._signupRole||'caregiver'});
+    window._cuidSpecs=[];
+    renderSpecChips();
+    toast('Conta criada — informe seu CEP');
+    show('cuidador-etapa1');
+  }catch(e){ toast(ic24AuthError(e)||e.message||'Erro ao criar conta'); }
+}
+function validarEnderecoCad(){
+  const num=document.getElementById('cad-num').value.trim();
+  const cep=(document.getElementById('cad-cep').value||'').replace(/\D/g,'');
+  if(cep.length!==8){ toast('Informe um CEP válido (ex.: 39400-000)'); return false; }
+  if(!document.getElementById('cad-rua').value.trim()){ toast('Busque o CEP ou preencha a rua'); return false; }
+  if(!num){ toast('Informe o número do endereço'); return false; }
+  if(!document.getElementById('cad-cidade').value.trim()){ toast('Cidade obrigatória'); return false; }
+  if(!document.getElementById('cad-uf').value.trim()){ toast('UF obrigatória'); return false; }
+  return true;
+}
+function irCuidadorEtapa2(){
+  if(!validarEnderecoCad()) return;
+  show('cuidador-etapa2');
+}
+function addEspecialidade(){
+  const inp=document.getElementById('cuid-spec');
+  const v=(inp?.value||'').trim();
+  if(!v){ toast('Digite uma especialidade'); return; }
+  if(!window._cuidSpecs.includes(v)) window._cuidSpecs.push(v);
+  inp.value='';
+  renderSpecChips();
+}
+function renderSpecChips(){
+  const box=document.getElementById('cuid-spec-chips');
+  if(!box) return;
+  box.innerHTML=window._cuidSpecs.map((s,i)=>'<span style="background:var(--pl);border:1px solid var(--line);padding:6px 10px;border-radius:999px;font-size:13px">'+escapeHtml(s)+' <button type="button" data-i="'+i+'" onclick="removeEspecialidade('+i+')" style="border:none;background:none;cursor:pointer;color:var(--err)">×</button></span>').join('');
+}
+function removeEspecialidade(i){
+  window._cuidSpecs.splice(i,1);
+  renderSpecChips();
+}
+function irCuidadorEtapa3(){
+  if(!document.getElementById('cuid-bio').value.trim()){ toast('Escreva um pouco sobre você'); return; }
+  show('cuidador-etapa3');
+}
+async function finalizarCuidador(){
+  const hour=document.getElementById('cuid-hour').value.trim();
+  const daily=document.getElementById('cuid-daily').value.trim();
+  if(!hour&&!daily){ toast('Informe valor por hora ou por dia'); return; }
+  try{
+    if(window._pendingProfilePhoto){
+      try{ await ic24UploadFotoPerfil(window._pendingProfilePhoto); }catch(e){ toast(e.message||'Foto pendente — envie no currículo'); }
+      window._pendingProfilePhoto=null;
+    }
+    await ic24SalvarCuidador();
+    const uid=ic24Auth?.currentUser?.uid;
+    if(uid) await ic24RecomputeCurriculo(uid);
+    await carregarPainelCuidador();
+    show('cuidador-painel');
+    toast('Cadastro salvo — área do cuidador aberta!');
+  }catch(e){ toast(e.message||'Erro ao salvar no Firestore'); }
+}
+function maskCep(el){
+  let v=el.value.replace(/\D/g,'').slice(0,8);
+  if(v.length>5) v=v.slice(0,5)+'-'+v.slice(5);
+  el.value=v;
+  if(v.replace(/\D/g,'').length===8) buscarCep(el.id.startsWith('fam')?'fam':'cad');
+}
+async function buscarCep(prefix){
+  const cepEl=document.getElementById(prefix+'-cep');
+  const digits=(cepEl?.value||'').replace(/\D/g,'');
+  if(digits.length!==8){ toast('Informe um CEP com 8 dígitos'); return; }
+  try{
+    const r=await fetch('https://viacep.com.br/ws/'+digits+'/json/');
+    const j=await r.json();
+    if(j.erro){ toast('CEP não encontrado'); return; }
+    document.getElementById(prefix+'-rua').value=j.logradouro||'';
+    document.getElementById(prefix+'-bairro').value=j.bairro||'';
+    document.getElementById(prefix+'-cidade').value=j.localidade||'';
+    document.getElementById(prefix+'-uf').value=j.uf||'';
+    toast('Endereço preenchido pelo CEP');
+  }catch(e){ toast('Erro ao buscar CEP'); }
+}
+function enderecoResumo(prefix){
+  const p=id=>document.getElementById(prefix+'-'+id)?.value?.trim()||'';
+  return [p('rua'), p('num')?'nº '+p('num'):'', p('comp'), p('bairro'), p('cidade')&&p('uf')?p('cidade')+' - '+p('uf'):'', p('cep')?'CEP '+p('cep'):''].filter(Boolean).join(', ');
+}
+function irLogin(){ show('login'); }
+function irEscolhaPerfil(){ show('escolha-perfil'); }
+function irCadastroCuidador(){ show('cadastro'); }
+function irCadastroFamilia(){ show('cadastro-familia'); }
+function irCadastro(){ irEscolhaPerfil(); }
+function irPesquisa(){
+  show('pesquisa');
+}
+function irFamiliaPainel(){
+  carregarPainelFamilia();
+  show('familia-painel');
+}
+function verFoto(nome){
+  document.getElementById('modalContent').innerHTML='<div style="background:#fff;color:#333;padding:40px 24px;border-radius:12px;max-width:320px"><div style="font-size:48px;margin-bottom:12px">📄</div><b>'+nome+'</b><p style="margin-top:8px;font-size:13px;color:#666">Foto do documento<br/>(Firebase Storage)</p></div>';
+  document.getElementById('modal').classList.add('on');
+}
+function fecharFoto(){ document.getElementById('modal').classList.remove('on'); }
+async function irDocumentos(){
+  const nome=document.getElementById('nome').value.trim();
+  const email=document.getElementById('cad-email').value.trim();
+  const senha=document.getElementById('cad-senha').value;
+  const senha2=document.getElementById('cad-senha2').value;
+  const cpf=document.getElementById('cpf').value.trim();
+  const num=document.getElementById('cad-num').value.trim();
+  if(!nome){ toast('Informe o nome completo'); return; }
+  if(!cpf){ toast('Informe o CPF'); return; }
+  if(!num){ toast('Informe o número do endereço'); return; }
+  if((document.getElementById('cad-cep').value||'').replace(/\D/g,'').length!==8){ toast('Informe um CEP válido'); return; }
+  try{
+    await ic24CriarConta({nome,email,senha,senha2,role:window._signupRole||'caregiver'});
+    if(window._pendingProfilePhoto){
+      try{ await ic24UploadFotoPerfil(window._pendingProfilePhoto); toast('Foto de perfil salva no Firebase'); }catch(e){ toast(e.message||'Foto pendente — envie no currículo'); }
+      window._pendingProfilePhoto=null;
+    }
+    window._docVoltar='cadastro';
+    toast('Conta criada no Firebase');
+    syncDocumentosUI();
+    show('documentos');
+  }catch(e){ toast(ic24AuthError(e)||e.message||'Erro ao criar conta'); }
+}
+function preencherCadastroCuidador(d){
+  if(!d) return;
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el&&v!=null&&v!=='') el.value=v; };
+  set('acc-nome', d.fullName);
+  set('cad-cep', d.cep);
+  set('cad-rua', d.street);
+  set('cad-num', d.number);
+  set('cad-comp', d.complement);
+  set('cad-bairro', d.neighborhood);
+  set('cad-cidade', d.city);
+  set('cad-uf', d.state);
+  set('cuid-bio', d.bio);
+  if(d.hourRate!=null) set('cuid-hour', d.hourRate);
+  if(d.dailyRate!=null) set('cuid-daily', d.dailyRate);
+  set('cuid-cpf', d.cpf);
+  if(Array.isArray(d.specialties)){
+    window._cuidSpecs=[...d.specialties];
+    renderSpecChips();
+  }
+  if(d.photoUrl){
+    ['etapa2-foto-preview','cuid-foto-preview'].forEach(id=>{
+      const img=document.getElementById(id);
+      if(img){ img.src=d.photoUrl; img.style.display='block'; }
+    });
+    ['etapa2-foto-txt','cuid-foto-txt'].forEach(id=>{
+      const t=document.getElementById(id);
+      if(t) t.style.display='none';
+    });
+  }
+}
+function preencherCadastroFamilia(d){
+  if(!d) return;
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el&&v!=null&&v!=='') el.value=v; };
+  set('fam-nome', d.fullName);
+  set('fam-email', d.email);
+  set('fam-tel', d.phone);
+  set('fam-cep', d.cep);
+  set('fam-rua', d.street);
+  set('fam-num', d.number);
+  set('fam-comp', d.complement);
+  set('fam-bairro', d.neighborhood);
+  set('fam-cidade', d.city);
+  set('fam-uf', d.state);
+}
+async function ic24NavegarPosLogin(u){
+  if(u.role==='caregiver'){
+    const { data, docsMap }=await ic24CarregarDadosCuidador(u.uid);
+    preencherCadastroCuidador(data);
+    const rota=ic24AvaliarCadastroCuidador(data, docsMap);
+    window._cadastroRetomada=!rota.complete;
+    if(rota.complete){
+      await carregarPainelCuidador();
+    } else if(rota.screen==='documentos'){
+      window._docVoltar='cuidador-curriculo';
+      await syncDocumentosUI();
+      await carregarPainelCuidador();
+    } else if(['cuidador-curriculo','cuidador-etapa1','cuidador-etapa2','cuidador-etapa3'].includes(rota.screen)){
+      await carregarPainelCuidador();
+    }
+    return rota;
+  }
+  const fam=await ic24CarregarDadosFamilia(u.uid);
+  preencherCadastroFamilia(fam);
+  const rota=ic24AvaliarCadastroFamilia(fam);
+  if(rota.complete) await carregarPainelFamilia();
+  return rota;
+}
+async function entrar(){
+  const e=document.getElementById('email').value.trim();
+  const s=document.getElementById('senha').value;
+  if(!e||!s){ toast('Preencha e-mail e senha'); return; }
+  try{
+    const u=await ic24Entrar(e,s);
+    const rota=await ic24NavegarPosLogin(u);
+    toast(rota.complete ? ('Login OK — bem-vindo, '+u.fullName) : (rota.message||'Complete seu cadastro'));
+    show(rota.screen);
+  }catch(err){ toast(ic24AuthError(err)); }
+}
+function fotoPerfil(input){
+  const f=input.files[0];
+  if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    const img=document.getElementById('fotoPreview');
+    img.src=r.result; img.style.display='block';
+    document.getElementById('fotoIcon').style.display='none';
+    document.getElementById('fotoTxt').style.display='none';
+    document.getElementById('fotoBox').classList.add('has');
+  };
+  r.readAsDataURL(f);
+  window._pendingProfilePhoto=f;
+  toast('Foto selecionada — será enviada ao Firebase ao continuar');
+}
+function fotoPerfilEtapa2(input){
+  const f=input.files[0];
+  if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    const img=document.getElementById('etapa2-foto-preview');
+    if(img){ img.src=r.result; img.style.display='block'; }
+    const txt=document.getElementById('etapa2-foto-txt');
+    if(txt) txt.style.display='none';
+  };
+  r.readAsDataURL(f);
+  window._pendingProfilePhoto=f;
+  toast('Foto selecionada — será enviada ao finalizar o cadastro');
+}
+async function fotoPerfilPainel(input){
+  const f=input.files[0];
+  if(!f)return;
+  const prev=document.getElementById('cuid-foto-preview');
+  const txt=document.getElementById('cuid-foto-txt');
+  const r=new FileReader();
+  r.onload=()=>{ if(prev){ prev.src=r.result; prev.style.display='block'; } if(txt) txt.style.display='none'; };
+  r.readAsDataURL(f);
+  try{
+    ic24InitFirebase();
+    if(!ic24Auth.currentUser){ toast('Faça login como cuidador'); return; }
+    await ic24UploadFotoPerfil(f);
+    toast('Foto de perfil salva no Firebase Storage');
+    await carregarPainelCuidador();
+  }catch(e){ toast(e.message||'Erro ao salvar foto'); }
+}
+function anexarDocCurriculo(docKey){
+  const inp=document.createElement('input');
+  inp.type='file';
+  inp.accept='image/*';
+  inp.capture='environment';
+  inp.onchange=()=>{
+    if(!inp.files[0]) return;
+    ic24UploadDocumento(docKey,inp.files[0]).then(()=>{
+      toast('Documento enviado ao Firebase');
+      carregarPainelCuidador();
+    }).catch(e=>toast(e.message||'Erro no upload'));
+  };
+  inp.click();
+}
+function anexar(input){
+  if(!input.files[0])return;
+  const docKey=input.closest('.doc')?.getAttribute('data-doc');
+  const nome=input.closest('.doc')?.querySelector('b')?.textContent||docKey;
+  if(!docKey){ toast('Tipo de documento inválido'); return; }
+  ic24UploadDocumento(docKey,input.files[0]).then(()=>{
+    input.closest('.doc').classList.add('done');
+    toast('Enviado: '+nome.split('—')[0].trim()+' — classificado!');
+    if(typeof carregarPainelCuidador==='function') carregarPainelCuidador();
+  }).catch(e=>toast(e.message||'Erro no upload'));
+}
+async function finalizar(){
+  const obr=['rg','cpf','comprovante','ctps','antecedentes'];
+  for(const k of obr){
+    const el=document.querySelector('.doc[data-doc="'+k+'"]');
+    if(!el||!el.classList.contains('done')){
+      toast('Anexe RG, CPF, comprovante, CTPS e antecedentes (foto enviada ao Firebase)'); return;
+    }
+  }
+  try{
+    await ic24SalvarCuidador();
+    const uid=ic24Auth?.currentUser?.uid;
+    if(uid) await ic24RecomputeCurriculo(uid);
+    await carregarPainelCuidador();
+    show('cuidador-painel');
+    toast('Cadastro e currículo salvos no Firebase');
+  }catch(e){ toast(e.message||'Erro ao salvar no Firestore'); }
+}
+async function solicitarCurriculoContratante(){
+  const caregiverId=(document.getElementById('pesquisa-cuidador-id')?.value||'').trim()||IC24_DEMO_CAREGIVER;
+  try{
+    ic24InitFirebase();
+    if(!ic24Auth.currentUser){ toast('Faça login como família'); irLogin(); return; }
+    const r=await ic24SolicitarCurriculo(caregiverId);
+    const fullLink=location.origin+location.pathname.replace(/index\.html?$/,'')+r.link;
+    const box=document.getElementById('pesquisa-curriculo-link');
+    if(box){
+      box.style.display='block';
+      box.innerHTML='<strong>Currículo liberado:</strong><br/><a href="'+fullLink+'" target="_blank" rel="noopener">'+fullLink+'</a>';
+    }
+    window.open(fullLink,'_blank');
+    toast('Currículo Lates gerado — link válido por 7 dias');
+  }catch(e){ toast(e.message||'Erro ao solicitar currículo'); }
+}
+async function salvarCpfEClassificar(){
+  const cpf=document.getElementById('cuid-cpf')?.value?.trim();
+  try{
+    if(cpf) await ic24SalvarPainelCuidador({cpf});
+    const uid=ic24Auth?.currentUser?.uid;
+    if(uid) await ic24RecomputeCurriculo(uid);
+    await carregarPainelCuidador();
+    toast('Classificação atualizada');
+  }catch(e){ toast(e.message||'Erro'); }
+}
+function renderDocsUploadShort(docsMap){
+  const box=document.getElementById('cuid-docs-upload');
+  if(!box) return;
+  const keys=['cpf','rg','antecedentes','curso','ctps'];
+  box.innerHTML=keys.map(k=>{
+    const done=docsMap&&docsMap[k];
+    const meta=IC24_DOC_META[k];
+    return '<div class="list-item" style="cursor:pointer" onclick="anexarDocCurriculo(\''+k+'\')"><b>'+(meta?.label||k)+'</b><small>'+(done?'✓ Enviado — toque para substituir':'Pendente — toque para enviar foto')+'</small></div>';
+  }).join('');
+}
+async function finalizarFamilia(){
+  const nome=document.getElementById('fam-nome').value.trim();
+  const email=document.getElementById('fam-email').value.trim();
+  const senha=document.getElementById('fam-senha').value;
+  const senha2=document.getElementById('fam-senha2').value;
+  const num=document.getElementById('fam-num').value.trim();
+  if(!num){ toast('Informe o número do endereço'); return; }
+  if((document.getElementById('fam-cep').value||'').replace(/\D/g,'').length!==8){ toast('Informe um CEP válido'); return; }
+  try{
+    await ic24CriarConta({nome,email,senha,senha2,role:'family'});
+    await ic24SalvarFamilia();
+    toast('Cadastro família salvo no Firebase!');
+    setTimeout(async ()=>{ await carregarPainelFamilia(); show('familia-painel'); }, 1200);
+  }catch(e){ toast(ic24AuthError(e)||e.message||'Erro ao salvar'); }
+}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),2500);
+}
+async function solicitarMatch(){
+  try{
+    ic24InitFirebase();
+    if(!ic24Auth.currentUser){ toast('Faça login como família'); irLogin(); return; }
+    await ic24SolicitarMatch(IC24_DEMO_CAREGIVER);
+    ic24FillPixScreen();
+    show('pix-pay');
+    toast('Match registrado — pague o PIX para liberar o chat');
+  }catch(e){ toast(e.message||'Erro ao solicitar match'); }
+}
+async function copiarPixChave(){
+  await ic24CopyText(IC24_PIX.keyDisplay);
+  toast('Copiado!');
+}
+async function copiarPixCodigo(){
+  const code=window._ic24PixCode||ic24PixCopiaCola();
+  await ic24CopyText(code);
+  toast('Copiado!');
+}
+async function confirmarPix(){
+  try{
+    const chatId=await ic24ConfirmarPixPagamento();
+    toast('Pagamento confirmado — chat liberado!');
+    abrirChat(chatId,true);
+  }catch(e){ toast(e.message||'Erro ao confirmar PIX'); }
+}
+function renderChatMsgs(msgs){
+  const box=document.getElementById('chatMsgs');
+  if(!box)return;
+  const uid=ic24Auth&&ic24Auth.currentUser?ic24Auth.currentUser.uid:'';
+  box.innerHTML=msgs.length?msgs.map(m=>{
+    const me=m.senderId===uid;
+    return '<div class="chat-msg '+(me?'me':'them')+'">'+escapeHtml(m.text||'')+'</div>';
+  }).join(''):'<p class="hint" style="text-align:center">Chat liberado! Combine os detalhes do cuidado.</p>';
+  box.scrollTop=box.scrollHeight;
+}
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+async function abrirChat(chatId,unlocked){
+  show('chat-match');
+  const note=document.getElementById('chatLockNote');
+  const input=document.getElementById('chatInput');
+  if(note)note.style.display=unlocked?'none':'block';
+  if(input)input.disabled=!unlocked;
+  if(_chatUnsub)_chatUnsub();
+  window._ic24ChatId=chatId;
+  _chatUnsub=ic24ListenChat(chatId,renderChatMsgs);
+}
+async function enviarChat(){
+  const chatId=window._ic24ChatId;
+  const input=document.getElementById('chatInput');
+  if(!chatId||!input||input.disabled)return;
+  const text=input.value.trim();
+  if(!text)return;
+  try{
+    await ic24SendChatMessage(chatId,text);
+    input.value='';
+  }catch(e){ toast(e.message||'Erro ao enviar'); }
+}
+
+/* ========== PAINEL CUIDADOR ========== */
+window._cuidPainel = window._cuidPainel || {};
+
+function maskCpf(el){
+  let v=el.value.replace(/\D/g,'').slice(0,11);
+  if(v.length>9) v=v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6,9)+'-'+v.slice(9);
+  else if(v.length>6) v=v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6);
+  else if(v.length>3) v=v.slice(0,3)+'.'+v.slice(3);
+  el.value=v;
+}
+function selChip(btn, groupId){
+  document.querySelectorAll('#'+groupId+' .chip').forEach(c=>c.classList.remove('on'));
+  btn.classList.add('on');
+}
+function toggleDay(btn){ btn.classList.toggle('on'); }
+function chipVal(groupId){
+  const el=document.querySelector('#'+groupId+' .chip.on');
+  return el?el.getAttribute('data-v'):'';
+}
+function diasAgendaSel(){
+  return [...document.querySelectorAll('#agenda-dias .day-btn.on')].map(b=>b.getAttribute('data-d'));
+}
+function ic24Classificacao(d){
+  if(d.classification&&d.classification.label) return d.classification;
+  const docsMap={};
+  (d.documentsList||[]).forEach(x=>{ docsMap[x.key||x.id]=x; });
+  if(typeof ic24ClassificarDocumentos==='function'&&Object.keys(docsMap).length){
+    return ic24ClassificarDocumentos(Object.fromEntries(Object.entries(docsMap).map(([k,v])=>[k,{url:v.fileUrl||v.url}])));
+  }
+  return { label:'Nível Inicial — envie documentos', stars:'★★★☆☆ 4,0', score:0, missingRequired:['CPF','Antecedentes','Curso'] };
+}
+function fmtMoeda(n){ return 'R$ '+Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+async function carregarPainelCuidador(){
+  ic24InitFirebase();
+  const uid=ic24Auth.currentUser?.uid;
+  let d={};
+  let docsMap={};
+  if(uid){
+    const snap=await ic24Db.collection('caregivers').doc(uid).get();
+    d=snap.exists?snap.data():{};
+    docsMap=await ic24ListDocumentos(uid);
+    d.documentsList=Object.entries(docsMap).map(([k,v])=>({key:k,...v}));
+    if(d.activeFamilyId) window._activeFamilyId=d.activeFamilyId;
+  const pixKeyEl=document.getElementById('cob-pix-key');
+  const pixTitEl=document.getElementById('cob-pix-titular');
+  if(pixKeyEl&&d.pixKey) pixKeyEl.value=d.pixKey;
+  if(pixTitEl&&(d.pixTitular||d.fullName)) pixTitEl.value=d.pixTitular||d.fullName;
+  }
+  window._cuidPainel=d;
+  window._cuidDocs=docsMap;
+  const nome=d.fullName||document.getElementById('acc-nome')?.value?.trim()||'Cuidador';
+  const cpf=d.cpf||'';
+  const cls=ic24Classificacao(d);
+  document.getElementById('cuid-nome-display').textContent=nome;
+  document.getElementById('cuid-cpf-display').textContent=cpf||'Informe no currículo';
+  document.getElementById('cuid-stars-display').textContent=cls.stars||'★★★☆☆';
+  document.getElementById('cuid-class-display').textContent='Classificação: '+(cls.label||'—');
+  const av=document.getElementById('cuid-avatar');
+  if(av){
+    if(d.photoUrl) av.innerHTML='<img src="'+escapeHtml(d.photoUrl)+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>';
+    else av.textContent='👤';
+  }
+  const fotoPrev=document.getElementById('cuid-foto-preview');
+  const fotoTxt=document.getElementById('cuid-foto-txt');
+  if(d.photoUrl&&fotoPrev){
+    fotoPrev.src=d.photoUrl; fotoPrev.style.display='block';
+    if(fotoTxt) fotoTxt.style.display='none';
+  }
+  const cpfInp=document.getElementById('cuid-cpf');
+  if(cpfInp&&cpf) cpfInp.value=cpf;
+  renderCurriculo(d, cls, docsMap);
+  renderDocsUploadShort(docsMap);
+  renderRecomendacoes(d);
+  renderOfertas();
+  renderFaturamento(d);
+  renderTaxa(d);
+  renderHistorico(d);
+  if(d.agenda) aplicarAgendaUI(d.agenda);
+  if(d.plantaoHoje) aplicarPlantaoHojeUI(d.plantaoHoje);
+  if(d.pontoLog) renderPontoLog(d.pontoLog);
+  if(d.pontoObs&&document.getElementById('ponto-obs')) document.getElementById('ponto-obs').value=d.pontoObs;
+  renderTaxaAlerta(d);
+  renderOfertasTaxaBloqueio(d);
+  if(d.diario?.texto) document.getElementById('diario-texto').value=d.diario.texto;
+  if(d.diario?.assinado) marcarDiarioAssinado();
+}
+
+function baixarCurriculoCadastro(){
+  const d=window._cuidPainel||{};
+  const cls=ic24Classificacao(d);
+  ic24BaixarCurriculoCadastro(d, cls, window._cuidDocs||{});
+  toast('Download do currículo iniciado');
+}
+
+function renderTaxaAlerta(d){
+  const box=document.getElementById('taxa-alerta');
+  if(!box) return;
+  const pend=ic24PlatformFeePending(d);
+  if(pend>=IC24_FEE_LIMIT){
+    box.innerHTML='<div class="fee-warn"><strong>Taxa pendente: '+fmtMoeda(pend)+'</strong><br/>Limite de R$ 50 atingido. Quite em <b>Taxa do app</b> para aceitar ofertas novamente.</div>';
+  } else if(pend>0){
+    box.innerHTML='<div class="fee-ok">Taxa pendente: '+fmtMoeda(pend)+' de '+fmtMoeda(IC24_FEE_LIMIT)+' — quite antes de atingir o limite.</div>';
+  } else box.innerHTML='';
+}
+
+function renderOfertasTaxaBloqueio(d){
+  const box=document.getElementById('ofertas-taxa-bloqueio');
+  if(!box) return;
+  if(ic24OffersBlockedByFee(d)){
+    box.innerHTML='<div class="fee-warn"><strong>Ofertas bloqueadas</strong> — taxa pendente '+fmtMoeda(ic24PlatformFeePending(d))+'. Você pode visualizar, mas não aceitar nem enviar proposta até pagar em Taxa do app (7%).</div>';
+  } else box.innerHTML='';
+}
+
+function renderCurriculo(d, cls, docsMap){
+  const box=document.getElementById('cuid-curriculo-dados');
+  const classBox=document.getElementById('cuid-classificacao-box');
+  if(!box) return;
+  const addr=d.address||enderecoResumo('cad')||'—';
+  const specs=(d.specialties||window._cuidSpecs||[]).join(', ')||'—';
+  const docCount=docsMap?Object.keys(docsMap).length:(d.documentsCount||0);
+  box.innerHTML=
+    '<p><strong>Nome:</strong> '+escapeHtml(d.fullName||'—')+'</p>'+
+    '<p><strong>Endereço:</strong> '+escapeHtml(addr)+'</p>'+
+    '<p><strong>Sobre:</strong> '+escapeHtml(d.bio||document.getElementById('cuid-bio')?.value||'—')+'</p>'+
+    '<p><strong>Especialidades:</strong> '+escapeHtml(specs)+'</p>'+
+    '<p><strong>Valores:</strong> '+fmtMoeda(d.hourRate)+'/h · '+fmtMoeda(d.dailyRate)+'/dia</p>'+
+    '<p><strong>Documentos no Firebase:</strong> '+docCount+' foto(s)</p>';
+  if(classBox) classBox.innerHTML=
+    '<p><strong>'+escapeHtml(cls.label||'—')+'</strong></p>'+
+    '<p style="font-size:13px;color:var(--m);margin-top:6px">Score: '+(cls.score||0)+'/100 · Classificação automática pelos documentos enviados.</p>'+
+    (cls.missingRequired&&cls.missingRequired.length?'<p style="font-size:12px;color:var(--err);margin-top:6px">Falta: '+escapeHtml(cls.missingRequired.join(', '))+'</p>':'');
+}
+
+function renderRecomendacoes(d){
+  const list=document.getElementById('cuid-recomendacoes-list');
+  if(!list) return;
+  const recs=d.recommendations||[
+    {nome:'Família Silva', nota:5, texto:'Profissional dedicada, pontual e carinhosa com minha mãe.'},
+    {nome:'Sr. João M.', nota:5, texto:'Excelente cuidado com medicação e alimentação.'},
+    {nome:'Dra. Ana P.', nota:4, texto:'Recomendo — comunicação clara com a família.'},
+  ];
+  list.innerHTML=recs.map(r=>'<div class="list-item"><b>'+escapeHtml(r.nome)+' · '+('★'.repeat(r.nota))+'</b><small>'+escapeHtml(r.texto)+'</small></div>').join('');
+}
+
+function renderOfertas(){
+  ic24ListarOfertasAbertas({urgent:true}).then(urg=>{
+    const box=document.getElementById('ofertas-urgentes');
+    if(box) box.innerHTML=urg.length?urg.map(o=>ic24FmtOferta(o)+'<button class="btn btn-p" type="button" style="margin-top:8px;height:40px" onclick="selecionarOfertaCuidador(\''+o.id+'\')">Ver / Responder</button>').join(''):'<p class="hint">Nenhum plantão urgente no momento.</p>';
+  }).catch(()=>{});
+  ic24ListarOfertasAbertas({urgent:false}).then(all=>{
+    const out=document.getElementById('ofertas-outras');
+    const others=(all||[]).filter(o=>!o.urgent);
+    if(out) out.innerHTML=others.length?others.map(o=>ic24FmtOferta(o)+'<button class="btn btn-o" type="button" style="margin-top:8px;height:40px" onclick="selecionarOfertaCuidador(\''+o.id+'\')">Responder</button>').join(''):'<p class="hint">Nenhuma oferta aberta.</p>';
+  }).catch(()=>{});
+}
+function selecionarOfertaCuidador(id){
+  document.getElementById('oferta-acao-id').value=id;
+  document.getElementById('oferta-acao-box').style.display='block';
+  document.getElementById('oferta-acao-titulo').textContent='Responder oferta '+id.slice(0,8)+'…';
+  toast('Preencha contra-proposta ou aceite');
+}
+async function aceitarOfertaCuidador(){
+  if(ic24OffersBlockedByFee(window._cuidPainel||{})){ toast('Taxa pendente ≥ R$ 50 — pague em Taxa do app (7%)'); show('cuidador-taxa'); return; }
+  const id=document.getElementById('oferta-acao-id').value;
+  if(!id){ toast('Selecione uma oferta'); return; }
+  try{
+    await ic24ResponderOferta(id,{action:'accept',message:document.getElementById('oferta-contra-msg').value});
+    toast('Oferta aceita — aguardando confirmação da família');
+    await carregarPainelCuidador();
+    renderOfertas();
+  }catch(e){ toast(e.message||'Erro'); }
+}
+async function contraOfertaCuidador(){
+  if(ic24OffersBlockedByFee(window._cuidPainel||{})){ toast('Taxa pendente ≥ R$ 50 — pague em Taxa do app (7%)'); show('cuidador-taxa'); return; }
+  const id=document.getElementById('oferta-acao-id').value;
+  const v=document.getElementById('oferta-contra-valor').value;
+  if(!id||!v){ toast('Informe valor da contra-proposta'); return; }
+  try{
+    await ic24ResponderOferta(id,{action:'counter',proposedDailyRate:parseFloat(v),message:document.getElementById('oferta-contra-msg').value});
+    toast('Nova proposta enviada à família');
+    renderOfertas();
+  }catch(e){ toast(e.message||'Erro'); }
+}
+async function recusarOfertaCuidador(){
+  const id=document.getElementById('oferta-acao-id').value;
+  if(!id){ toast('Selecione uma oferta'); return; }
+  try{
+    await ic24ResponderOferta(id,{action:'reject',message:document.getElementById('oferta-contra-msg').value||'Não disponível'});
+    toast('Oferta recusada — registrado no Firebase');
+    document.getElementById('oferta-acao-box').style.display='none';
+    renderOfertas();
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+function renderFaturamento(d){
+  const fin=d.finance||{total:2640,mes:880,pendente:220,plantoes:12};
+  document.getElementById('fat-total').textContent=fmtMoeda(fin.total);
+  document.getElementById('fat-mes').textContent=fmtMoeda(fin.mes);
+  document.getElementById('fat-pendente').textContent=fmtMoeda(fin.pendente);
+  document.getElementById('fat-plantoes').textContent=fin.plantoes||0;
+  const lista=document.getElementById('fat-lista');
+  if(lista) lista.innerHTML=(fin.movimentos||[
+    {data:'15/06',desc:'Plantão 12h — Família Silva',valor:280},
+    {data:'12/06',desc:'Diária 8h — Sr. João',valor:180},
+  ]).map(m=>'<div class="list-item"><b>'+escapeHtml(m.desc)+'</b><small>'+escapeHtml(m.data)+' · '+fmtMoeda(m.valor)+'</small></div>').join('');
+}
+
+function renderTaxa(d){
+  const fin=d.finance||{total:2640};
+  const bruto=fin.total||0;
+  const taxa=bruto*0.07;
+  const pend=ic24PlatformFeePending(d);
+  document.getElementById('taxa-bruto').textContent=fmtMoeda(bruto);
+  document.getElementById('taxa-valor').textContent=fmtMoeda(taxa);
+  const pendEl=document.getElementById('taxa-pendente');
+  if(pendEl) pendEl.textContent=fmtMoeda(pend);
+  document.getElementById('taxa-detalhe').innerHTML=
+    '<p>Taxa de manutenção: <strong>7%</strong> sobre serviços na plataforma.</p>'+
+    '<p style="margin-top:8px">Pendente acumulado: <strong style="color:'+(pend>=IC24_FEE_LIMIT?'var(--err)':'var(--p)')+'">'+fmtMoeda(pend)+'</strong> / limite '+fmtMoeda(IC24_FEE_LIMIT)+'</p>'+
+    (pend>=IC24_FEE_LIMIT?'<p style="margin-top:8px;color:var(--err)">Aceitar ofertas <strong>bloqueado</strong> até quitar.</p>':'')+
+    '<p style="margin-top:8px">Líquido estimado: <strong>'+fmtMoeda(bruto-taxa)+'</strong></p>';
+  renderTaxaAlerta(d);
+}
+
+function renderHistorico(d){
+  const list=document.getElementById('historico-lista');
+  if(!list) return;
+  const hist=d.workHistory||[
+    {data:'10–11/06',tipo:'Plantão 24h',local:'Montes Claros',valor:420,status:'Concluído'},
+    {data:'05/06',tipo:'Escala 12h',local:'Montes Claros',valor:280,status:'Concluído'},
+    {data:'28/05',tipo:'Diária 8h',local:'Montes Claros',valor:180,status:'Concluído'},
+  ];
+  list.innerHTML=hist.map(h=>'<div class="list-item"><b>'+escapeHtml(h.tipo)+' · '+escapeHtml(h.data)+'</b><small>'+escapeHtml(h.local)+' · '+fmtMoeda(h.valor)+' · '+escapeHtml(h.status)+'</small></div>').join('');
+}
+
+function aplicarAgendaUI(a){
+  if(a.periodo) document.querySelectorAll('#agenda-periodo .chip').forEach(c=>{ c.classList.toggle('on',c.getAttribute('data-v')===a.periodo); });
+  if(a.dias) document.querySelectorAll('#agenda-dias .day-btn').forEach(b=>{ b.classList.toggle('on',a.dias.includes(b.getAttribute('data-d'))); });
+  if(a.inicio) document.querySelectorAll('#agenda-inicio .chip').forEach(c=>{ c.classList.toggle('on',c.getAttribute('data-v')===a.inicio); });
+  if(a.escala) document.querySelectorAll('#agenda-escala .chip').forEach(c=>{ c.classList.toggle('on',c.getAttribute('data-v')===String(a.escala)); });
+  const viagem=document.getElementById('agenda-viagem');
+  if(viagem) viagem.checked=!!a.viagem;
+  const raio=document.getElementById('agenda-raio');
+  if(raio&&a.raioKm!=null) raio.value=a.raioKm;
+  if(a.dataInicio&&document.getElementById('agenda-data-inicio')) document.getElementById('agenda-data-inicio').value=a.dataInicio;
+  if(a.dataFim&&document.getElementById('agenda-data-fim')) document.getElementById('agenda-data-fim').value=a.dataFim;
+  if(a.horaEntrada&&document.getElementById('agenda-hora-entrada')) document.getElementById('agenda-hora-entrada').value=a.horaEntrada;
+  if(a.horaSaida&&document.getElementById('agenda-hora-saida')) document.getElementById('agenda-hora-saida').value=a.horaSaida;
+}
+
+function aplicarPlantaoHojeUI(p){
+  const chk=document.getElementById('plantao-hoje-ativo');
+  if(chk) chk.checked=!!p.ativo;
+  document.getElementById('plantao-hoje-status').textContent='Status: '+(p.ativo?'ativo — visível para famílias próximas':'inativo');
+}
+
+async function salvarAgenda(){
+  const agenda={
+    periodo:chipVal('agenda-periodo')||'semana',
+    dias:diasAgendaSel(),
+    inicio:chipVal('agenda-inicio')||'07:00',
+    escala:chipVal('agenda-escala')||'8',
+    viagem:!!document.getElementById('agenda-viagem')?.checked,
+    raioKm:parseInt(document.getElementById('agenda-raio')?.value||'0',10)||0,
+    dataInicio:document.getElementById('agenda-data-inicio')?.value||'',
+    dataFim:document.getElementById('agenda-data-fim')?.value||'',
+    horaEntrada:document.getElementById('agenda-hora-entrada')?.value||'07:00',
+    horaSaida:document.getElementById('agenda-hora-saida')?.value||'19:00',
+    turnosFixos:['07:00','19:00'],
+    escalasPermitidas:[4,6,8,12,24,48],
+  };
+  if(!agenda.dias.length){ toast('Selecione pelo menos um dia'); return; }
+  try{
+    await ic24SalvarPainelCuidador({agenda});
+    toast('Agenda salva — famílias verão sua disponibilidade');
+  }catch(e){ toast(e.message||'Erro ao salvar agenda'); }
+}
+
+function renderPontoLog(log){
+  const box=document.getElementById('ponto-log');
+  if(!box) return;
+  const obs=window._cuidPainel?.pontoObs;
+  if(!log||!log.length){
+    box.innerHTML=(obs?'<div style="margin-bottom:8px"><em>Obs:</em> '+escapeHtml(obs)+'</div>':'')+'Nenhum registro hoje.';
+    return;
+  }
+  box.innerHTML=(obs?'<div style="margin-bottom:8px;padding:8px;background:#FFF9E6;border-radius:8px"><em>Obs:</em> '+escapeHtml(obs)+'</div>':'')+
+    log.map(e=>'<div>'+escapeHtml(e.hora)+' — <strong>'+escapeHtml(e.tipo)+'</strong>'+(e.obs?' · '+escapeHtml(e.obs):'')+(e.confirmado?' ✓ patrão':'')+'</div>').join('');
+  const last=log[log.length-1];
+  const st=document.getElementById('ponto-status');
+  if(st) st.textContent=(last.tipo==='Saída final'||last.tipo==='saida')?'Plantão encerrado — aguardando confirmação do patrão':('Último: '+last.tipo);
+}
+
+async function registrarPonto(tipo){
+  const labels={entrada:'Entrada',intervalo_saida:'Saída intervalo',intervalo_retorno:'Retorno intervalo',saida:'Saída final'};
+  const manual=document.getElementById('ponto-hora-manual')?.value;
+  const now=new Date();
+  const hora=manual||now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const obsLinha=document.getElementById('ponto-obs')?.value?.trim()||'';
+  const entry={tipo:labels[tipo]||tipo,hora,ts:now.toISOString(),confirmado:false,obs:obsLinha||null};
+  const log=[...(window._cuidPainel.pontoLog||[]),entry];
+  const uid=ic24Auth?.currentUser?.uid;
+  try{
+    await ic24SalvarPainelCuidador({pontoLog:log,pontoObs:document.getElementById('ponto-obs')?.value?.trim()||''});
+    window._cuidPainel.pontoLog=log;
+    renderPontoLog(log);
+    toast(labels[tipo]+' registrada — '+hora);
+    if(tipo==='saida'){
+      await ic24SyncPontoFromCaregiver(uid, window._activeFamilyId||null, log, document.getElementById('ponto-obs')?.value?.trim()||'');
+      setTimeout(()=>toast('Patrão/confirmação: familiar autentica no cartão de ponto'),1500);
+    }
+  }catch(e){ toast(e.message||'Erro ao registrar ponto'); }
+}
+
+async function salvarObsPonto(){
+  const obs=document.getElementById('ponto-obs')?.value?.trim()||'';
+  try{
+    await ic24SalvarPainelCuidador({pontoObs:obs});
+    window._cuidPainel.pontoObs=obs;
+    renderPontoLog(window._cuidPainel.pontoLog||[]);
+    toast('Observações salvas');
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+function marcarDiarioAssinado(){
+  const box=document.getElementById('diario-assinatura');
+  if(!box) return;
+  box.classList.add('signed');
+  box.innerHTML='<p style="color:var(--p);font-weight:600">✓ Sumário assinado eletronicamente</p><small style="color:var(--m)">'+new Date().toLocaleDateString('pt-BR')+'</small>';
+}
+
+async function assinarDiario(){
+  const texto=document.getElementById('diario-texto')?.value?.trim();
+  if(!texto){ toast('Escreva o sumário antes de assinar'); return; }
+  marcarDiarioAssinado();
+  try{
+    await ic24SalvarPainelCuidador({diario:{texto,assinado:true,assinadoEm:new Date().toISOString()}});
+    toast('Sumário assinado eletronicamente');
+  }catch(e){ toast(e.message||'Erro ao assinar'); }
+}
+
+async function salvarDiario(){
+  const texto=document.getElementById('diario-texto')?.value?.trim();
+  if(!texto){ toast('Escreva o sumário do dia'); return; }
+  try{
+    const uid=ic24Auth?.currentUser?.uid;
+    await ic24SalvarPainelCuidador({diario:{texto,assinado:!!window._cuidPainel.diario?.assinado}});
+    if(uid) await ic24SalvarDiarioComFamilia({texto,caregiverId:uid,familyId:window._activeFamilyId||null,idosoNome:''});
+    toast('Diário salvo — familiar pode visualizar e assinar');
+  }catch(e){ toast(e.message||'Erro ao salvar diário'); }
+}
+
+async function enviarDiarioProximoCuidador(){
+  const texto=document.getElementById('diario-texto')?.value?.trim();
+  if(!texto){ toast('Salve o diário antes de enviar'); return; }
+  try{
+    await ic24SalvarPainelCuidador({diario:{texto,assinado:!!window._cuidPainel.diario?.assinado,repasseProximo:true,repasseEm:new Date().toISOString()}});
+    toast('Diário enviado ao próximo cuidador');
+  }catch(e){ toast(e.message||'Erro ao enviar'); }
+}
+
+async function togglePlantaoHoje(){
+  const ativo=!!document.getElementById('plantao-hoje-ativo')?.checked;
+  document.getElementById('plantao-hoje-status').textContent='Status: '+(ativo?'ativo — visível para famílias próximas':'inativo');
+}
+
+async function salvarPlantaoHoje(){
+  const plantaoHoje={
+    ativo:!!document.getElementById('plantao-hoje-ativo')?.checked,
+    escala:chipVal('plantao-hoje-escala')||'12',
+    inicio:chipVal('plantao-hoje-inicio')||'07:00',
+    publicadoEm:new Date().toISOString(),
+  };
+  try{
+    await ic24SalvarPainelCuidador({plantaoHoje, availableToday:plantaoHoje.ativo});
+    document.getElementById('plantao-hoje-status').textContent='Status: '+(plantaoHoje.ativo?'ativo — visível para famílias próximas':'inativo');
+    toast(plantaoHoje.ativo?'Plantão de hoje publicado!':'Disponibilidade desativada');
+  }catch(e){ toast(e.message||'Erro ao publicar'); }
+}
+
+async function enviarRelatorioAvaliacoes(){
+  try{
+    await ic24SalvarPainelCuidador({relatorioAvaliacoesEm:new Date().toISOString()});
+    toast('Relatório de avaliações positivas enviado ao contratante');
+  }catch(e){ toast(e.message||'Erro ao enviar relatório'); }
+}
+
+window._cobCopyText='';
+window._cobLastInvoice=null;
+async function gerarCobrancaCliente(){
+  try{
+    const metodo=chipVal('cob-metodo')||'boleto';
+    const r=await ic24GerarCobrancaCliente({
+      valor:document.getElementById('cob-valor').value,
+      descricao:document.getElementById('cob-desc').value,
+      metodo,
+      linkCartao:document.getElementById('cob-link-cartao')?.value,
+      pixKey:document.getElementById('cob-pix-key')?.value,
+      pixTitular:document.getElementById('cob-pix-titular')?.value,
+    });
+    window._cobLastInvoice=r;
+    const box=document.getElementById('cob-resultado');
+    const btn=document.getElementById('cob-copiar-btn');
+    const boletoBtn=document.getElementById('cob-boleto-btn');
+    let copyParts=[];
+    if(r.pixCopiaCola){
+      copyParts.push('PIX R$ '+Number(r.amount).toFixed(2)+'\nChave: '+(r.pixKey||'')+'\n'+r.pixCopiaCola);
+      box.innerHTML='<strong>Boleto / PIX R$ '+Number(r.amount).toFixed(2)+'</strong><br/>Titular: '+escapeHtml(r.pixTitular||'')+'<br/>Chave: '+escapeHtml(r.pixKey||'')+'<br/><code style="font-size:11px">'+escapeHtml(r.pixCopiaCola||'')+'</code>';
+    }
+    if(r.cardLink){
+      copyParts.push('Cartão: '+r.cardLink);
+      box.innerHTML+=(box.innerHTML?'<br/><br/>':'')+'<strong>Link cartão</strong><br/><a href="'+escapeHtml(r.cardLink)+'" target="_blank">'+escapeHtml(r.cardLink)+'</a>';
+    }
+    window._cobCopyText=copyParts.join('\n\n');
+    box.style.display='block';
+    if(btn) btn.style.display='block';
+    if(boletoBtn) boletoBtn.style.display='block';
+    toast('Cobrança registrada no Firebase — baixe o boleto');
+    carregarCobrancasHistorico();
+  }catch(e){ toast(e.message||'Erro ao gerar cobrança'); }
+}
+function baixarBoletoGerado(){
+  if(!window._cobLastInvoice){ toast('Gere uma cobrança primeiro'); return; }
+  ic24BaixarBoleto(window._cobLastInvoice);
+  toast('Boleto baixado');
+}
+async function copiarCobranca(){
+  if(!window._cobCopyText){ toast('Gere uma cobrança primeiro'); return; }
+  await ic24CopyText(window._cobCopyText);
+  toast('Copiado! Cole no WhatsApp do cliente');
+}
+async function carregarCobrancasHistorico(){
+  const box=document.getElementById('cob-historico');
+  if(!box) return;
+  try{
+    const list=await ic24ListarCobrancasCuidador();
+    box.innerHTML=list.length?list.map(c=>'<div class="list-item"><b>'+fmtMoeda(c.amount)+' · '+(c.method==='pix'?'PIX':'Cartão')+'</b><small>'+escapeHtml(c.description||'')+'</small></div>').join(''):'<p class="hint">Nenhuma cobrança gerada.</p>';
+  }catch(e){ box.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+async function pagarTaxaPlataforma(){
+  try{
+    const metodo=chipVal('taxa-pag-metodo')||'pix';
+    const pay=await ic24PagarTaxaPlataforma(metodo);
+    const box=document.getElementById('taxa-pix-box');
+    if(metodo==='google_play_iap'||metodo==='apple_iap'){
+      toast((metodo==='apple_iap'?'Apple IAP':'Google Play IAP')+' registrado no Firebase — taxa quitada');
+      await carregarPainelCuidador();
+      return;
+    }
+    box.style.display='block';
+    box.innerHTML='<strong>Pague a taxa via PIX: '+fmtMoeda(pay.amount)+'</strong><br/><code style="font-size:11px">'+escapeHtml(pay.pixCopiaCola||'')+'</code><br/><small>Após pagar, toque em Confirmar PIX da taxa pago</small>';
+    toast('PIX da taxa gerado');
+  }catch(e){ toast(e.message||'Erro'); }
+}
+async function confirmarTaxaPix(){
+  try{
+    await ic24ConfirmarTaxaPixPaga();
+    document.getElementById('taxa-pix-box').style.display='none';
+    await carregarPainelCuidador();
+    toast('Taxa quitada — ofertas liberadas!');
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+/* ========== PAINEL CONTRATANTE / FAMÍLIA ========== */
+async function carregarPainelFamilia(){
+  ic24InitFirebase();
+  const uid=ic24Auth.currentUser?.uid;
+  let nome='Contratante';
+  if(uid){
+    const u=await ic24Db.collection('users').doc(uid).get();
+    nome=u.data()?.fullName||nome;
+  }
+  const el=document.getElementById('fam-nome-display');
+  if(el) el.textContent=nome;
+}
+
+async function carregarProximosFamilia(){
+  const list=document.getElementById('fam-proximos-list');
+  if(!list) return;
+  list.innerHTML='<p class="hint">Carregando…</p>';
+  try{
+    const cgs=await ic24ListarCuidadoresProximos();
+    list.innerHTML=cgs.length?cgs.map(c=>'<div class="list-item"><b>'+escapeHtml(c.fullName||'Cuidador')+'</b><small>'+
+      escapeHtml((c.city||'')+(c.state?' - '+c.state:''))+' · '+
+      (c.availableToday||c.plantaoHoje?.ativo?'✅ Disponível hoje':'Agenda')+' · R$ '+(c.dailyRate||'—')+'/dia</small>'+
+      '<button class="btn btn-o" type="button" style="margin-top:8px;height:40px" onclick="abrirPerfilCuidador(\''+c.id+'\')">Ver perfil / currículo</button></div>').join(''):
+      '<p class="hint">Nenhum cuidador com plantão hoje. Peça para ativarem "Oferecer plantão hoje".</p>';
+  }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
+function abrirPerfilCuidador(id){
+  ['pesquisa-cuidador-id','fam-curriculo-cuid-id','avaliar-cuid-id','rec-cuid-id','irr-cuid-id','den-cuid-id'].forEach(sel=>{
+    const el=document.getElementById(sel);
+    if(el) el.value=id;
+  });
+  irPesquisaDe(document.querySelector('.screen.on')?.id||'familia-proximos');
+}
+
+async function publicarOfertaUrgente(){
+  try{
+    await ic24CriarOferta({
+      title:'Plantão '+(document.getElementById('urg-elderly').value.trim()||'idoso'),
+      elderlyType:document.getElementById('urg-elderly').value.trim(),
+      careNeeds:document.getElementById('urg-needs').value.trim(),
+      dailyRate:parseFloat(document.getElementById('urg-valor').value)||0,
+      scheduleType:chipVal('urg-schedule')||'urgente_hoje',
+      urgent:chipVal('urg-schedule')==='urgente_hoje',
+    });
+    toast('Oferta publicada — cuidadores disponíveis verão em Ofertas de serviço');
+    await carregarOfertasFamilia();
+    show('familia-ofertas');
+  }catch(e){ toast(e.message||'Erro ao publicar'); }
+}
+
+async function carregarOfertasFamilia(){
+  const list=document.getElementById('fam-ofertas-list');
+  if(!list) return;
+  try{
+    const ofertas=await ic24ListarOfertasFamilia();
+    let html='';
+    for(const o of ofertas){
+      html+=ic24FmtOferta(o);
+      const resps=await ic24ListarRespostasOferta(o.id);
+      resps.forEach(r=>{
+        html+='<div class="list-item" style="margin-left:12px;border-style:dashed"><b>Proposta cuidador</b><small>'+
+          (r.action==='accept'?'Aceitou':'Contra: R$ '+r.proposedDailyRate)+' · '+escapeHtml(r.message||'')+'</small>';
+        if(r.status==='counter_pending'){
+          html+='<button class="btn btn-p" type="button" style="margin-top:6px;height:36px" onclick="familiaAceitarProposta(\''+r.id+'\',true)">Aceitar</button> ';
+          html+='<button class="btn btn-g" type="button" style="margin-top:6px;height:36px" onclick="familiaAceitarProposta(\''+r.id+'\',false)">Recusar</button>';
+        }
+        html+='</div>';
+      });
+    }
+    list.innerHTML=html||'<p class="hint">Nenhuma oferta ainda. Publique em Plantão urgente.</p>';
+  }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
+async function familiaAceitarProposta(responseId, accept){
+  try{
+    await ic24FamiliaAceitarContraProposta(responseId, accept);
+    toast(accept?'Proposta aceita — plantão confirmado!':'Proposta recusada');
+    carregarOfertasFamilia();
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+async function carregarPontoFamilia(){
+  const list=document.getElementById('fam-ponto-list');
+  if(!list) return;
+  try{
+    const rows=await ic24ListarPontoPendenteFamilia();
+    list.innerHTML=rows.length?rows.map(r=>'<div class="list-item"><b>Ponto '+escapeHtml(r.date||'')+'</b><small>Cuidador: '+escapeHtml(r.caregiverId||'').slice(0,8)+'…</small>'+
+      (r.observacoes?'<p style="font-size:13px;margin:8px 0;padding:8px;background:#FFF9E6;border-radius:8px">'+escapeHtml(r.observacoes)+'</p>':'')+
+      '<div class="ponto-log" style="margin-top:8px">'+((r.log||[]).map(e=>escapeHtml(e.hora+' — '+e.tipo)).join('<br/>'))+'</div>'+
+      '<button class="btn btn-p" type="button" style="margin-top:8px" onclick="confirmarPontoFamilia(\''+r.id+'\')">Autenticar diária</button></div>').join(''):
+      '<p class="hint">Nenhum ponto aguardando confirmação.</p>';
+  }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
+async function confirmarPontoFamilia(id){
+  try{
+    await ic24ConfirmarPontoFamilia(id);
+    toast('Diária autenticada pelo contratante');
+    carregarPontoFamilia();
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+async function carregarDiarioFamilia(){
+  const list=document.getElementById('fam-diario-list');
+  if(!list) return;
+  try{
+    const rows=await ic24ListarDiariosFamilia();
+    list.innerHTML=rows.length?rows.map(r=>'<div class="list-item"><b>'+escapeHtml(r.date||'')+' — '+escapeHtml(r.elderlyName||'Idoso')+'</b>'+
+      '<p style="font-size:14px;margin:8px 0">'+escapeHtml(r.text||'')+'</p>'+
+      (r.familySigned?'<small style="color:var(--p)">✓ Assinado pela família</small>':
+      '<button class="btn btn-p" type="button" style="margin-top:8px;height:40px" onclick="assinarDiarioFamilia(\''+r.id+'\')">Assinar diário</button>')+
+      '</div>').join(''):'<p class="hint">Nenhum diário disponível. O cuidador registra ao fim do dia.</p>';
+  }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
+async function assinarDiarioFamilia(id){
+  try{
+    await ic24AssinarDiarioFamilia(id);
+    toast('Diário assinado eletronicamente');
+    carregarDiarioFamilia();
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+async function carregarPagamentosFamilia(){
+  const h=document.getElementById('fam-historico-list');
+  const p=document.getElementById('fam-pagamentos-list');
+  try{
+    const hist=await ic24ListarCuidadosAnteriores();
+    if(h) h.innerHTML=hist.length?hist.map(o=>'<div class="list-item"><b>'+escapeHtml(o.title||'Plantão')+'</b><small>Concluído · R$ '+escapeHtml(o.dailyRate||'—')+'</small></div>').join(''):'<p class="hint">Nenhum cuidado concluído ainda.</p>';
+    const pays=await ic24ListarPagamentosFamilia();
+    if(p) p.innerHTML=pays.length?pays.map(x=>'<div class="list-item"><b>PIX R$ '+escapeHtml(x.amount||'0')+'</b><small>'+escapeHtml(x.status||'')+'</small></div>').join(''):'<p class="hint">Nenhum pagamento registrado.</p>';
+  }catch(e){ if(h) h.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
+async function enviarAvaliacaoFamilia(){
+  try{
+    await ic24CriarAvaliacao({
+      caregiverId:document.getElementById('avaliar-cuid-id').value.trim(),
+      nota:parseInt(document.getElementById('avaliar-nota').value,10)||5,
+      texto:document.getElementById('avaliar-texto').value.trim(),
+    });
+    toast('Avaliação enviada');
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+async function solicitarCartaFamilia(){
+  try{
+    await ic24SolicitarCartaRecomendacao(document.getElementById('rec-cuid-id').value.trim(), document.getElementById('rec-texto').value.trim());
+    toast('Solicitação de carta enviada');
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+async function solicitarCurriculoFamilia(){
+  const caregiverId=document.getElementById('fam-curriculo-cuid-id')?.value?.trim();
+  if(!caregiverId){ toast('Informe o ID do cuidador'); return; }
+  try{
+    const r=await ic24SolicitarCurriculo(caregiverId);
+    const fullLink=location.origin+location.pathname.replace(/index\.html?$/,'')+r.link;
+    const box=document.getElementById('fam-curriculo-link');
+    if(box){ box.style.display='block'; box.innerHTML='<a href="'+fullLink+'" target="_blank">'+fullLink+'</a>'; }
+    window.open(fullLink,'_blank');
+    toast('Currículo Lates gerado');
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+async function enviarIrregularidade(){
+  try{
+    await ic24CriarRelatorioFamilia({type:'irregularidade',caregiverId:document.getElementById('irr-cuid-id').value.trim(),texto:document.getElementById('irr-texto').value.trim(),gravidade:'media'});
+    toast('Irregularidade registrada — equipe analisará');
+    show('familia-painel');
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+async function denunciarCuidadorFamilia(){
+  try{
+    await ic24CriarRelatorioFamilia({type:'denuncia_cuidador',caregiverId:document.getElementById('den-cuid-id').value.trim(),texto:document.getElementById('den-texto').value.trim(),gravidade:'alta'});
+    toast('Denúncia registrada');
+    show('familia-painel');
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+async function enviarFaleConosco(){
+  try{
+    await ic24EnviarFaleConosco(document.getElementById('contato-assunto').value.trim(), document.getElementById('contato-msg').value.trim());
+    toast('Mensagem enviada — retornaremos em breve');
+    show('familia-painel');
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+const _famShowOrig=show;
+show=function(id){
+  _famShowOrig(id);
+  if(id==='familia-proximos') carregarProximosFamilia();
+  if(id==='familia-ofertas') carregarOfertasFamilia();
+  if(id==='familia-ponto') carregarPontoFamilia();
+  if(id==='familia-diario') carregarDiarioFamilia();
+  if(id==='familia-pagamentos') carregarPagamentosFamilia();
+  if(id==='cuidador-ofertas'){ renderOfertas(); renderOfertasTaxaBloqueio(window._cuidPainel||{}); }
+  if(id==='cuidador-faturamento') carregarCobrancasHistorico();
+  if(id==='cuidador-curriculo'&&!window._curriculoBaixadoOnce){
+    window._curriculoBaixadoOnce=true;
+    setTimeout(()=>{ toast('Toque em Baixar meu cadastro para salvar o currículo'); },400);
+  }
+  if(id==='cuidador-taxa') renderTaxa(window._cuidPainel||{});
+};
+document.addEventListener('click',e=>{
+  if(e.target.closest('#cob-metodo .chip')){ /* método atualizado via chipVal */ }
+});
+try{
+  ic24InitFirebase();
+  ic24Auth.onAuthStateChanged(async (user)=>{
+    if(!user||window._ic24IgnorarAuthRedirect) return;
+    const on=document.querySelector('.screen.on')?.id;
+    if(on!=='welcome'&&on!=='login') return;
+    try{
+      const snap=await ic24Db.collection('users').doc(user.uid).get();
+      const data=snap.data()||{};
+      const u={ uid:user.uid, role:data.role||'family', fullName:data.fullName||user.email };
+      const rota=await ic24NavegarPosLogin(u);
+      show(rota.screen);
+      if(!rota.complete) toast(rota.message||'Complete seu cadastro');
+    }catch(_){ /* sessão inválida — permanece no login */ }
+  });
+}catch(_){ /* Firebase offline */ }
+</script>
+</body>
+</html>

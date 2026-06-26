@@ -1,0 +1,7 @@
+# App iPhone = protótipo web completo (mesmo do localhost:8888)
+
+O TestFlight carrega `web_app/` — cópia de `IdosoCare24H/web-app/`.
+
+Login demo: cuidador.demo@ic24test.local / Demo123!
+
+Para atualizar o web no iPhone, copie de IdosoCare24H/web-app/ para web_app/ e rode build Codemagic.
