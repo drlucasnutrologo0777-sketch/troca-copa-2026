@@ -21,6 +21,10 @@ workflows:
       cocoapods: default
 
     scripts:
+      - name: AVISO — isto e TROCA COPA (nao Idoso Care)
+        script: |
+          echo "========== TROCA COPA 2026 — NAO E IDOSO CARE =========="
+          echo "Para Idoso Care no iPhone: workflow 'Idoso Care 24H — iOS TestFlight'"
       - name: Verificar credenciais Apple
         script: |
           set -e
@@ -116,6 +120,14 @@ workflows:
       cocoapods: default
 
     scripts:
+      - name: CONFIRMAR IDOSO CARE WEB (nao Troca Copa)
+        script: |
+          set -e
+          echo "========== IDOSO CARE 24H — BUILD WEB 36 =========="
+          echo "Diretorio: $(pwd)"
+          test -f web_app/index.html || { echo "ERRO: pasta idoso-care-24h nao encontrada"; exit 1; }
+          bash tool/verify_web_build.sh
+          echo "Commit: $(git rev-parse --short HEAD)"
       - name: Verificar credenciais Apple
         script: |
           set -e
@@ -147,11 +159,6 @@ workflows:
             --verbose
           keychain add-certificates
           xcode-project use-profiles --project ios/Runner.xcodeproj
-      - name: Verificar app WEB (nao Flutter antigo)
-        script: |
-          set -e
-          bash tool/verify_web_build.sh
-          echo "Commit: $(git rev-parse --short HEAD)"
       - name: Flutter pub get
         script: flutter pub get
       - name: CocoaPods

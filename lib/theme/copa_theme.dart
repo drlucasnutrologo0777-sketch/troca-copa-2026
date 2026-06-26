@@ -12,6 +12,13 @@ abstract final class CopaColors {
   static const branco = Color(0xFFFFFFFF);
   static const textoEscuro = Color(0xFF1A1A2E);
 
+  /// Aliases usados em telas mais novas.
+  static const primary = azul;
+  static const textoSuave = Color(0xFF6B7280);
+  static const fundo = Color(0xFF1E3A5F);
+  static const primarySoft = Color(0xFFE8F4FC);
+  static const bordaCard = Color(0xFFE5E7EB);
+
   static const List<Color> circulos = [
     vermelho,
     verde,
