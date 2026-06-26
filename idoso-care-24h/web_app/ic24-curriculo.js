@@ -6,8 +6,8 @@ const IC24_DOC_META = {
   comprovante: { type: 'Comprovante', label: 'Comprovante de endereço', weight: 8, tier: 'identity' },
   ctps: { type: 'CarteiraTrabalho', label: 'Carteira de Trabalho', weight: 12, tier: 'work' },
   antecedentes: { type: 'AntecedentesCriminais', label: 'Antecedentes criminais', weight: 30, tier: 'compliance', required: true },
-  diploma: { type: 'Diploma', label: 'Diploma / Certificado de formação', weight: 18, tier: 'education' },
-  curso: { type: 'CursoCuidador', label: 'Curso de Cuidador de Idosos', weight: 25, tier: 'education', required: true },
+  diploma: { type: 'Diploma', label: 'Diploma de enfermagem (técnico, auxiliar ou superior)', weight: 20, tier: 'education' },
+  curso: { type: 'CursoCuidador', label: 'Curso de Cuidador de Idosos', weight: 25, tier: 'education' },
   inss: { type: 'INSS', label: 'INSS / PIS', weight: 5, tier: 'work' },
   titulo: { type: 'TituloEleitor', label: 'Título de eleitor', weight: 3, tier: 'identity' },
   reservista: { type: 'Reservista', label: 'Certificado de reservista', weight: 3, tier: 'identity' },
@@ -28,7 +28,17 @@ function ic24MaskCpf(cpf) {
   return '***.***.' + d.slice(6, 9) + '-' + d.slice(9);
 }
 
-function ic24ClassificarDocumentos(docsMap) {
+function ic24ExperienciaCursoOk(cg) {
+  return String(cg?.cursoExperienciaTexto || '').trim().length >= 20;
+}
+
+function ic24HasCursoOuExperiencia(docsMap, cg) {
+  const uploaded = Object.keys(docsMap || {});
+  return (uploaded.includes('curso') && docsMap.curso?.url) || ic24ExperienciaCursoOk(cg);
+}
+
+function ic24ClassificarDocumentos(docsMap, cg) {
+  cg = cg || {};
   const uploaded = Object.keys(docsMap || {});
   let score = 0;
   const verified = [];
@@ -41,6 +51,13 @@ function ic24ClassificarDocumentos(docsMap) {
       missingRequired.push(meta.label);
     }
   });
+  if (ic24ExperienciaCursoOk(cg) && !uploaded.includes('curso')) {
+    score += 15;
+    verified.push({ key: 'experiencia', label: 'Experiência como cuidador (descrita)', type: 'Experiencia', tier: 'experience' });
+  }
+  if (!ic24HasCursoOuExperiencia(docsMap, cg)) {
+    missingRequired.push('Curso de cuidador ou descrição de experiência');
+  }
   const specs = (window._cuidSpecs || []).length;
   if (specs >= 2) score += 8;
   if (specs >= 4) score += 7;
@@ -48,7 +65,10 @@ function ic24ClassificarDocumentos(docsMap) {
   let label = 'Nível Inicial — documentação incompleta';
   let stars = '★★★☆☆ 4,0';
   const hasAntec = uploaded.includes('antecedentes');
-  const hasCurso = uploaded.includes('curso') || uploaded.includes('diploma');
+  const hasCurso =
+    uploaded.includes('curso') ||
+    uploaded.includes('diploma') ||
+    ic24ExperienciaCursoOk(cg);
   if (score >= 85 && hasAntec && hasCurso) {
     level = 'senior';
     label = 'Nível Sênior — Especialista certificado';
@@ -126,6 +146,7 @@ async function ic24RecomputeCurriculo(uid) {
   const cg = cgSnap.exists ? cgSnap.data() : {};
   const classification = ic24ClassificarDocumentos(
     Object.fromEntries(Object.entries(docsMap).map(([k, v]) => [k, { url: v.fileUrl }])),
+    cg,
   );
   const documentsPublic = Object.entries(docsMap).map(([key, d]) => ({
     key,
@@ -148,6 +169,7 @@ async function ic24RecomputeCurriculo(uid) {
     state: cg.state || '',
     address: cg.address || '',
     photoUrl: cg.photoUrl || null,
+    cursoExperienciaTexto: cg.cursoExperienciaTexto || '',
     classification,
     documents: documentsPublic,
     certificatesVerified: classification.verified.map((v) => v.key),
