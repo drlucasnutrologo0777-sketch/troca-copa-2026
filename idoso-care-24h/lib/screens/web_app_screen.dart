@@ -55,12 +55,15 @@ class _WebAppScreenState extends State<WebAppScreen> {
     }
 
     if (_initialUrl == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: Color(0xFF2E8B57))),
+      return const ColoredBox(
+        color: Color(0xFFF5F7FA),
+        child: Center(child: CircularProgressIndicator(color: Color(0xFF2E8B57))),
       );
     }
 
-    return SafeArea(
+    // Tela cheia: safe-area fica no CSS do web (viewport-fit=cover + env(safe-area-inset-*)).
+    return ColoredBox(
+      color: const Color(0xFFF5F7FA),
       child: InAppWebView(
         initialUrlRequest: URLRequest(url: _initialUrl),
         initialSettings: InAppWebViewSettings(
@@ -69,10 +72,11 @@ class _WebAppScreenState extends State<WebAppScreen> {
           databaseEnabled: true,
           mediaPlaybackRequiresUserGesture: false,
           allowsInlineMediaPlayback: true,
-          useHybridComposition: true,
           allowFileAccessFromFileURLs: true,
           allowUniversalAccessFromFileURLs: true,
           supportZoom: false,
+          transparentBackground: true,
+          underPageBackgroundColor: const Color(0xFFF5F7FA),
         ),
         onPermissionRequest: (controller, request) async {
           return PermissionResponse(
