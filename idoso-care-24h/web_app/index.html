@@ -127,11 +127,6 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
   padding:8px 16px;font-size:13px;font-weight:600;color:var(--p);cursor:pointer;
   box-shadow:0 4px 12px rgba(0,0,0,.08);font-family:inherit;
 }
-</head>
-<body>
-<div id="app">
-.pix-box{text-align:center;background:var(--pl);border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0}
-.pix-box canvas{border-radius:12px;background:#fff;margin:12px auto;display:block}
 .chat-msgs{flex:1;overflow-y:auto;padding:12px 0;min-height:280px;max-height:50vh}
 .chat-msg{max-width:85%;padding:10px 14px;border-radius:14px;margin-bottom:8px;font-size:14px;line-height:1.4}
 .chat-msg.me{margin-left:auto;background:var(--p);color:#fff;border-bottom-right-radius:4px}
@@ -658,8 +653,8 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <div class="gal-item" onclick="verFoto('Referência')"><div class="ph">📄<br/>Experiência</div></div>
       </div>
 
-      <button class="btn btn-p" type="button" onclick="solicitarMatch()">Dar match / Solicitar contratação</button>
-      <p class="hint" style="margin-top:12px;text-align:center;font-size:12px">Revise currículo e todas as fotos acima antes de confirmar.</p>
+      <button class="btn btn-p" type="button" onclick="abrirChatNegocio()">Abrir chat</button>
+      <p class="hint" style="margin-top:12px;text-align:center;font-size:12px">Chat liberado somente após fechar negócio em Minhas ofertas.</p>
     </div>
   </section>
 
@@ -692,6 +687,11 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <button type="button" class="menu-topic" onclick="show('familia-ofertas')">
         <span class="menu-ic">📋</span>
         <div><b>Minhas ofertas de serviço</b><small>Diária, semanal, quinzenal — propostas dos cuidadores</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="abrirChatNegocio()">
+        <span class="menu-ic">💬</span>
+        <div><b>Chat com cuidador</b><small>Liberado após fechar negócio</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('familia-ponto')">
@@ -775,6 +775,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
     <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Minhas ofertas</h2></div>
     <div class="pad">
       <p class="hint">Propostas dos cuidadores: aceitar, recusar ou negociar.</p>
+      <div id="fam-notificacoes-list"></div>
       <div id="fam-ofertas-list"></div>
       <button class="btn btn-o" type="button" style="margin-top:12px" onclick="show('familia-urgente')">+ Nova oferta de serviço</button>
     </div>
@@ -875,26 +876,6 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
     </div>
   </section>
 
-  <!-- ========== PIX — liberar chat (R$ 0,50) ========== -->
-  <section class="screen" id="pix-pay">
-    <div class="topbar">
-      <button type="button" onclick="voltarDePesquisa()">←</button>
-      <h2>PIX para liberar chat</h2>
-    </div>
-    <div class="pad">
-      <p class="hint">Pague R$ 0,50 via PIX para iniciar a conversa com o cuidador após o match.</p>
-      <div class="pix-box">
-        <canvas id="pixQrCanvas"></canvas>
-        <p style="font-size:13px;color:var(--m);margin-top:8px"><span>Beneficiário</span>: <strong id="pixName">Eder Lucas Santos Tiago</strong></p>
-        <p style="font-size:13px;color:var(--m)"><span>Chave PIX (telefone)</span>: <strong id="pixKey">11968362005</strong></p>
-        <p style="font-size:15px;font-weight:700;color:var(--p);margin-top:8px"><span>Valor</span>: <span id="pixAmount">R$ 0,50</span></p>
-      </div>
-      <button class="btn btn-o" type="button" onclick="copiarPixChave()">Copiar chave PIX</button>
-      <button class="btn btn-g" type="button" style="margin-top:8px" onclick="copiarPixCodigo()">Copiar código PIX</button>
-      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="confirmarPix()">Já paguei — liberar chat</button>
-    </div>
-  </section>
-
   <!-- ========== CHAT DO MATCH ========== -->
   <section class="screen" id="chat-match">
     <div class="topbar">
@@ -902,7 +883,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <h2>Chat do match</h2>
     </div>
     <div class="pad" style="display:flex;flex-direction:column;min-height:70vh">
-      <div class="note" id="chatLockNote">Chat bloqueado — conclua o pagamento PIX.</div>
+      <div class="note" id="chatLockNote">Chat bloqueado — feche o negócio com o cuidador em Minhas ofertas para conversar.</div>
       <div class="chat-msgs" id="chatMsgs"></div>
       <div class="chat-bar">
         <input class="inp" id="chatInput" placeholder="Digite sua mensagem..." style="margin:0"/>
@@ -929,6 +910,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
           </div>
         </div>
       </div>
+      <div id="cuid-notificacoes" style="display:none;margin-bottom:12px"></div>
 
       <button type="button" class="menu-topic" onclick="show('cuidador-curriculo')">
         <span class="menu-ic">📋</span>
@@ -958,6 +940,11 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <button type="button" class="menu-topic" onclick="show('cuidador-ofertas')">
         <span class="menu-ic">🔔</span>
         <div><b>Ofertas de serviço</b><small>Plantões urgentes hoje e outras oportunidades</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="abrirChatNegocio()">
+        <span class="menu-ic">💬</span>
+        <div><b>Chat com contratante</b><small>Liberado após fechar negócio</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('cuidador-plantao-hoje')">
@@ -1154,36 +1141,49 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <div id="oferta-acao-box" style="display:none;margin-top:12px" class="cv">
         <p class="lbl" id="oferta-acao-titulo">Responder oferta</p>
         <input type="hidden" id="oferta-acao-id"/>
-        <label class="lbl">Forma de recebimento acordada</label>
-        <div class="chip-row" id="oferta-pag-freq">
-          <button type="button" class="chip on" data-v="diaria" onclick="selChip(this,'oferta-pag-freq');toggleOfertaPagSemanal()">Diária (fim do plantão)</button>
-          <button type="button" class="chip" data-v="semanal" onclick="selChip(this,'oferta-pag-freq');toggleOfertaPagSemanal()">Semanal</button>
-          <button type="button" class="chip" data-v="quinzenal" onclick="selChip(this,'oferta-pag-freq');toggleOfertaPagSemanal()">Quinzenal</button>
+        <input type="hidden" id="oferta-resposta-id"/>
+
+        <div id="oferta-passo1">
+          <p class="hint">Primeiro aceite a oferta ou envie uma contra-proposta de valor. Depois você escolhe como quer receber.</p>
+          <label class="lbl">Contra-proposta diária (R$) — opcional</label>
+          <input class="inp" id="oferta-contra-valor" type="number" placeholder="Deixe vazio para aceitar o valor da família"/>
+          <label class="lbl">Mensagem</label>
+          <input class="inp" id="oferta-contra-msg" placeholder="Ex.: Posso iniciar às 19h"/>
+          <button class="btn btn-p" type="button" style="margin-top:12px" onclick="aceitarOfertaCuidador()">Aceitar oferta</button>
+          <button class="btn btn-o" type="button" style="margin-top:8px" onclick="contraOfertaCuidador()">Enviar contra-proposta</button>
+          <button class="btn btn-g" type="button" style="margin-top:8px;background:#fef2f2;color:var(--err);border:1px solid #fecaca" onclick="recusarOfertaCuidador()">Recusar oferta</button>
         </div>
-        <div id="oferta-pag-dia-semana" style="display:none;margin-top:8px">
-          <label class="lbl">Dia da semana para recebimento</label>
-          <div class="chip-row" id="oferta-pag-dia">
-            <button type="button" class="chip on" data-v="seg" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Seg</button>
-            <button type="button" class="chip" data-v="ter" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Ter</button>
-            <button type="button" class="chip" data-v="qua" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Qua</button>
-            <button type="button" class="chip" data-v="qui" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Qui</button>
-            <button type="button" class="chip" data-v="sex" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Sex</button>
-            <button type="button" class="chip" data-v="sab" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Sáb</button>
-            <button type="button" class="chip" data-v="dom" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Dom</button>
+
+        <div id="oferta-passo2" style="display:none">
+          <p class="hint" id="oferta-passo2-hint">Agora escolha <strong>como quer receber</strong> e finalize. O contratante receberá a notificação para fechar o negócio. (PIX/boleto só depois, em Faturamento.)</p>
+          <label class="lbl">Forma de recebimento</label>
+          <div class="chip-row" id="oferta-pag-freq">
+            <button type="button" class="chip on" data-v="diaria" onclick="selChip(this,'oferta-pag-freq');toggleOfertaPagSemanal()">Diária (fim do plantão)</button>
+            <button type="button" class="chip" data-v="semanal" onclick="selChip(this,'oferta-pag-freq');toggleOfertaPagSemanal()">A cada 7 dias</button>
+            <button type="button" class="chip" data-v="quinzenal" onclick="selChip(this,'oferta-pag-freq');toggleOfertaPagSemanal()">Quinzenal</button>
           </div>
+          <label class="lbl" style="margin-top:12px">Duração do trabalho (dias)</label>
+          <input class="inp" id="oferta-duracao-dias" type="number" min="1" max="365" value="15" placeholder="Ex.: 15" oninput="atualizarResumoPagOferta()"/>
+          <div id="oferta-pag-dia-semana" style="display:none;margin-top:8px">
+            <label class="lbl">Dia da semana para recebimento</label>
+            <div class="chip-row" id="oferta-pag-dia">
+              <button type="button" class="chip on" data-v="seg" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Seg</button>
+              <button type="button" class="chip" data-v="ter" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Ter</button>
+              <button type="button" class="chip" data-v="qua" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Qua</button>
+              <button type="button" class="chip" data-v="qui" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Qui</button>
+              <button type="button" class="chip" data-v="sex" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Sex</button>
+              <button type="button" class="chip" data-v="sab" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Sáb</button>
+              <button type="button" class="chip" data-v="dom" onclick="selChip(this,'oferta-pag-dia');atualizarResumoPagOferta()">Dom</button>
+            </div>
+          </div>
+          <p class="hint" id="oferta-pag-resumo" style="margin-top:8px"></p>
+          <div class="note" style="margin-top:12px;font-size:12px;line-height:1.5">
+            <p><strong>Aviso:</strong> O app não se responsabiliza por inadimplência. Pagamento acordado entre as partes.</p>
+            <p style="margin-top:8px"><strong>Primeiro pagamento:</strong> somente após autenticação da primeira diária pelo contratante.</p>
+            <div style="margin-top:8px" id="oferta-aviso-multa"></div>
+          </div>
+          <button class="btn btn-p" type="button" style="margin-top:12px" onclick="finalizarFormaRecebimento()">Finalizar e enviar ao contratante</button>
         </div>
-        <p class="hint" id="oferta-pag-resumo" style="margin-top:8px"></p>
-        <label class="lbl">Contra-proposta diária (R$) — opcional</label>
-        <input class="inp" id="oferta-contra-valor" type="number" placeholder="Deixe vazio para aceitar valor da família"/>
-        <label class="lbl">Mensagem</label>
-        <input class="inp" id="oferta-contra-msg" placeholder="Ex.: Posso iniciar às 19h"/>
-        <div class="note" style="margin-top:12px;font-size:12px;line-height:1.5">
-          <p><strong>Aviso:</strong> O Idoso Care 24H é uma plataforma de conexão e registro seguro de atividades entre famílias e cuidadores. <strong>Não nos responsabilizamos por inadimplência</strong> — o pagamento é acordado diretamente entre as partes.</p>
-          <p style="margin-top:8px"><strong>Primeiro pagamento:</strong> somente após o preenchimento e a <strong>assinatura eletrônica do primeiro dia de serviço</strong> pelo contratante (cartão de ponto / diário do idoso).</p>
-        </div>
-        <button class="btn btn-p" type="button" onclick="aceitarOfertaCuidador()">Aceitar oferta</button>
-        <button class="btn btn-o" type="button" style="margin-top:8px" onclick="contraOfertaCuidador()">Enviar nova proposta</button>
-        <button class="btn btn-g" type="button" style="margin-top:8px;background:#fef2f2;color:var(--err);border:1px solid #fecaca" onclick="recusarOfertaCuidador()">Recusar oferta</button>
       </div>
     </div>
   </section>
@@ -1346,7 +1346,6 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
   <div id="modalContent" style="text-align:center;color:#fff"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -1755,31 +1754,19 @@ function toast(msg){
   t.textContent=msg; t.classList.add('on');
   setTimeout(()=>t.classList.remove('on'),2500);
 }
-async function solicitarMatch(){
+async function abrirChatNegocio(){
   try{
     ic24InitFirebase();
-    if(!ic24Auth.currentUser){ toast('Faça login como família'); irLogin(); return; }
-    await ic24SolicitarMatch(IC24_DEMO_CAREGIVER);
-    ic24FillPixScreen();
-    show('pix-pay');
-    toast('Match registrado — pague o PIX para liberar o chat');
-  }catch(e){ toast(e.message||'Erro ao solicitar match'); }
-}
-async function copiarPixChave(){
-  await ic24CopyText(IC24_PIX.keyDisplay);
-  toast('Copiado!');
-}
-async function copiarPixCodigo(){
-  const code=window._ic24PixCode||ic24PixCopiaCola();
-  await ic24CopyText(code);
-  toast('Copiado!');
-}
-async function confirmarPix(){
-  try{
-    const chatId=await ic24ConfirmarPixPagamento();
-    toast('Pagamento confirmado — chat liberado!');
-    abrirChat(chatId,true);
-  }catch(e){ toast(e.message||'Erro ao confirmar PIX'); }
+    if(!ic24Auth.currentUser){ toast('Faça login'); irLogin(); return; }
+    const chat=await ic24BuscarChatAtivoUsuario();
+    if(!chat||!chat.id){
+      toast('Chat bloqueado — feche o negócio em Minhas ofertas primeiro');
+      const role=(window._cuidPainel&&Object.keys(window._cuidPainel).length)?'caregiver':'family';
+      show(role==='caregiver'?'cuidador-ofertas':'familia-ofertas');
+      return;
+    }
+    await abrirChat(chat.id,true);
+  }catch(e){ toast(e.message||'Chat indisponível'); }
 }
 function renderChatMsgs(msgs){
   const box=document.getElementById('chatMsgs');
@@ -1925,21 +1912,29 @@ function renderTaxaAlerta(d){
 function renderOfertasTaxaBloqueio(d){
   const box=document.getElementById('ofertas-taxa-bloqueio');
   if(!box) return;
-  if(ic24OffersBlockedByFee(d)){
+  const multa=typeof ic24CancellationFeePending==='function'?ic24CancellationFeePending(d):0;
+  if(multa>0){
+    box.innerHTML='<div class="fee-warn"><strong>Multa de cancelamento pendente: '+fmtMoeda(multa)+'</strong><br/>Quite para aceitar ofertas e enviar propostas.</div>';
+  }else if(ic24OffersBlockedByFee(d)){
     box.innerHTML='<div class="fee-warn"><strong>Ofertas bloqueadas</strong> — taxa pendente '+fmtMoeda(ic24PlatformFeePending(d))+'. Você pode visualizar, mas não aceitar nem enviar proposta até pagar em Taxa do app (7%).</div>';
   } else box.innerHTML='';
+}
+function injetarAvisoMultaCancelamento(elId){
+  const el=document.getElementById(elId);
+  if(el&&typeof ic24HtmlAvisoMultaCancelamento==='function') el.innerHTML=ic24HtmlAvisoMultaCancelamento();
 }
 
 function renderCurriculo(d, cls, docsMap){
   const box=document.getElementById('cuid-curriculo-dados');
   const classBox=document.getElementById('cuid-classificacao-box');
   if(!box) return;
-  const addr=d.address||enderecoResumo('cad')||'—';
+  const regiao=[d.city,d.state].filter(Boolean).join(' — ')||'—';
   const specs=(d.specialties||window._cuidSpecs||[]).join(', ')||'—';
   const docCount=docsMap?Object.keys(docsMap).length:(d.documentsCount||0);
   box.innerHTML=
     '<p><strong>Nome:</strong> '+escapeHtml(d.fullName||'—')+'</p>'+
-    '<p><strong>Endereço:</strong> '+escapeHtml(addr)+'</p>'+
+    '<p><strong>Região:</strong> '+escapeHtml(regiao)+'</p>'+
+    '<p class="hint" style="font-size:12px">Telefone, e-mail e endereço completo não aparecem no currículo enviado ao contratante.</p>'+
     '<p><strong>Sobre:</strong> '+escapeHtml(d.bio||document.getElementById('cuid-bio')?.value||'—')+'</p>'+
     '<p><strong>Especialidades:</strong> '+escapeHtml(specs)+'</p>'+
     '<p><strong>Valores:</strong> '+fmtMoeda(d.hourRate)+'/h · '+fmtMoeda(d.dailyRate)+'/dia</p>'+
@@ -1974,14 +1969,29 @@ function renderOfertas(){
 }
 function selecionarOfertaCuidador(id){
   document.getElementById('oferta-acao-id').value=id;
+  document.getElementById('oferta-resposta-id').value='';
   document.getElementById('oferta-acao-box').style.display='block';
+  document.getElementById('oferta-passo1').style.display='block';
+  document.getElementById('oferta-passo2').style.display='none';
   document.getElementById('oferta-acao-titulo').textContent='Responder oferta '+id.slice(0,8)+'…';
   window._ofertaAtualId=id;
   ic24InitFirebase();
   ic24Db.collection('job_offers').doc(id).get().then(snap=>{
     window._ofertaAtual=snap.exists?{id,...snap.data()}:null;
-    atualizarResumoPagOferta();
   }).catch(()=>{ window._ofertaAtual=null; });
+}
+function mostrarPasso2Oferta(responseId, isCounter){
+  document.getElementById('oferta-resposta-id').value=responseId;
+  document.getElementById('oferta-passo1').style.display='none';
+  document.getElementById('oferta-passo2').style.display='block';
+  injetarAvisoMultaCancelamento('oferta-aviso-multa');
+  const hint=document.getElementById('oferta-passo2-hint');
+  if(hint){
+    hint.innerHTML=isCounter
+      ? 'Contra-proposta registrada. Agora escolha <strong>como quer receber</strong> e finalize.'
+      : 'Oferta aceita. Agora escolha <strong>como quer receber</strong> e finalize.';
+  }
+  toggleOfertaPagSemanal();
 }
 function toggleOfertaPagSemanal(){
   const freq=chipVal('oferta-pag-freq')||'diaria';
@@ -2001,51 +2011,56 @@ function atualizarResumoPagOferta(){
   try{
     const freq=chipVal('oferta-pag-freq')||'diaria';
     const weekDay=chipVal('oferta-pag-dia')||'seg';
+    const dias=parseInt(document.getElementById('oferta-duracao-dias')?.value,10)||15;
     const rate=taxaDiariaOfertaAtual()||1;
-    const calc=ic24CalcularPropostaPagamento(rate,freq,weekDay);
-    el.textContent='Recebimento: '+calc.scheduleLabel+(calc.diariasCount>1?' · '+calc.diariasCount+' diárias por ciclo':'');
+    const calc=ic24CalcularPropostaPagamento(rate,freq,weekDay,dias);
+    el.textContent='Resumo: '+calc.scheduleLabel+' · '+dias+' dias · R$ '+Number(calc.perCycleAmount).toFixed(2)+' por ciclo';
   }catch(_){ el.textContent=''; }
 }
-function payloadPropostaOferta(action){
+function termosRecebimentoOferta(){
   const freq=chipVal('oferta-pag-freq')||'diaria';
   const weekDay=chipVal('oferta-pag-dia')||'seg';
-  const contra=parseFloat(document.getElementById('oferta-contra-valor')?.value);
-  const rate=(contra&&contra>0)?contra:taxaDiariaOfertaAtual();
-  if(!rate||rate<=0) throw new Error('Informe ou aceite um valor diário');
-  if(action==='counter'&&(!contra||contra<=0)) throw new Error('Informe valor da contra-proposta');
-  const calc=ic24CalcularPropostaPagamento(rate,freq,weekDay);
-  return {
-    action,
-    proposedDailyRate: action==='counter'?contra:null,
-    message: document.getElementById('oferta-contra-msg')?.value||'',
-    paymentSchedule: calc.paymentSchedule,
-    paymentWeekDay: calc.paymentWeekDay||null,
-    scheduleLabel: calc.scheduleLabel,
-    diariasCount: calc.diariasCount,
-    dailyRateUsed: rate,
-  };
+  const dias=parseInt(document.getElementById('oferta-duracao-dias')?.value,10)||15;
+  if(!dias||dias<1) throw new Error('Informe a duração do trabalho em dias');
+  return { paymentSchedule: freq, paymentWeekDay: weekDay, jobDurationDays: dias };
 }
 async function aceitarOfertaCuidador(){
+  if(typeof ic24UserBlockedByDebts==='function'&&ic24UserBlockedByDebts(window._cuidPainel||{})){
+    toast('Taxa ou multa pendente — regularize antes de aceitar ofertas');
+    show('cuidador-taxa'); return;
+  }
   if(ic24OffersBlockedByFee(window._cuidPainel||{})){ toast('Taxa pendente ≥ R$ 50 — pague em Taxa do app (7%)'); show('cuidador-taxa'); return; }
   const id=document.getElementById('oferta-acao-id').value;
   if(!id){ toast('Selecione uma oferta'); return; }
   try{
-    const payload=payloadPropostaOferta('accept');
-    await ic24ResponderOferta(id,payload);
-    toast('Oferta aceita — '+payload.scheduleLabel);
-    await carregarPainelCuidador();
-    renderOfertas();
+    const r=await ic24Passo1Oferta(id,{action:'accept',message:document.getElementById('oferta-contra-msg')?.value||''});
+    mostrarPasso2Oferta(r.id,false);
+    toast('Oferta aceita — escolha como quer receber');
   }catch(e){ toast(e.message||'Erro'); }
 }
 async function contraOfertaCuidador(){
+  if(typeof ic24UserBlockedByDebts==='function'&&ic24UserBlockedByDebts(window._cuidPainel||{})){
+    toast('Taxa ou multa pendente — regularize antes de enviar propostas');
+    show('cuidador-taxa'); return;
+  }
   if(ic24OffersBlockedByFee(window._cuidPainel||{})){ toast('Taxa pendente ≥ R$ 50 — pague em Taxa do app (7%)'); show('cuidador-taxa'); return; }
   const id=document.getElementById('oferta-acao-id').value;
-  const v=document.getElementById('oferta-contra-valor').value;
-  if(!id||!v){ toast('Informe valor da contra-proposta'); return; }
+  const v=parseFloat(document.getElementById('oferta-contra-valor')?.value);
+  if(!id||!v||v<=0){ toast('Informe valor da contra-proposta'); return; }
   try{
-    const payload=payloadPropostaOferta('counter');
-    await ic24ResponderOferta(id,payload);
-    toast('Nova proposta enviada — '+payload.scheduleLabel);
+    const r=await ic24Passo1Oferta(id,{action:'counter',proposedDailyRate:v,message:document.getElementById('oferta-contra-msg')?.value||''});
+    mostrarPasso2Oferta(r.id,true);
+    toast('Contra-proposta registrada — escolha como quer receber');
+  }catch(e){ toast(e.message||'Erro'); }
+}
+async function finalizarFormaRecebimento(){
+  const responseId=document.getElementById('oferta-resposta-id').value;
+  if(!responseId){ toast('Complete o passo anterior'); return; }
+  try{
+    const terms=termosRecebimentoOferta();
+    const r=await ic24FinalizarFormaRecebimento(responseId,terms);
+    toast('Enviado ao contratante!');
+    document.getElementById('oferta-acao-box').style.display='none';
     renderOfertas();
   }catch(e){ toast(e.message||'Erro'); }
 }
@@ -2382,19 +2397,31 @@ async function publicarOfertaUrgente(){
 
 async function carregarOfertasFamilia(){
   const list=document.getElementById('fam-ofertas-list');
+  const notifBox=document.getElementById('fam-notificacoes-list');
   if(!list) return;
   try{
+    const notifs=await ic24ListarNotificacoesFamilia();
+    if(notifBox){
+      const avisoMulta=typeof ic24HtmlAvisoMultaCancelamento==='function'?ic24HtmlAvisoMultaCancelamento():'';
+      notifBox.innerHTML=notifs.length?notifs.map(n=>'<div class="list-item" style="border-color:var(--p);background:var(--pl)"><b>🔔 '+escapeHtml(n.caregiverName||'Cuidador')+'</b><p style="font-size:14px;margin:8px 0">'+escapeHtml(n.message||'')+'</p>'+
+        '<div class="note" style="font-size:12px;margin:8px 0">'+avisoMulta+'</div>'+
+        '<button class="btn btn-p" type="button" style="height:36px;margin-right:6px" onclick="familiaFecharNegocio(\''+n.responseId+'\',true,\''+n.id+'\')">Fechar negócio</button>'+
+        '<button class="btn btn-g" type="button" style="height:36px;background:#fef2f2;color:var(--err);border:1px solid #fecaca" onclick="familiaFecharNegocio(\''+n.responseId+'\',false,\''+n.id+'\')">Recusar</button></div>').join(''):'';
+    }
     const ofertas=await ic24ListarOfertasFamilia();
     let html='';
     for(const o of ofertas){
       html+=ic24FmtOferta(o);
       const resps=await ic24ListarRespostasOferta(o.id);
       resps.forEach(r=>{
-        html+='<div class="list-item" style="margin-left:12px;border-style:dashed"><b>Proposta cuidador</b><small>'+
-          (r.action==='accept'?'Aceitou':'Contra: R$ '+r.proposedDailyRate)+' · '+escapeHtml(r.message||'')+'</small>';
-        if(r.status==='counter_pending'){
-          html+='<button class="btn btn-p" type="button" style="margin-top:6px;height:36px" onclick="familiaAceitarProposta(\''+r.id+'\',true)">Aceitar</button> ';
-          html+='<button class="btn btn-g" type="button" style="margin-top:6px;height:36px" onclick="familiaAceitarProposta(\''+r.id+'\',false)">Recusar</button>';
+        if(r.status==='awaiting_terms') return;
+        html+='<div class="list-item" style="margin-left:12px;border-style:dashed"><b>'+escapeHtml(r.status==='pending_family'?'Aguardando sua resposta':'Proposta cuidador')+'</b><small>'+
+          (r.action==='counter'?'Contra: R$ '+r.proposedDailyRate:'Aceitou')+
+          (r.scheduleLabel?' · '+escapeHtml(r.scheduleLabel):'')+
+          (r.message?' · '+escapeHtml(r.message):'')+'</small>';
+        if(r.status==='pending_family'){
+          html+='<button class="btn btn-p" type="button" style="margin-top:6px;height:36px" onclick="familiaFecharNegocio(\''+r.id+'\',true)">Fechar negócio</button> ';
+          html+='<button class="btn btn-g" type="button" style="margin-top:6px;height:36px" onclick="familiaFecharNegocio(\''+r.id+'\',false)">Recusar</button>';
         }
         html+='</div>';
       });
@@ -2403,12 +2430,17 @@ async function carregarOfertasFamilia(){
   }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
 }
 
-async function familiaAceitarProposta(responseId, accept){
+async function familiaFecharNegocio(responseId, accept, notificationId){
   try{
-    await ic24FamiliaAceitarContraProposta(responseId, accept);
-    toast(accept?'Proposta aceita — plantão confirmado!':'Proposta recusada');
+    await ic24FamiliaAceitarContraProposta(responseId, accept, notificationId||null);
+    toast(accept?'Negócio fechado — chat liberado!':'Proposta recusada');
+    if(accept) await abrirChatNegocio();
     carregarOfertasFamilia();
   }catch(e){ toast(e.message||'Erro'); }
+}
+
+async function familiaAceitarProposta(responseId, accept){
+  return familiaFecharNegocio(responseId, accept, null);
 }
 
 async function carregarPontoFamilia(){

@@ -173,74 +173,58 @@ async function ic24SalvarFamilia() {
 
 const IC24_DEMO_CAREGIVER = 'demo_caregiver_maria';
 
-async function ic24SolicitarMatch(caregiverId) {
+async function ic24CriarChatNegocioFechado(familyId, caregiverId, offerId) {
   ic24InitFirebase();
-  const familyId = ic24Auth.currentUser?.uid;
-  if (!familyId) throw new Error('Faça login como família');
-  const cgId = caregiverId || IC24_DEMO_CAREGIVER;
-  const matchId = 'm_' + familyId + '_' + cgId;
-  const chatId = 'chat_' + matchId;
-  await ic24Db.collection('matches').doc(matchId).set(
-    {
-      familyId,
-      caregiverId: cgId,
-      chatId,
-      chatUnlocked: false,
-      paymentStatus: 'pending',
-      pixAmount: 0.5,
-      pixBeneficiary: 'Eder Lucas Santos Tiago',
-      pixKey: '11968362005',
-      status: 'contact_requested',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    },
-    { merge: true },
-  );
+  if (!familyId || !caregiverId) throw new Error('Participantes inválidos');
+  const chatId = 'chat_' + familyId + '_' + caregiverId;
   await ic24Db.collection('chats').doc(chatId).set(
     {
-      participants: [familyId, cgId],
-      caregiverId: cgId,
+      participants: [familyId, caregiverId],
       familyId,
-      chatUnlocked: false,
-      lastMessage: 'Match solicitado — aguardando PIX',
+      caregiverId,
+      offerId: offerId || null,
+      chatUnlocked: true,
+      unlockedReason: 'negocio_fechado',
+      unlockedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      lastMessage: 'Negócio fechado — conversa liberada',
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     },
     { merge: true },
   );
-  window._ic24MatchId = matchId;
-  window._ic24ChatId = chatId;
-  return { matchId, chatId };
+  await ic24Db.collection('matches').doc('match_' + (offerId || chatId)).set(
+    {
+      familyId,
+      caregiverId,
+      offerId: offerId || null,
+      chatId,
+      chatUnlocked: true,
+      status: 'matched',
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    },
+    { merge: true },
+  );
+  return chatId;
 }
 
-async function ic24ConfirmarPixPagamento() {
+async function ic24BuscarChatAtivoUsuario() {
   ic24InitFirebase();
-  const matchId = window._ic24MatchId;
-  const chatId = window._ic24ChatId;
-  if (!matchId || !chatId) throw new Error('Match não encontrado');
-  const familyId = ic24Auth.currentUser?.uid;
-  await ic24Db.collection('matches').doc(matchId).update({
-    chatUnlocked: true,
-    paymentStatus: 'confirmed',
-    paidAt: firebase.firestore.FieldValue.serverTimestamp(),
-    status: 'chat_active',
-  });
-  await ic24Db.collection('chats').doc(chatId).update({
-    chatUnlocked: true,
-    lastMessage: 'Chat liberado após PIX',
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-  });
-  await ic24Db.collection('payments').add({
-    matchId,
-    chatId,
-    familyId,
-    amount: 0.5,
-    currency: 'BRL',
-    method: 'pix',
-    pixBeneficiary: 'Eder Lucas Santos Tiago',
-    pixKey: '11968362005',
-    status: 'confirmed',
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-  });
-  return chatId;
+  const uid = ic24Auth.currentUser?.uid;
+  if (!uid) return null;
+  const byFamily = await ic24Db
+    .collection('chats')
+    .where('familyId', '==', uid)
+    .where('chatUnlocked', '==', true)
+    .limit(1)
+    .get();
+  if (!byFamily.empty) return { id: byFamily.docs[0].id, ...byFamily.docs[0].data() };
+  const byCaregiver = await ic24Db
+    .collection('chats')
+    .where('caregiverId', '==', uid)
+    .where('chatUnlocked', '==', true)
+    .limit(1)
+    .get();
+  if (!byCaregiver.empty) return { id: byCaregiver.docs[0].id, ...byCaregiver.docs[0].data() };
+  return null;
 }
 
 function ic24ListenChat(chatId, onMessages) {
@@ -260,6 +244,8 @@ async function ic24SendChatMessage(chatId, text) {
   ic24InitFirebase();
   const uid = ic24Auth.currentUser?.uid;
   if (!uid || !text.trim()) return;
+  const unlocked = await ic24MatchChatUnlocked(chatId);
+  if (!unlocked) throw new Error('Chat bloqueado — feche o negócio antes de conversar');
   await ic24Db.collection('chats').doc(chatId).collection('messages').add({
     senderId: uid,
     text: text.trim(),

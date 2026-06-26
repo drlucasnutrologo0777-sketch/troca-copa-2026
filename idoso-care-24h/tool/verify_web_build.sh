@@ -8,6 +8,8 @@ grep -q 'OnboardingGate' lib/main.dart && { echo "ERRO: main.dart ainda referenc
 grep -q 'HomeShell' lib/main.dart && { echo "ERRO: main.dart ainda referencia HomeShell (app antigo)"; exit 1; } || true
 test -f web_app/index.html || { echo "ERRO: web_app/index.html ausente"; exit 1; }
 grep -q 'Protótipo Web' web_app/index.html && { echo "ERRO: badge Protótipo Web ainda presente (Apple rejeita)"; exit 1; } || true
+grep -q 'id="pix-pay"' web_app/index.html && { echo "ERRO: tela pix-pay (Troca Copa) no Idoso Care — remover"; exit 1; } || true
+grep -q 'PIX para liberar chat' web_app/index.html && { echo "ERRO: PIX R\$ 0,50 chat no Idoso Care — remover"; exit 1; } || true
 echo "OK: fonte aponta para WebAppScreen + web_app/"
 
 if [ "${1:-}" = "--ipa" ]; then

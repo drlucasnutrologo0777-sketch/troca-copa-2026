@@ -2,6 +2,8 @@
 
 const IC24_FEE_LIMIT = 50;
 const IC24_FEE_RATE = 0.07;
+const IC24_CANCEL_FEE_RATE = 0.07;
+const IC24_CANCEL_FEE_EACH = 0.035;
 const IC24_PIX_BENEFICIARIO = {
   name: 'Eder Lucas Santos Tiago',
   key: '+5511968362005',
@@ -39,8 +41,24 @@ function ic24PlatformFeePending(d) {
   return Number((d && d.platformFeePending) || 0);
 }
 
+function ic24CancellationFeePending(d) {
+  return Number((d && d.cancellationFeePending) || 0);
+}
+
 function ic24OffersBlockedByFee(d) {
   return ic24PlatformFeePending(d) >= IC24_FEE_LIMIT;
+}
+
+function ic24UserBlockedByDebts(d) {
+  return ic24OffersBlockedByFee(d) || ic24CancellationFeePending(d) > 0;
+}
+
+function ic24HtmlAvisoMultaCancelamento() {
+  return (
+    '<p><strong>Cancelamento após fechar negócio:</strong> multa de <strong>7%</strong> do valor acordado, ' +
+    'dividida entre as partes (<strong>3,5% cada</strong>). ' +
+    '<strong>Não pagar impede novas ofertas e novos trabalhos no app.</strong></p>'
+  );
 }
 
 async function ic24AcumularTaxaPlataforma(caregiverId, valorServico) {
@@ -71,66 +89,214 @@ const IC24_DIAS_SEMANA = {
   sab: 'sábado',
 };
 
-function ic24CalcularPropostaPagamento(dailyRate, freq, weekDay) {
+function ic24CalcularPropostaPagamento(dailyRate, freq, weekDay, jobDurationDays) {
   const rate = Number(dailyRate) || 0;
   if (!rate || rate <= 0) throw new Error('Informe um valor diário válido');
+  const days = Math.max(1, Number(jobDurationDays) || 30);
+  let base;
   if (freq === 'diaria') {
-    return {
+    base = {
       paymentSchedule: 'diaria',
       diariasCount: 1,
+      perCycleAmount: rate,
       totalAmount: rate,
       description: '1 diária — pagamento ao fim do plantão',
-      scheduleLabel: 'Diária (ao fim do plantão)',
+      scheduleLabel: 'Diária (ao fim de cada plantão)',
+      totalCycles: days,
     };
-  }
-  if (freq === 'semanal') {
+  } else if (freq === 'semanal') {
     const dia = IC24_DIAS_SEMANA[weekDay] || weekDay || 'dia escolhido';
-    return {
+    const amt = Math.round(rate * 7 * 100) / 100;
+    base = {
       paymentSchedule: 'semanal',
       paymentWeekDay: weekDay || 'seg',
       diariasCount: 7,
-      totalAmount: Math.round(rate * 7 * 100) / 100,
+      perCycleAmount: amt,
+      totalAmount: amt,
       description: '7 diárias — pagamento semanal (' + dia + ')',
       scheduleLabel: 'Semanal — ' + dia,
+      totalCycles: Math.ceil(days / 7),
     };
-  }
-  if (freq === 'quinzenal') {
-    return {
+  } else if (freq === 'quinzenal') {
+    const amt = Math.round(rate * 14 * 100) / 100;
+    base = {
       paymentSchedule: 'quinzenal',
       diariasCount: 14,
-      totalAmount: Math.round(rate * 14 * 100) / 100,
+      perCycleAmount: amt,
+      totalAmount: amt,
       description: '14 diárias — pagamento quinzenal',
       scheduleLabel: 'Quinzenal',
+      totalCycles: Math.ceil(days / 14),
     };
+  } else {
+    throw new Error('Selecione a forma de recebimento');
   }
-  throw new Error('Selecione a forma de recebimento');
+  base.jobDurationDays = days;
+  base.totalContractAmount = Math.round(base.perCycleAmount * base.totalCycles * 100) / 100;
+  return base;
 }
 
-async function ic24GerarPixPropostaOferta({ dailyRate, paymentSchedule, paymentWeekDay }) {
+async function ic24ObterOfertaAtivaCuidador(caregiverId) {
+  ic24InitFirebase();
+  const cgId = caregiverId || ic24Auth.currentUser?.uid;
+  if (!cgId) return null;
+  const snap = await ic24Db
+    .collection('job_offers')
+    .where('matchedCaregiverId', '==', cgId)
+    .where('status', '==', 'matched')
+    .limit(5)
+    .get();
+  if (snap.empty) return null;
+  const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  list.sort((a, b) => {
+    const ta = a.matchedAt?.toMillis?.() || a.matchedAt?.seconds * 1000 || 0;
+    const tb = b.matchedAt?.toMillis?.() || b.matchedAt?.seconds * 1000 || 0;
+    return tb - ta;
+  });
+  return list[0];
+}
+
+async function ic24PrefillCobrancaDoPlantao() {
   ic24InitFirebase();
   const caregiverId = ic24Auth.currentUser?.uid;
-  if (!caregiverId) throw new Error('Faça login como cuidador');
-  const calc = ic24CalcularPropostaPagamento(dailyRate, paymentSchedule, paymentWeekDay);
-  const cgSnap = await ic24Db.collection('caregivers').doc(caregiverId).get();
-  const cg = cgSnap.data() || {};
-  const chavePix = (cg.pixKey || '').trim();
-  const titular = (cg.pixTitular || cg.fullName || '').trim();
-  if (!chavePix) {
-    throw new Error('Cadastre sua chave PIX em Faturamento antes de aceitar ou enviar proposta');
+  if (!caregiverId) return { canGenerate: false, reason: 'Faça login como cuidador' };
+  const offer = await ic24ObterOfertaAtivaCuidador(caregiverId);
+  if (!offer) return { canGenerate: false, reason: 'Nenhum plantão fechado no momento' };
+  const cycle = (offer.paymentCycleCurrent || 0) + 1;
+  const totalCycles = offer.paymentCyclesTotal || 1;
+  if (cycle > totalCycles) {
+    return { canGenerate: false, reason: 'Todos os ciclos de pagamento deste plantão já foram cobrados' };
   }
-  const txid = 'PROP' + Date.now().toString(36).toUpperCase().slice(-8);
-  const pixCopiaCola = ic24PixCopiaColaValor(calc.totalAmount, txid, chavePix, titular);
+  if (!offer.billingReady && cycle === 1) {
+    return {
+      canGenerate: false,
+      reason: 'Aguardando o contratante autenticar a primeira diária (cartão de ponto)',
+      offer,
+    };
+  }
+  const rate = Number(offer.agreedDailyRate || offer.dailyRate) || 0;
+  const calc = ic24CalcularPropostaPagamento(
+    rate,
+    offer.paymentSchedule || 'diaria',
+    offer.paymentWeekDay,
+    offer.jobDurationDays,
+  );
+  const amount = offer.perCycleAmount || calc.perCycleAmount;
+  const title = offer.title || 'Plantão';
+  const desc =
+    title +
+    ' — ciclo ' +
+    cycle +
+    '/' +
+    totalCycles +
+    ' (' +
+    (offer.scheduleLabel || calc.scheduleLabel) +
+    ')';
   return {
-    ...calc,
-    pixKey: chavePix,
-    pixTitular: titular,
-    pixCopiaCola,
-    txid,
-    dailyRate: Number(dailyRate),
+    canGenerate: true,
+    offerId: offer.id,
+    familyId: offer.familyId,
+    cycle,
+    totalCycles,
+    amount,
+    description: desc,
+    scheduleLabel: offer.scheduleLabel || calc.scheduleLabel,
+    offer,
   };
 }
 
-async function ic24GerarCobrancaCliente({ valor, descricao, metodo, linkCartao, familyId, pixKey, pixTitular }) {
+async function ic24GerarCobrancaCicloPlantao({ pixKey, pixTitular, linkCartao, metodo }) {
+  const pre = await ic24PrefillCobrancaDoPlantao();
+  if (!pre.canGenerate) throw new Error(pre.reason || 'Cobrança não disponível');
+  const inv = await ic24GerarCobrancaCliente({
+    valor: pre.amount,
+    descricao: pre.description,
+    metodo: metodo || 'boleto',
+    linkCartao,
+    familyId: pre.familyId,
+    pixKey,
+    pixTitular,
+    offerId: pre.offerId,
+    paymentCycle: pre.cycle,
+  });
+  await ic24Db.collection('job_offers').doc(pre.offerId).update({
+    billingReady: false,
+    lastInvoiceId: inv.id,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+  return inv;
+}
+
+async function ic24NotificarCuidadorPagamento(caregiverId, invoice) {
+  if (!caregiverId || !invoice) return;
+  ic24InitFirebase();
+  await ic24Db.collection('caregiver_notifications').add({
+    caregiverId,
+    type: 'payment_received',
+    invoiceId: invoice.id,
+    offerId: invoice.offerId || null,
+    amount: invoice.amount,
+    message:
+      'Pagamento recebido: R$ ' +
+      Number(invoice.amount || 0).toFixed(2) +
+      (invoice.description ? ' — ' + invoice.description : ''),
+    read: false,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+}
+
+async function ic24ConfirmarPagamentoFamilia(invoiceId) {
+  ic24InitFirebase();
+  const familyId = ic24Auth.currentUser?.uid;
+  if (!familyId) throw new Error('Faça login como família');
+  const ref = ic24Db.collection('invoices').doc(invoiceId);
+  const snap = await ref.get();
+  if (!snap.exists) throw new Error('Cobrança não encontrada');
+  const inv = snap.data();
+  if (inv.familyId !== familyId) throw new Error('Sem permissão');
+  if (inv.status === 'paid') throw new Error('Pagamento já confirmado');
+  await ref.update({
+    status: 'paid',
+    paidAt: firebase.firestore.FieldValue.serverTimestamp(),
+    paidConfirmedBy: familyId,
+  });
+  const paid = { id: invoiceId, ...inv, status: 'paid' };
+  if (inv.caregiverId) await ic24NotificarCuidadorPagamento(inv.caregiverId, paid);
+  if (inv.offerId) {
+    const offerRef = ic24Db.collection('job_offers').doc(inv.offerId);
+    const offerSnap = await offerRef.get();
+    if (offerSnap.exists) {
+      const o = offerSnap.data();
+      const cur = Number(o.paymentCycleCurrent || 0);
+      const next = Math.max(cur, Number(inv.paymentCycle || cur + 1));
+      const patch = {
+        paymentCycleCurrent: next,
+        billingReady: next < (o.paymentCyclesTotal || 1),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      };
+      await offerRef.update(patch);
+    }
+  }
+  return paid;
+}
+
+async function ic24ListarNotificacoesCuidador(limit) {
+  ic24InitFirebase();
+  const uid = ic24Auth.currentUser?.uid;
+  if (!uid) return [];
+  const snap = await ic24QuerySnap(
+    () =>
+      ic24Db
+        .collection('caregiver_notifications')
+        .where('caregiverId', '==', uid)
+        .orderBy('createdAt', 'desc')
+        .limit(limit || 10),
+    () => ic24Db.collection('caregiver_notifications').where('caregiverId', '==', uid).limit(limit || 10),
+  );
+  return ic24SortByCreated(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+}
+
+async function ic24GerarCobrancaCliente({ valor, descricao, metodo, linkCartao, familyId, pixKey, pixTitular, offerId, paymentCycle }) {
   ic24InitFirebase();
   const caregiverId = ic24Auth.currentUser?.uid;
   if (!caregiverId) throw new Error('Faça login como cuidador');
@@ -150,6 +316,8 @@ async function ic24GerarCobrancaCliente({ valor, descricao, metodo, linkCartao, 
     id: ref.id,
     caregiverId,
     familyId: familyId || window._activeFamilyId || null,
+    offerId: offerId || null,
+    paymentCycle: paymentCycle || null,
     amount,
     description: descricao || 'Serviço de cuidador',
     method: metodo || 'pix',
@@ -165,7 +333,6 @@ async function ic24GerarCobrancaCliente({ valor, descricao, metodo, linkCartao, 
     data.pixBeneficiary = titular || IC24_PIX_BENEFICIARIO.name;
   }
   if (metodo === 'cartao' && !cardLink) throw new Error('Cole o link de pagamento com cartão');
-  if (metodo === 'boleto' && !cardLink) throw new Error('Cole o link de cartão para incluir no boleto');
   data.boletoHtml = ic24MontarBoletoHtml(data);
   await ref.set(data);
   if (chavePix && chavePix !== cg.pixKey) {
@@ -295,19 +462,25 @@ async function ic24ConfirmarTaxaPixPaga() {
 
 function ic24BaixarCurriculoCadastro(d, cls, docsMap) {
   const nome = d.fullName || 'Cuidador';
+  const cpfMask =
+    typeof ic24MaskCpf === 'function'
+      ? ic24MaskCpf(d.cpf)
+      : String(d.cpf || '')
+          .replace(/\D/g, '')
+          .replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '***.$2.$3-**');
+  const regiao = [d.city, d.state].filter(Boolean).join(' — ') || '—';
   const html =
     '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Currículo ' +
     nome +
     '</title><style>body{font-family:Arial,sans-serif;max-width:720px;margin:24px auto;padding:20px;color:#222}h1{color:#2E8B57}section{margin:16px 0;padding:12px;border:1px solid #e0e0e0;border-radius:8px}small{color:#666}</style></head><body>' +
     '<h1>Currículo Lates — Idoso Care 24H</h1>' +
-    '<section><h2>Dados pessoais</h2><p><b>Nome:</b> ' +
+    '<p><small>Sem telefone, e-mail ou endereço — dados de contato protegidos pela plataforma.</small></p>' +
+    '<section><h2>Dados públicos</h2><p><b>Nome:</b> ' +
     (d.fullName || '—') +
     '</p><p><b>CPF:</b> ' +
-    (d.cpf || '—') +
-    '</p><p><b>E-mail:</b> ' +
-    (d.email || '—') +
-    '</p><p><b>Endereço:</b> ' +
-    (d.address || d.city || '—') +
+    cpfMask +
+    '</p><p><b>Região:</b> ' +
+    regiao +
     '</p></section>' +
     '<section><h2>Perfil</h2><p>' +
     (d.bio || '—') +

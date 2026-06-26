@@ -68,7 +68,7 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--t
       '<div class="card"><h2>Especialidades</h2><p>'+esc((c.specialties||[]).join(' · ')||'—')+'</p></div>'+
       '<div class="card"><h2>Valores</h2>'+
         '<p><strong>Hora:</strong> '+fmt(c.hourRate)+' &nbsp; <strong>Diária:</strong> '+fmt(c.dailyRate)+'</p>'+
-        '<p><strong>Endereço base:</strong> '+esc(c.address||'—')+'</p>'+
+        (c.city?'<p><strong>Região:</strong> '+esc(c.city)+(c.state?', '+esc(c.state):'')+'</p>':'')+
       '</div>'+
       '<div class="card"><h2>Documentos verificados</h2>'+
         '<p style="font-size:13px;color:var(--m);margin-bottom:12px">Fotos enviadas no cadastro — validadas pela plataforma.</p>'+
@@ -81,7 +81,7 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--t
       '</div>'+
       '<div class="card" style="font-size:13px;color:var(--m)">'+
         'Solicitado por: <strong>'+esc(request.familyName||'Contratante')+'</strong><br/>'+
-        'Este currículo é confidencial — uso exclusivo para contratação de cuidador.'+
+        'Este currículo é confidencial — sem telefone, e-mail ou endereço completo. Contato pelo chat após fechar negócio.'+
       '</div>'+
       '<p class="brand"><b>Idoso Care 24H</b> — Cuidadores de idosos com segurança e confiança</p>';
   }catch(e){

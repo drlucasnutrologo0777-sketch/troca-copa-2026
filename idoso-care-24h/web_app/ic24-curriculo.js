@@ -138,7 +138,6 @@ async function ic24RecomputeCurriculo(uid) {
   const curriculum = {
     caregiverId: uid,
     fullName: cg.fullName || '',
-    email: cg.email || '',
     cpfMasked: ic24MaskCpf(cg.cpf),
     bio: cg.bio || '',
     specialties: cg.specialties || [],
@@ -146,7 +145,6 @@ async function ic24RecomputeCurriculo(uid) {
     dailyRate: cg.dailyRate || null,
     city: cg.city || '',
     state: cg.state || '',
-    address: cg.address || '',
     photoUrl: cg.photoUrl || null,
     classification,
     documents: documentsPublic,
@@ -212,6 +210,9 @@ async function ic24CarregarCurriculoPorToken(token) {
     if (!curSnap.exists) throw new Error('Currículo não encontrado');
     curriculum = curSnap.data();
   }
+  delete curriculum.email;
+  delete curriculum.phone;
+  delete curriculum.address;
   return { request: req, curriculum };
 }
 
