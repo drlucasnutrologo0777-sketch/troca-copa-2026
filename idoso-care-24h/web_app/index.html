@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#2E8B57"/>
 <title>Idoso Care 24H</title>
 <link rel="manifest" href="manifest.json"/>
+<link rel="icon" href="favicon.png" type="image/png"/>
+<link rel="apple-touch-icon" href="logo.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -22,12 +24,11 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
 .pad{padding:24px 20px 32px;flex:1}
 .logo-wrap{text-align:center;padding:32px 0 24px}
 .logo{
-  width:72px;height:72px;margin:0 auto 16px;border-radius:20px;
-  background:linear-gradient(145deg,var(--p),var(--pd));
-  display:flex;align-items:center;justify-content:center;
+  width:88px;height:88px;margin:0 auto 16px;border-radius:20px;
+  overflow:hidden;
   box-shadow:0 8px 24px rgba(46,139,87,.25);
 }
-.logo svg{width:36px;height:36px;fill:#fff}
+.logo img{width:100%;height:100%;object-fit:cover;display:block}
 .brand{font-size:24px;font-weight:700;color:var(--p)}
 .brand-sub{font-size:14px;color:var(--m);margin-top:6px;line-height:1.4}
 .screen{display:none}
@@ -50,6 +51,15 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
 .link-row{display:flex;justify-content:space-between;align-items:center;margin:4px 0 20px;font-size:14px}
 .link-row a{color:var(--s);text-decoration:none;font-weight:500}
 .link-row a:active{opacity:.7}
+.legal-foot{margin-top:24px;font-size:12px;color:var(--m);line-height:1.5;text-align:center}
+.legal-foot a{color:var(--p);text-decoration:none;font-weight:500}
+.account-foot{margin:18px 0 8px;text-align:center;font-size:12px;color:var(--m)}
+.account-foot a{color:var(--m);text-decoration:none;border-bottom:1px dotted var(--line)}
+.account-foot a:active{opacity:.7}
+.btn-danger{background:var(--err);color:#fff}
+.btn-danger:disabled{opacity:.45;cursor:not-allowed}
+.check-row{display:flex;align-items:flex-start;gap:10px;margin:14px 0;font-size:13px;color:var(--t)}
+.check-row input{margin-top:3px;accent-color:var(--err)}
 .register-line{text-align:center;margin-top:20px;font-size:15px;color:var(--m)}
 .register-line a{color:var(--p);font-weight:600;text-decoration:none}
 .step{font-size:12px;font-weight:600;color:var(--p);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
@@ -186,13 +196,14 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
     <div class="pad">
       <div class="logo-wrap">
         <div class="logo">
-          <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          <img src="logo.png" alt="Idoso Care 24H" width="88" height="88"/>
         </div>
         <div class="brand">Idoso Care 24H</div>
         <p class="brand-sub">Cuidadores de idosos com segurança e confiança</p>
       </div>
       <button class="btn btn-p" type="button" onclick="irLogin()">Entrar</button>
       <button class="btn btn-o" type="button" style="margin-top:12px" onclick="irEscolhaPerfil()">Criar conta</button>
+      <p class="legal-foot">Ao continuar, você concorda com os <a href="https://idoso-care-24h.web.app/termos.html" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="https://idoso-care-24h.web.app/privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>. <a href="https://idoso-care-24h.web.app/exclusao-conta.html" target="_blank" rel="noopener">Excluir conta</a></p>
     </div>
   </section>
 
@@ -211,7 +222,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
 
       <div class="link-row">
         <span></span>
-        <a href="#" onclick="toast('Recuperação por e-mail');return false">Esqueceu a senha?</a>
+        <a href="#" onclick="esqueciSenha();return false">Esqueceu a senha?</a>
       </div>
 
       <button class="btn btn-p" type="button" onclick="entrar()">Entrar</button>
@@ -321,11 +332,11 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <label class="lbl">Sobre mim</label>
       <textarea class="inp" id="cuid-bio" rows="4" style="height:auto;padding:12px 14px" placeholder="Ex.: 8 anos de experiência, plantões diurnos e 12x36…"></textarea>
 
-      <label class="lbl">Foto de perfil (opcional)</label>
+      <label class="lbl">Foto de perfil (obrigatória)</label>
       <div class="photo-pick" id="etapa2-foto-box" style="width:100px;height:100px;margin:0 0 16px;position:relative" onclick="document.getElementById('etapa2-foto-inp').click()">
         <img id="etapa2-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
         <span id="etapa2-foto-txt">📷 Toque para enviar foto</span>
-        <input type="file" id="etapa2-foto-inp" accept="image/*" capture="user" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilEtapa2(this)"/>
+        <input type="file" id="etapa2-foto-inp" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilEtapa2(this)"/>
       </div>
 
       <label class="lbl">Especialidades</label>
@@ -433,7 +444,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <img id="fotoPreview" alt="" style="display:none"/>
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2E8B57" stroke-width="2" id="fotoIcon"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
         <span id="fotoTxt">Toque para<br/>foto do perfil</span>
-        <input type="file" accept="image/*" capture="environment" onchange="fotoPerfil(this)"/>
+        <input type="file" accept="image/*" onchange="fotoPerfil(this)"/>
       </label>
 
       <label class="lbl">Nome completo</label>
@@ -531,77 +542,77 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <div class="ic">🪪</div>
         <div><b>RG — Registro Geral</b><small>Frente e verso (se aplicável)</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+        <input type="file" accept="image/*" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="cpf">
         <div class="ic">📋</div>
         <div><b>CPF</b><small>Documento ou cartão do CPF</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+        <input type="file" accept="image/*" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="comprovante">
         <div class="ic">🏠</div>
         <div><b>Comprovante de endereço</b><small>Conta de luz, água ou telefone (até 90 dias)</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+        <input type="file" accept="image/*" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="ctps">
         <div class="ic">💼</div>
         <div><b>Carteira de Trabalho</b><small>Página de identificação e contrato atual</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+        <input type="file" accept="image/*" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="diploma">
         <div class="ic">🎓</div>
         <div><b>Diploma / Certificado de formação</b><small>Curso de cuidador, técnico ou graduação</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+        <input type="file" accept="image/*" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="antecedentes">
         <div class="ic">🛡️</div>
         <div><b>Certidão de antecedentes criminais</b><small>Emitida nos últimos 90 dias</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+        <input type="file" accept="image/*" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="curso">
         <div class="ic">📜</div>
         <div><b>Certificado — Curso de Cuidador de Idosos</b><small>Primeiros socorros, medicação, etc.</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+        <input type="file" accept="image/*" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="inss">
         <div class="ic">🔢</div>
         <div><b>Número do INSS / PIS</b><small>Cartão ou extrato</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+        <input type="file" accept="image/*" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="titulo">
         <div class="ic">🗳️</div>
         <div><b>Título de eleitor</b><small>Opcional, se disponível</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+        <input type="file" accept="image/*" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="reservista">
         <div class="ic">⚔️</div>
         <div><b>Certificado de reservista</b><small>Quando aplicável</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+        <input type="file" accept="image/*" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="referencia">
         <div class="ic">📞</div>
         <div><b>Comprovante de experiência / referência</b><small>Declaração ou contracheque anterior</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" capture="environment" onchange="anexar(this)"/>
+        <input type="file" accept="image/*" onchange="anexar(this)"/>
       </div>
 
       <button class="btn btn-p" type="button" style="margin-top:16px" onclick="finalizar()">Enviar cadastro para análise</button>
@@ -739,6 +750,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <div><b>Denunciar cuidador</b><small>Canal formal + órgãos de proteção</small></div>
         <span class="menu-arr">›</span>
       </button>
+      <p class="account-foot"><a href="#" onclick="abrirExclusaoConta('familia-painel');return false">Privacidade · excluir conta</a></p>
     </div>
   </section>
 
@@ -747,6 +759,30 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
     <div class="pad">
       <p class="hint">Cuidadores com <strong>plantão hoje</strong> ativo — cruzamento com disponibilidade publicada.</p>
       <div id="fam-proximos-list"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="familia-cuidador-perfil">
+    <div class="topbar"><button type="button" onclick="show('familia-proximos')">←</button><h2>Perfil do cuidador</h2></div>
+    <div class="pad" id="fam-cuidador-perfil-box"><p class="hint">Carregando…</p></div>
+  </section>
+
+  <section class="screen" id="familia-cuidador-proposta">
+    <div class="topbar"><button type="button" onclick="show(window._propostaVoltar||'familia-proximos')">←</button><h2>Oferecer proposta</h2></div>
+    <div class="pad">
+      <input type="hidden" id="proposta-cuid-id"/>
+      <p class="hint" id="proposta-cuid-nome"></p>
+      <label class="lbl">Valor diária (R$)</label>
+      <input class="inp" id="proposta-valor" type="number" placeholder="Ex.: 250"/>
+      <label class="lbl">Tipo de cuidado / idoso</label>
+      <input class="inp" id="proposta-idoso" placeholder="Ex.: Idoso 82a, Alzheimer"/>
+      <label class="lbl">Necessidades</label>
+      <input class="inp" id="proposta-necessidades" placeholder="Medicação, banho…"/>
+      <label class="lbl">Duração (dias)</label>
+      <input class="inp" id="proposta-duracao" type="number" value="15" min="1"/>
+      <label class="lbl">Mensagem</label>
+      <input class="inp" id="proposta-msg" placeholder="Ex.: Posso iniciar segunda-feira"/>
+      <button class="btn btn-p" type="button" onclick="enviarPropostaCuidador()">Enviar proposta</button>
     </div>
   </section>
 
@@ -861,9 +897,9 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <label class="lbl">Mensagem</label>
       <textarea class="inp" id="contato-msg" rows="4" style="height:auto;padding:12px"></textarea>
       <button class="btn btn-p" type="button" onclick="enviarFaleConosco()">Enviar</button>
+      <p class="account-foot"><a href="#" onclick="abrirExclusaoConta('familia-painel');return false">Privacidade · excluir conta</a></p>
     </div>
   </section>
-
   <section class="screen" id="familia-denunciar">
     <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Denunciar cuidador</h2></div>
     <div class="pad">
@@ -873,6 +909,32 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <textarea class="inp" id="den-texto" rows="4" style="height:auto;padding:12px"></textarea>
       <button class="btn btn-p" type="button" style="background:var(--err)" onclick="denunciarCuidadorFamilia()">Registrar denúncia</button>
       <div class="note" style="margin-top:12px">Em risco imediato: ligue <strong>190</strong> ou <strong>100</strong>.</div>
+    </div>
+  </section>
+
+  <section class="screen" id="conta-excluir">
+    <div class="topbar">
+      <button type="button" onclick="show(window._contaVoltar||'familia-painel')">←</button>
+      <h2>Excluir conta</h2>
+    </div>
+    <div class="pad">
+      <div class="warn">
+        <strong>Exclusão permanente.</strong> Sua conta, perfil, documentos, chats e dados pessoais serão apagados dos nossos servidores. Esta ação <strong>não pode ser desfeita</strong>.
+      </div>
+      <p class="hint">Serão removidos: cadastro, currículo, ofertas, mensagens, tickets de suporte e arquivos enviados. Registros financeiros já concluídos podem ser mantidos de forma anonimizada por obrigação legal.</p>
+      <label class="lbl" for="excluir-senha">Confirme com sua senha</label>
+      <input class="inp" id="excluir-senha" type="password" placeholder="Senha atual" autocomplete="current-password"/>
+      <label class="check-row">
+        <input type="checkbox" id="excluir-confirm" onchange="atualizarBtnExcluir()"/>
+        <span>Entendo que a exclusão é <strong>permanente</strong> e desejo apagar minha conta.</span>
+      </label>
+      <button class="btn btn-danger" type="button" id="btnExcluirConta" disabled onclick="confirmarExcluirConta()">Apagar conta permanentemente</button>
+      <button class="btn btn-o" type="button" style="margin-top:10px" onclick="sairConta()">Sair da conta (sem apagar)</button>
+      <p class="account-foot" style="margin-top:20px">
+        <a href="https://idoso-care-24h.web.app/privacidade.html" target="_blank" rel="noopener">Política de privacidade</a>
+        ·
+        <a href="https://idoso-care-24h.web.app/termos.html" target="_blank" rel="noopener">Termos de uso</a>
+      </p>
     </div>
   </section>
 
@@ -972,6 +1034,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <div><b>Denunciar maus-tratos</b><small>Disque Denúncia e Conselho da Pessoa Idosa</small></div>
         <span class="menu-arr">›</span>
       </button>
+      <p class="account-foot"><a href="#" onclick="abrirExclusaoConta('cuidador-painel');return false">Privacidade · excluir conta</a></p>
     </div>
   </section>
 
@@ -987,7 +1050,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <div class="photo-pick" id="cuid-foto-box" style="width:100px;height:100px;margin:0 0 16px;position:relative" onclick="document.getElementById('cuid-foto-inp').click()">
         <img id="cuid-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
         <span id="cuid-foto-txt">📷 Toque para enviar foto</span>
-        <input type="file" id="cuid-foto-inp" accept="image/*" capture="environment" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilPainel(this)"/>
+        <input type="file" id="cuid-foto-inp" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilPainel(this)"/>
       </div>
       <label class="lbl">CPF</label>
       <input class="inp" id="cuid-cpf" placeholder="000.000.000-00" maxlength="14" oninput="maskCpf(this)"/>
@@ -1080,6 +1143,28 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <div><label class="lbl" style="font-size:11px">Hora saída</label><input class="inp" id="agenda-hora-saida" type="time" value="19:00"/></div>
       </div>
       <button class="btn btn-p" type="button" onclick="salvarAgenda()">Salvar agenda</button>
+      <p class="step" style="margin-top:20px">Como você prefere receber</p>
+      <p class="hint">Mesma preferência usada ao aceitar ofertas (também configurável em Plantão hoje).</p>
+      <div class="chip-row" id="agenda-pag-freq">
+        <button type="button" class="chip on" data-v="diaria" onclick="selChip(this,'agenda-pag-freq');toggleAgendaPagSemanal()">Diária</button>
+        <button type="button" class="chip" data-v="semanal" onclick="selChip(this,'agenda-pag-freq');toggleAgendaPagSemanal()">Semanal</button>
+        <button type="button" class="chip" data-v="quinzenal" onclick="selChip(this,'agenda-pag-freq');toggleAgendaPagSemanal()">Quinzenal</button>
+      </div>
+      <div id="agenda-pag-dia-semana" style="display:none;margin-top:8px">
+        <label class="lbl">Dia da semana</label>
+        <div class="chip-row" id="agenda-pag-dia">
+          <button type="button" class="chip on" data-v="seg" onclick="selChip(this,'agenda-pag-dia')">Seg</button>
+          <button type="button" class="chip" data-v="ter" onclick="selChip(this,'agenda-pag-dia')">Ter</button>
+          <button type="button" class="chip" data-v="qua" onclick="selChip(this,'agenda-pag-dia')">Qua</button>
+          <button type="button" class="chip" data-v="qui" onclick="selChip(this,'agenda-pag-dia')">Qui</button>
+          <button type="button" class="chip" data-v="sex" onclick="selChip(this,'agenda-pag-dia')">Sex</button>
+          <button type="button" class="chip" data-v="sab" onclick="selChip(this,'agenda-pag-dia')">Sáb</button>
+          <button type="button" class="chip" data-v="dom" onclick="selChip(this,'agenda-pag-dia')">Dom</button>
+        </div>
+      </div>
+      <label class="lbl">Duração típica (dias)</label>
+      <input class="inp" id="agenda-duracao-dias" type="number" min="1" value="15"/>
+      <button class="btn btn-o" type="button" style="margin-top:8px" onclick="salvarPreferenciasRecebimento()">Salvar forma de recebimento</button>
     </div>
   </section>
 
@@ -1144,7 +1229,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <input type="hidden" id="oferta-resposta-id"/>
 
         <div id="oferta-passo1">
-          <p class="hint">Primeiro aceite a oferta ou envie uma contra-proposta de valor. Depois você escolhe como quer receber.</p>
+          <p class="hint">Aceite ou envie contra-proposta de valor. Sua forma de recebimento cadastrada em <strong>Oferecer plantão hoje</strong> será aplicada automaticamente.</p>
           <label class="lbl">Contra-proposta diária (R$) — opcional</label>
           <input class="inp" id="oferta-contra-valor" type="number" placeholder="Deixe vazio para aceitar o valor da família"/>
           <label class="lbl">Mensagem</label>
@@ -1154,7 +1239,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
           <button class="btn btn-g" type="button" style="margin-top:8px;background:#fef2f2;color:var(--err);border:1px solid #fecaca" onclick="recusarOfertaCuidador()">Recusar oferta</button>
         </div>
 
-        <div id="oferta-passo2" style="display:none">
+        <div id="oferta-passo2" style="display:none" aria-hidden="true">
           <p class="hint" id="oferta-passo2-hint">Agora escolha <strong>como quer receber</strong> e finalize. O contratante receberá a notificação para fechar o negócio. (PIX/boleto só depois, em Faturamento.)</p>
           <label class="lbl">Forma de recebimento</label>
           <div class="chip-row" id="oferta-pag-freq">
@@ -1210,6 +1295,27 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <button type="button" class="chip on" data-v="07:00" onclick="selChip(this,'plantao-hoje-inicio')">07:00</button>
         <button type="button" class="chip" data-v="19:00" onclick="selChip(this,'plantao-hoje-inicio')">19:00</button>
       </div>
+      <p class="step" style="margin-top:16px">Como você prefere receber</p>
+      <p class="hint">Usado automaticamente ao aceitar ofertas de famílias.</p>
+      <div class="chip-row" id="plantao-pag-freq">
+        <button type="button" class="chip on" data-v="diaria" onclick="selChip(this,'plantao-pag-freq');togglePlantaoPagSemanal()">Diária (fim do plantão)</button>
+        <button type="button" class="chip" data-v="semanal" onclick="selChip(this,'plantao-pag-freq');togglePlantaoPagSemanal()">A cada 7 dias</button>
+        <button type="button" class="chip" data-v="quinzenal" onclick="selChip(this,'plantao-pag-freq');togglePlantaoPagSemanal()">Quinzenal</button>
+      </div>
+      <div id="plantao-pag-dia-semana" style="display:none;margin-top:8px">
+        <label class="lbl">Dia da semana para recebimento</label>
+        <div class="chip-row" id="plantao-pag-dia">
+          <button type="button" class="chip on" data-v="seg" onclick="selChip(this,'plantao-pag-dia')">Seg</button>
+          <button type="button" class="chip" data-v="ter" onclick="selChip(this,'plantao-pag-dia')">Ter</button>
+          <button type="button" class="chip" data-v="qua" onclick="selChip(this,'plantao-pag-dia')">Qua</button>
+          <button type="button" class="chip" data-v="qui" onclick="selChip(this,'plantao-pag-dia')">Qui</button>
+          <button type="button" class="chip" data-v="sex" onclick="selChip(this,'plantao-pag-dia')">Sex</button>
+          <button type="button" class="chip" data-v="sab" onclick="selChip(this,'plantao-pag-dia')">Sáb</button>
+          <button type="button" class="chip" data-v="dom" onclick="selChip(this,'plantao-pag-dia')">Dom</button>
+        </div>
+      </div>
+      <label class="lbl">Duração típica do trabalho (dias)</label>
+      <input class="inp" id="plantao-duracao-dias" type="number" min="1" max="365" value="15"/>
       <button class="btn btn-p" type="button" onclick="salvarPlantaoHoje()">Publicar disponibilidade</button>
       <div class="note" style="margin-top:12px" id="plantao-hoje-status">Status: inativo</div>
     </div>
@@ -1275,16 +1381,10 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       </div>
       <div class="cv" id="taxa-detalhe" style="margin-top:12px"></div>
       <p class="step" style="margin-top:16px">Pagar taxa pendente</p>
-      <div class="chip-row" id="taxa-pag-metodo">
-        <button type="button" class="chip on" data-v="pix" onclick="selChip(this,'taxa-pag-metodo')">PIX</button>
-        <button type="button" class="chip" data-v="google_play_iap" onclick="selChip(this,'taxa-pag-metodo')">Google Play (IAP)</button>
-        <button type="button" class="chip" data-v="apple_iap" onclick="selChip(this,'taxa-pag-metodo')">Apple App Store (IAP)</button>
-      </div>
-      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="pagarTaxaPlataforma()">Gerar pagamento da taxa</button>
-      <button class="btn btn-o" type="button" style="margin-top:8px" onclick="confirmarTaxaPix()">Confirmar PIX da taxa pago</button>
-      <div id="taxa-pix-box" class="cob-box" style="display:none;margin-top:12px"></div>
+      <p class="hint">Pagamento exclusivo via <strong>Apple App Store</strong> (compra no app).</p>
+      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="pagarTaxaPlataforma()">Pagar taxa via App Store</button>
       <div class="note" style="margin-top:12px;font-size:12px">
-        <strong>Lojas:</strong> Google Play Billing e Apple StoreKit — produto <code>ic24_taxa_manutencao</code>. Pagamentos IAP registrados em <code>platform_fee_payments</code> no Firebase.
+        <strong>App Store:</strong> produto consumível <code>ic24_taxa_manutencao</code>. Pagamentos registrados em <code>platform_fee_payments</code> no Firebase.
       </div>
     </div>
   </section>
@@ -1350,6 +1450,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
 <script src="pix.js"></script>
 <script src="firebase-ic24.js"></script>
 <script src="ic24-curriculo.js"></script>
@@ -1449,16 +1550,23 @@ function removeEspecialidade(i){
 }
 function irCuidadorEtapa3(){
   if(!document.getElementById('cuid-bio').value.trim()){ toast('Escreva um pouco sobre você'); return; }
+  if(!window._photoUploaded && !window._pendingProfilePhoto && !(window._cuidPainel?.photoUrl)){
+    toast('Envie sua foto de perfil — toque no círculo acima'); return;
+  }
   show('cuidador-etapa3');
 }
 async function finalizarCuidador(){
   const hour=document.getElementById('cuid-hour').value.trim();
   const daily=document.getElementById('cuid-daily').value.trim();
   if(!hour&&!daily){ toast('Informe valor por hora ou por dia'); return; }
+  if(!window._photoUploaded && !window._pendingProfilePhoto && !(window._cuidPainel?.photoUrl)){
+    toast('Foto de perfil obrigatória — volte à etapa 2'); show('cuidador-etapa2'); return;
+  }
   try{
     if(window._pendingProfilePhoto){
-      try{ await ic24UploadFotoPerfil(window._pendingProfilePhoto); }catch(e){ toast(e.message||'Foto pendente — envie no currículo'); }
+      await ic24UploadFotoPerfil(window._pendingProfilePhoto);
       window._pendingProfilePhoto=null;
+      window._photoUploaded=true;
     }
     await ic24SalvarCuidador();
     const uid=ic24Auth?.currentUser?.uid;
@@ -1553,6 +1661,7 @@ function preencherCadastroCuidador(d){
     renderSpecChips();
   }
   if(d.photoUrl){
+    window._photoUploaded=true;
     ['etapa2-foto-preview','cuid-foto-preview'].forEach(id=>{
       const img=document.getElementById(id);
       if(img){ img.src=d.photoUrl; img.style.display='block'; }
@@ -1638,7 +1747,16 @@ function fotoPerfilEtapa2(input){
   };
   r.readAsDataURL(f);
   window._pendingProfilePhoto=f;
-  toast('Foto selecionada — será enviada ao finalizar o cadastro');
+  ic24InitFirebase();
+  if(!ic24Auth.currentUser){
+    toast('Foto selecionada — será enviada ao finalizar o cadastro');
+    return;
+  }
+  ic24UploadFotoPerfil(f).then(()=>{
+    window._pendingProfilePhoto=null;
+    window._photoUploaded=true;
+    toast('Foto salva no Firebase');
+  }).catch(e=>{ toast(e.message||'Erro ao enviar foto — tente outra imagem'); input.value=''; window._pendingProfilePhoto=null; });
 }
 async function fotoPerfilPainel(input){
   const f=input.files[0];
@@ -1660,7 +1778,6 @@ function anexarDocCurriculo(docKey){
   const inp=document.createElement('input');
   inp.type='file';
   inp.accept='image/*';
-  inp.capture='environment';
   inp.onchange=()=>{
     if(!inp.files[0]) return;
     ic24UploadDocumento(docKey,inp.files[0]).then(()=>{
@@ -1672,12 +1789,14 @@ function anexarDocCurriculo(docKey){
 }
 function anexar(input){
   if(!input.files[0])return;
+  ic24InitFirebase();
+  if(!ic24Auth.currentUser){ toast('Faça login como cuidador'); return; }
   const docKey=input.closest('.doc')?.getAttribute('data-doc');
   const nome=input.closest('.doc')?.querySelector('b')?.textContent||docKey;
   if(!docKey){ toast('Tipo de documento inválido'); return; }
   ic24UploadDocumento(docKey,input.files[0]).then(()=>{
     input.closest('.doc').classList.add('done');
-    toast('Enviado: '+nome.split('—')[0].trim()+' — classificado!');
+    toast('Enviado: '+nome.split('—')[0].trim()+' — salvo no Firebase');
     if(typeof carregarPainelCuidador==='function') carregarPainelCuidador();
   }).catch(e=>toast(e.message||'Erro no upload'));
 }
@@ -1883,6 +2002,7 @@ async function carregarPainelCuidador(){
   renderHistorico(d);
   if(d.agenda) aplicarAgendaUI(d.agenda);
   if(d.plantaoHoje) aplicarPlantaoHojeUI(d.plantaoHoje);
+  aplicarPaymentPrefsUI(d.paymentPreferences||{});
   if(d.pontoLog) renderPontoLog(d.pontoLog);
   if(d.pontoObs&&document.getElementById('ponto-obs')) document.getElementById('ponto-obs').value=d.pontoObs;
   renderTaxaAlerta(d);
@@ -2032,10 +2152,16 @@ async function aceitarOfertaCuidador(){
   if(ic24OffersBlockedByFee(window._cuidPainel||{})){ toast('Taxa pendente ≥ R$ 50 — pague em Taxa do app (7%)'); show('cuidador-taxa'); return; }
   const id=document.getElementById('oferta-acao-id').value;
   if(!id){ toast('Selecione uma oferta'); return; }
+  const prefs=window._cuidPainel?.paymentPreferences||{};
+  if(!prefs.configured){
+    toast('Configure forma de recebimento em Oferecer plantão hoje');
+    show('cuidador-plantao-hoje'); return;
+  }
   try{
-    const r=await ic24Passo1Oferta(id,{action:'accept',message:document.getElementById('oferta-contra-msg')?.value||''});
-    mostrarPasso2Oferta(r.id,false);
-    toast('Oferta aceita — escolha como quer receber');
+    await ic24AceitarOfertaComTermos(id,{action:'accept',message:document.getElementById('oferta-contra-msg')?.value||''});
+    toast('Proposta enviada ao contratante!');
+    document.getElementById('oferta-acao-box').style.display='none';
+    renderOfertas();
   }catch(e){ toast(e.message||'Erro'); }
 }
 async function contraOfertaCuidador(){
@@ -2047,10 +2173,16 @@ async function contraOfertaCuidador(){
   const id=document.getElementById('oferta-acao-id').value;
   const v=parseFloat(document.getElementById('oferta-contra-valor')?.value);
   if(!id||!v||v<=0){ toast('Informe valor da contra-proposta'); return; }
+  const prefs=window._cuidPainel?.paymentPreferences||{};
+  if(!prefs.configured){
+    toast('Configure forma de recebimento em Oferecer plantão hoje');
+    show('cuidador-plantao-hoje'); return;
+  }
   try{
-    const r=await ic24Passo1Oferta(id,{action:'counter',proposedDailyRate:v,message:document.getElementById('oferta-contra-msg')?.value||''});
-    mostrarPasso2Oferta(r.id,true);
-    toast('Contra-proposta registrada — escolha como quer receber');
+    await ic24AceitarOfertaComTermos(id,{action:'counter',proposedDailyRate:v,message:document.getElementById('oferta-contra-msg')?.value||''});
+    toast('Contra-proposta enviada ao contratante!');
+    document.getElementById('oferta-acao-box').style.display='none';
+    renderOfertas();
   }catch(e){ toast(e.message||'Erro'); }
 }
 async function finalizarFormaRecebimento(){
@@ -2134,7 +2266,51 @@ function aplicarAgendaUI(a){
 function aplicarPlantaoHojeUI(p){
   const chk=document.getElementById('plantao-hoje-ativo');
   if(chk) chk.checked=!!p.ativo;
-  document.getElementById('plantao-hoje-status').textContent='Status: '+(p.ativo?'ativo — visível para famílias próximas':'inativo');
+  const st=document.getElementById('plantao-hoje-status');
+  if(st) st.textContent='Status: '+(p.ativo?'ativo — visível para famílias próximas':'inativo');
+}
+
+function prefsRecebimentoFrom(prefix){
+  const freq=chipVal(prefix+'-pag-freq')||'diaria';
+  const weekDay=chipVal(prefix+'-pag-dia')||'seg';
+  const dias=parseInt(document.getElementById(prefix+'-duracao-dias')?.value,10)||15;
+  if(!dias||dias<1) throw new Error('Informe a duração em dias');
+  return { paymentSchedule:freq, paymentWeekDay:weekDay, jobDurationDays:dias, configured:true };
+}
+
+function aplicarPaymentPrefsUI(prefs){
+  const freq=prefs.paymentSchedule||'diaria';
+  const weekDay=prefs.paymentWeekDay||'seg';
+  const dias=prefs.jobDurationDays||15;
+  ['plantao','agenda'].forEach(prefix=>{
+    document.querySelectorAll('#'+prefix+'-pag-freq .chip').forEach(c=>{ c.classList.toggle('on',c.getAttribute('data-v')===freq); });
+    document.querySelectorAll('#'+prefix+'-pag-dia .chip').forEach(c=>{ c.classList.toggle('on',c.getAttribute('data-v')===weekDay); });
+    const diasEl=document.getElementById(prefix+'-duracao-dias');
+    if(diasEl) diasEl.value=dias;
+  });
+  togglePlantaoPagSemanal();
+  toggleAgendaPagSemanal();
+}
+
+function togglePlantaoPagSemanal(){
+  const freq=chipVal('plantao-pag-freq')||'diaria';
+  const box=document.getElementById('plantao-pag-dia-semana');
+  if(box) box.style.display=freq==='semanal'?'block':'none';
+}
+
+function toggleAgendaPagSemanal(){
+  const freq=chipVal('agenda-pag-freq')||'diaria';
+  const box=document.getElementById('agenda-pag-dia-semana');
+  if(box) box.style.display=freq==='semanal'?'block':'none';
+}
+
+async function salvarPreferenciasRecebimento(){
+  try{
+    const prefs=prefsRecebimentoFrom('agenda');
+    await ic24SalvarPainelCuidador({ paymentPreferences:prefs });
+    toast('Forma de recebimento salva');
+    await carregarPainelCuidador();
+  }catch(e){ toast(e.message||'Erro ao salvar'); }
 }
 
 async function salvarAgenda(){
@@ -2154,8 +2330,9 @@ async function salvarAgenda(){
   };
   if(!agenda.dias.length){ toast('Selecione pelo menos um dia'); return; }
   try{
-    await ic24SalvarPainelCuidador({agenda});
-    toast('Agenda salva — famílias verão sua disponibilidade');
+    const paymentPreferences=prefsRecebimentoFrom('agenda');
+    await ic24SalvarPainelCuidador({agenda, paymentPreferences});
+    toast('Agenda e forma de recebimento salvas');
   }catch(e){ toast(e.message||'Erro ao salvar agenda'); }
 }
 
@@ -2255,9 +2432,11 @@ async function salvarPlantaoHoje(){
     publicadoEm:new Date().toISOString(),
   };
   try{
-    await ic24SalvarPainelCuidador({plantaoHoje, availableToday:plantaoHoje.ativo});
+    const paymentPreferences=prefsRecebimentoFrom('plantao');
+    await ic24SalvarPainelCuidador({plantaoHoje, availableToday:plantaoHoje.ativo, paymentPreferences});
     document.getElementById('plantao-hoje-status').textContent='Status: '+(plantaoHoje.ativo?'ativo — visível para famílias próximas':'inativo');
-    toast(plantaoHoje.ativo?'Plantão de hoje publicado!':'Disponibilidade desativada');
+    toast(plantaoHoje.ativo?'Plantão e recebimento publicados!':'Disponibilidade desativada');
+    await carregarPainelCuidador();
   }catch(e){ toast(e.message||'Erro ao publicar'); }
 }
 
@@ -2322,26 +2501,11 @@ async function carregarCobrancasHistorico(){
 }
 async function pagarTaxaPlataforma(){
   try{
-    const metodo=chipVal('taxa-pag-metodo')||'pix';
-    const pay=await ic24PagarTaxaPlataforma(metodo);
-    const box=document.getElementById('taxa-pix-box');
-    if(metodo==='google_play_iap'||metodo==='apple_iap'){
-      toast((metodo==='apple_iap'?'Apple IAP':'Google Play IAP')+' registrado no Firebase — taxa quitada');
-      await carregarPainelCuidador();
-      return;
-    }
-    box.style.display='block';
-    box.innerHTML='<strong>Pague a taxa via PIX: '+fmtMoeda(pay.amount)+'</strong><br/><code style="font-size:11px">'+escapeHtml(pay.pixCopiaCola||'')+'</code><br/><small>Após pagar, toque em Confirmar PIX da taxa pago</small>';
-    toast('PIX da taxa gerado');
-  }catch(e){ toast(e.message||'Erro'); }
-}
-async function confirmarTaxaPix(){
-  try{
-    await ic24ConfirmarTaxaPixPaga();
-    document.getElementById('taxa-pix-box').style.display='none';
+    toast('Abrindo App Store…');
+    await ic24PagarTaxaPlataforma('apple_iap');
+    toast('Taxa paga — compra confirmada pela Apple');
     await carregarPainelCuidador();
-    toast('Taxa quitada — ofertas liberadas!');
-  }catch(e){ toast(e.message||'Erro'); }
+  }catch(e){ toast(e.message||'Erro ao pagar taxa'); }
 }
 
 /* ========== PAINEL CONTRATANTE / FAMÍLIA ========== */
@@ -2363,12 +2527,74 @@ async function carregarProximosFamilia(){
   list.innerHTML='<p class="hint">Carregando…</p>';
   try{
     const cgs=await ic24ListarCuidadoresProximos();
-    list.innerHTML=cgs.length?cgs.map(c=>'<div class="list-item"><b>'+escapeHtml(c.fullName||'Cuidador')+'</b><small>'+
+    list.innerHTML=cgs.length?cgs.map(c=>{
+      const foto=c.photoUrl?'<img src="'+escapeHtml(c.photoUrl)+'" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;margin-right:10px;vertical-align:middle"/>':'';
+      return '<div class="list-item"><div style="display:flex;align-items:center">'+foto+'<div><b>'+escapeHtml(c.fullName||'Cuidador')+'</b><small>'+
       escapeHtml((c.city||'')+(c.state?' - '+c.state:''))+' · '+
-      (c.availableToday||c.plantaoHoje?.ativo?'✅ Disponível hoje':'Agenda')+' · R$ '+(c.dailyRate||'—')+'/dia</small>'+
-      '<button class="btn btn-o" type="button" style="margin-top:8px;height:40px" onclick="abrirPerfilCuidador(\''+c.id+'\')">Ver perfil / currículo</button></div>').join(''):
+      (c.availableToday||c.plantaoHoje?.ativo?'✅ Disponível hoje':'Agenda')+' · R$ '+(c.dailyRate||'—')+'/dia</small></div></div>'+
+      '<button class="btn btn-o" type="button" style="margin-top:8px;height:40px;width:100%" onclick="abrirPerfilCuidadorFamilia(\''+c.id+'\')">Ver perfil</button>'+
+      '<button class="btn btn-o" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirCurriculoCuidador(\''+c.id+'\')">Ver currículo</button>'+
+      '<button class="btn btn-p" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirPropostaCuidador(\''+c.id+'\',\'familia-proximos\')">Oferecer proposta</button></div>';
+    }).join(''):
       '<p class="hint">Nenhum cuidador com plantão hoje. Peça para ativarem "Oferecer plantão hoje".</p>';
   }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
+async function abrirPerfilCuidadorFamilia(id){
+  window._cuidadorSelecionado=id;
+  const box=document.getElementById('fam-cuidador-perfil-box');
+  if(!box) return;
+  box.innerHTML='<p class="hint">Carregando…</p>';
+  show('familia-cuidador-perfil');
+  try{
+    const p=await ic24CarregarPerfilCuidadorPublico(id);
+    const foto=p.photoUrl?'<img src="'+escapeHtml(p.photoUrl)+'" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:12px;display:block"/>':'';
+    const prefs=p.paymentPreferences||{};
+    const rec=prefs.paymentSchedule==='semanal'?'Semanal':prefs.paymentSchedule==='quinzenal'?'Quinzenal':'Diária';
+    box.innerHTML=foto+'<h3 style="margin:0 0 8px">'+escapeHtml(p.fullName)+'</h3>'+
+      '<p class="hint">'+escapeHtml([p.city,p.state].filter(Boolean).join(' - '))+'</p>'+
+      '<p style="font-size:14px">'+escapeHtml(p.bio||'')+'</p>'+
+      '<p><strong>R$ '+(p.dailyRate||'—')+'/dia</strong> · Recebimento: '+rec+'</p>'+
+      (p.availableToday?'<p style="color:var(--p)">✓ Disponível hoje</p>':'')+
+      '<button class="btn btn-o" type="button" style="margin-top:12px" onclick="abrirCurriculoCuidador(\''+id+'\')">Ver currículo</button> '+
+      '<button class="btn btn-p" type="button" style="margin-top:12px" onclick="abrirPropostaCuidador(\''+id+'\',\'familia-cuidador-perfil\')">Oferecer proposta</button>';
+  }catch(e){ box.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
+async function abrirCurriculoCuidador(id){
+  document.getElementById('pesquisa-cuidador-id').value=id;
+  document.getElementById('fam-curriculo-cuid-id').value=id;
+  try{
+    ic24InitFirebase();
+    if(!ic24Auth.currentUser){ toast('Faça login como família'); irLogin(); return; }
+    const r=await ic24SolicitarCurriculo(id);
+    const fullLink=location.origin+location.pathname.replace(/index\.html?$/,'')+r.link;
+    toast('Currículo liberado');
+    window.open(fullLink,'_blank');
+  }catch(e){ toast(e.message||'Erro ao solicitar currículo'); }
+}
+
+function abrirPropostaCuidador(id, voltar){
+  window._propostaVoltar=voltar||'familia-proximos';
+  document.getElementById('proposta-cuid-id').value=id;
+  document.getElementById('proposta-cuid-nome').textContent='Proposta direta ao cuidador selecionado';
+  show('familia-cuidador-proposta');
+}
+
+async function enviarPropostaCuidador(){
+  const id=document.getElementById('proposta-cuid-id').value;
+  try{
+    await ic24FamiliaProporCuidador(id,{
+      dailyRate:parseFloat(document.getElementById('proposta-valor').value)||0,
+      elderlyType:document.getElementById('proposta-idoso').value.trim(),
+      careNeeds:document.getElementById('proposta-necessidades').value.trim(),
+      durationDays:parseInt(document.getElementById('proposta-duracao').value,10)||15,
+      message:document.getElementById('proposta-msg').value.trim(),
+    });
+    toast('Proposta enviada!');
+    show('familia-ofertas');
+    carregarOfertasFamilia();
+  }catch(e){ toast(e.message||'Erro'); }
 }
 
 function abrirPerfilCuidador(id){
@@ -2431,6 +2657,11 @@ async function carregarOfertasFamilia(){
 }
 
 async function familiaFecharNegocio(responseId, accept, notificationId){
+  if(accept){
+    const ok=confirm('Ao fechar o negócio você concorda com os Termos de Uso (idoso-care-24h.web.app/termos.html). Multa de cancelamento: 7%. Continuar?');
+    if(!ok) return;
+    window.open('https://idoso-care-24h.web.app/termos.html','_blank','noopener');
+  }
   try{
     await ic24FamiliaAceitarContraProposta(responseId, accept, notificationId||null);
     toast(accept?'Negócio fechado — chat liberado!':'Proposta recusada');
@@ -2549,6 +2780,49 @@ async function enviarFaleConosco(){
     toast('Mensagem enviada — retornaremos em breve');
     show('familia-painel');
   }catch(e){ toast(e.message||'Erro'); }
+}
+
+window._contaVoltar='familia-painel';
+function abrirExclusaoConta(voltar){
+  window._contaVoltar=voltar||'familia-painel';
+  const senha=document.getElementById('excluir-senha');
+  const chk=document.getElementById('excluir-confirm');
+  if(senha) senha.value='';
+  if(chk) chk.checked=false;
+  atualizarBtnExcluir();
+  show('conta-excluir');
+}
+function atualizarBtnExcluir(){
+  const ok=!!document.getElementById('excluir-confirm')?.checked;
+  const btn=document.getElementById('btnExcluirConta');
+  if(btn) btn.disabled=!ok;
+}
+async function confirmarExcluirConta(){
+  const senha=document.getElementById('excluir-senha')?.value||'';
+  const btn=document.getElementById('btnExcluirConta');
+  if(btn) btn.disabled=true;
+  try{
+    await ic24ExcluirConta(senha);
+    toast('Conta apagada permanentemente');
+    show('welcome');
+  }catch(e){
+    toast(e.message||'Não foi possível apagar a conta');
+    if(btn) btn.disabled=!document.getElementById('excluir-confirm')?.checked;
+  }
+}
+async function sairConta(){
+  try{
+    await ic24SairConta();
+    toast('Sessão encerrada');
+    show('welcome');
+  }catch(e){ toast(e.message||'Erro ao sair'); }
+}
+async function esqueciSenha(){
+  const email=document.getElementById('email')?.value?.trim();
+  try{
+    await ic24RecuperarSenha(email);
+    toast('Link de recuperação enviado ao e-mail');
+  }catch(e){ toast(e.message||'Erro ao enviar e-mail'); }
 }
 
 const _famShowOrig=show;

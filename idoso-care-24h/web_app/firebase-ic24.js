@@ -92,6 +92,14 @@ function ic24EnderecoMap(prefix) {
   };
 }
 
+function ic24StripUndefined(obj) {
+  const out = {};
+  for (const [k, v] of Object.entries(obj || {})) {
+    if (v !== undefined) out[k] = v;
+  }
+  return out;
+}
+
 async function ic24SalvarCuidador() {
   ic24InitFirebase();
   const uid = ic24Auth.currentUser?.uid;
@@ -110,23 +118,22 @@ async function ic24SalvarCuidador() {
   const hourRate = hourRaw ? parseFloat(hourRaw.replace(',', '.')) : null;
   const dailyRate = dailyRaw ? parseFloat(dailyRaw.replace(',', '.')) : null;
   const cpf = document.getElementById('cuid-cpf')?.value?.trim() || '';
-  await ic24Db.collection('caregivers').doc(uid).set(
-    {
-      fullName: nome,
-      email: ic24Auth.currentUser.email,
-      ...addr,
-      bio,
-      specialties,
-      hourRate,
-      dailyRate,
-      cpf: cpf || undefined,
-      approved: false,
-      rating: 4.5,
-      kycStatus: 'incomplete',
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    },
-    { merge: true },
-  );
+  const payload = ic24StripUndefined({
+    fullName: nome,
+    email: ic24Auth.currentUser.email,
+    ...addr,
+    bio,
+    specialties,
+    hourRate,
+    dailyRate,
+    cpf: cpf || null,
+    approved: false,
+    rating: 4.5,
+    kycStatus: 'incomplete',
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+  if (!cpf) delete payload.cpf;
+  await ic24Db.collection('caregivers').doc(uid).set(payload, { merge: true });
 }
 
 async function ic24SalvarPainelCuidador(partial) {
@@ -134,10 +141,10 @@ async function ic24SalvarPainelCuidador(partial) {
   const uid = ic24Auth.currentUser?.uid;
   if (!uid) throw new Error('Faça login como cuidador');
   await ic24Db.collection('caregivers').doc(uid).set(
-    {
+    ic24StripUndefined({
       ...partial,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    },
+    }),
     { merge: true },
   );
 }
@@ -317,4 +324,45 @@ function ic24AvaliarCadastroFamilia(d) {
     return { complete: false, screen: 'cadastro-familia', message: 'Complete seu cadastro de família/contratante' };
   }
   return { complete: true, screen: 'familia-painel', message: '' };
+}
+
+let ic24Functions = null;
+
+function ic24InitFunctions() {
+  ic24InitFirebase();
+  if (!window.firebase.functions) {
+    throw new Error('Firebase Functions não carregou');
+  }
+  if (!ic24Functions) {
+    ic24Functions = firebase.app().functions('southamerica-east1');
+  }
+  return ic24Functions;
+}
+
+async function ic24SairConta() {
+  ic24InitFirebase();
+  if (ic24Auth.currentUser) await ic24Auth.signOut();
+  window._ic24User = null;
+}
+
+async function ic24ExcluirConta(senha) {
+  ic24InitFirebase();
+  const user = ic24Auth.currentUser;
+  if (!user || !user.email) throw new Error('Faça login para excluir a conta');
+  if (!senha || String(senha).length < 6) throw new Error('Digite sua senha atual para confirmar');
+  const cred = firebase.auth.EmailAuthProvider.credential(user.email, senha);
+  await user.reauthenticateWithCredential(cred);
+  ic24InitFunctions();
+  const fn = ic24Functions.httpsCallable('deleteMyAccount');
+  const res = await fn({});
+  await ic24Auth.signOut();
+  window._ic24User = null;
+  return res.data || { ok: true };
+}
+
+async function ic24RecuperarSenha(email) {
+  ic24InitFirebase();
+  const addr = (email || '').trim();
+  if (!addr) throw new Error('Informe seu e-mail');
+  await ic24Auth.sendPasswordResetEmail(addr);
 }

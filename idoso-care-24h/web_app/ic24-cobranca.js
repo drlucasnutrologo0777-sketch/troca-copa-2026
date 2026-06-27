@@ -399,65 +399,64 @@ async function ic24ListarCobrancasCuidador() {
   return ic24SortByCreated(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
 }
 
+async function ic24PurchaseTaxaViaStoreKit() {
+  const bridge = window.flutter_inappwebview;
+  if (!bridge || typeof bridge.callHandler !== 'function') {
+    throw new Error(
+      'Pagamento da taxa disponível apenas no app iOS (TestFlight ou App Store). Abra pelo iPhone, não pelo navegador.',
+    );
+  }
+  const uid = ic24Auth?.currentUser?.uid || null;
+  const raw = await bridge.callHandler('ic24PurchasePlatformFee', uid);
+  const r = Array.isArray(raw) ? raw[0] : raw;
+  if (!r || !r.ok) {
+    throw new Error((r && r.error) || 'Compra cancelada ou não concluída na App Store');
+  }
+  return r;
+}
+
 async function ic24PagarTaxaPlataforma(metodo) {
   ic24InitFirebase();
   const uid = ic24Auth.currentUser?.uid;
   if (!uid) throw new Error('Faça login');
+  if (metodo !== 'apple_iap') {
+    throw new Error('A taxa da plataforma só pode ser paga via App Store (IAP)');
+  }
   const snap = await ic24Db.collection('caregivers').doc(uid).get();
   const pending = ic24PlatformFeePending(snap.data());
   if (pending <= 0) throw new Error('Nenhuma taxa pendente');
+
+  const iap = await ic24PurchaseTaxaViaStoreKit();
+
   const ref = ic24Db.collection('platform_fee_payments').doc();
   const txid = 'TAXA' + ref.id.slice(0, 6).toUpperCase();
   const pay = {
     id: ref.id,
     caregiverId: uid,
     amount: pending,
-    method: metodo || 'pix',
-    status: ['google_play_iap', 'apple_iap'].includes(metodo) ? 'confirmed_demo' : 'pending',
+    method: 'apple_iap',
+    status: 'confirmed',
     txid,
+    appleProductId: iap.productId || 'ic24_taxa_manutencao',
+    appleTransactionId: iap.transactionId || null,
+    appleReceipt: iap.serverVerificationData || null,
+    note: 'Apple StoreKit confirmado',
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
-  if (metodo === 'pix') {
-    pay.pixCopiaCola = ic24PixCopiaColaValor(pending, txid);
-  }
-  if (metodo === 'google_play_iap') {
-    pay.googlePlayProductId = 'ic24_taxa_manutencao';
-    pay.note = 'Google Play Billing — produto consumível';
-  }
-  if (metodo === 'apple_iap') {
-    pay.appleProductId = 'ic24_taxa_manutencao';
-    pay.note = 'Apple StoreKit — produto consumível';
-  }
   await ref.set(pay);
-  if (['google_play_iap', 'apple_iap'].includes(metodo)) {
-    await ic24Db.collection('caregivers').doc(uid).set(
-      {
-        platformFeePending: 0,
-        platformFeeLastPaidAt: firebase.firestore.FieldValue.serverTimestamp(),
-        platformFeeLastMethod: metodo,
-      },
-      { merge: true },
-    );
-  }
-  return pay;
-}
-
-async function ic24ConfirmarTaxaIap(metodo) {
-  return ic24PagarTaxaPlataforma(metodo);
-}
-
-async function ic24ConfirmarTaxaPixPaga() {
-  ic24InitFirebase();
-  const uid = ic24Auth.currentUser?.uid;
-  if (!uid) throw new Error('Faça login');
   await ic24Db.collection('caregivers').doc(uid).set(
     {
       platformFeePending: 0,
       platformFeeLastPaidAt: firebase.firestore.FieldValue.serverTimestamp(),
-      platformFeeLastMethod: 'pix',
+      platformFeeLastMethod: 'apple_iap',
     },
     { merge: true },
   );
+  return pay;
+}
+
+async function ic24ConfirmarTaxaIap(metodo) {
+  return ic24PagarTaxaPlataforma(metodo || 'apple_iap');
 }
 
 function ic24BaixarCurriculoCadastro(d, cls, docsMap) {

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
+import '../services/ic24_iap_service.dart';
 import '../services/web_app_bundle.dart';
 
 /// Protótipo web completo (mesmo conteúdo do serve_web.py / TestFlight build 37+).
@@ -23,7 +24,14 @@ class _WebAppScreenState extends State<WebAppScreen> {
   @override
   void initState() {
     super.initState();
+    Ic24IapService.instance.init();
     _prepare();
+  }
+
+  @override
+  void dispose() {
+    Ic24IapService.instance.dispose();
+    super.dispose();
   }
 
   Future<void> _prepare() async {
@@ -68,7 +76,43 @@ class _WebAppScreenState extends State<WebAppScreen> {
     );
   }
 
+  void _registerNativeBridge(InAppWebViewController controller) {
+    controller.addJavaScriptHandler(
+      handlerName: 'ic24PurchasePlatformFee',
+      callback: (args) async {
+        try {
+          final caregiverId = args.isNotEmpty ? args[0]?.toString() : null;
+          return await Ic24IapService.instance.comprarTaxaManutencao(
+            caregiverId: caregiverId,
+          );
+        } catch (e) {
+          return {'ok': false, 'error': e.toString()};
+        }
+      },
+    );
+
+    controller.addJavaScriptHandler(
+      handlerName: 'ic24PlatformFeeProductInfo',
+      callback: (args) async {
+        await Ic24IapService.instance.init();
+        final svc = Ic24IapService.instance;
+        return {
+          'available': svc.suportado && svc.lojaDisponivel && svc.product != null,
+          'productId': svc.product?.id ?? 'ic24_taxa_manutencao',
+          'price': svc.precoExibicao,
+        };
+      },
+    );
+  }
+
+  Future<void> _injectNativeFlags(InAppWebViewController controller) async {
+    await controller.evaluateJavascript(source: '''
+      window._ic24NativeIap = ${Platform.isIOS};
+    ''');
+  }
+
   Future<void> _verifyContent(InAppWebViewController controller) async {
+    await _injectNativeFlags(controller);
     final ok = await controller.evaluateJavascript(source: '''
       (function(){
         var w=document.getElementById('welcome');
@@ -120,6 +164,7 @@ class _WebAppScreenState extends State<WebAppScreen> {
         children: [
           InAppWebView(
             onWebViewCreated: (controller) async {
+              _registerNativeBridge(controller);
               await _loadWeb(controller);
             },
             initialSettings: InAppWebViewSettings(

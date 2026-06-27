@@ -136,8 +136,127 @@ async function ic24NotificarFamiliaProposta(familyId, offerId, responseId, messa
   });
 }
 
-/** Passo 1: aceitar, contra-propor ou recusar — ainda sem forma de recebimento. */
-async function ic24Passo1Oferta(offerId, { action, proposedDailyRate, message }) {
+/** Preferências de recebimento salvas no cadastro/plantão (não na proposta). */
+async function ic24ObterPreferenciasRecebimento(caregiverId) {
+  ic24InitFirebase();
+  const id = caregiverId || ic24Auth.currentUser?.uid;
+  if (!id) throw new Error('Cuidador não identificado');
+  const cgSnap = await ic24Db.collection('caregivers').doc(id).get();
+  const cg = cgSnap.exists ? cgSnap.data() : {};
+  const prefs = cg.paymentPreferences || {};
+  return {
+    paymentSchedule: prefs.paymentSchedule || 'diaria',
+    paymentWeekDay: prefs.paymentWeekDay || 'seg',
+    jobDurationDays: Number(prefs.jobDurationDays) || 15,
+    configured: prefs.configured === true,
+  };
+}
+
+/** Passo 1 + finalização automática com preferências já cadastradas. */
+async function ic24AceitarOfertaComTermos(offerId, payload) {
+  const r1 = await ic24Passo1Oferta(offerId, payload);
+  if (!r1.nextStep) return r1;
+  const terms = await ic24ObterPreferenciasRecebimento();
+  return ic24FinalizarFormaRecebimento(r1.id, terms);
+}
+
+/** Família envia proposta direta a um cuidador. */
+async function ic24FamiliaProporCuidador(caregiverId, { dailyRate, message, durationDays, elderlyType, careNeeds }) {
+  ic24InitFirebase();
+  const familyId = ic24Auth.currentUser?.uid;
+  if (!familyId) throw new Error('Faça login como família');
+  if (!caregiverId) throw new Error('Cuidador não informado');
+  if (!dailyRate || dailyRate <= 0) throw new Error('Informe o valor da diária');
+  const userSnap = await ic24Db.collection('users').doc(familyId).get();
+  const cgSnap = await ic24Db.collection('caregivers').doc(caregiverId).get();
+  if (!cgSnap.exists) throw new Error('Cuidador não encontrado');
+  const ref = ic24Db.collection('job_offers').doc();
+  const data = {
+    id: ref.id,
+    familyId,
+    familyName: userSnap.data()?.fullName || 'Família',
+    targetCaregiverId: caregiverId,
+    directedToCaregiver: true,
+    title: 'Proposta para ' + (cgSnap.data().fullName || 'cuidador'),
+    dailyRate,
+    careNeeds: careNeeds || '',
+    elderlyType: elderlyType || '',
+    jobDurationDays: durationDays || 15,
+    message: message || '',
+    status: 'open',
+    scheduleType: 'diaria',
+    urgent: false,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
+  await ref.set(data);
+  try {
+    await ic24Db.collection('caregiver_notifications').add({
+      caregiverId,
+      familyId,
+      offerId: ref.id,
+      message: (userSnap.data()?.fullName || 'Família') + ' enviou proposta de R$ ' + Number(dailyRate).toFixed(2) + '/dia',
+      read: false,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch (_e) {
+    /* coleção opcional */
+  }
+  return data;
+}
+
+async function ic24CarregarPerfilCuidadorPublico(caregiverId) {
+  ic24InitFirebase();
+  const snap = await ic24Db.collection('caregivers').doc(caregiverId).get();
+  if (!snap.exists) throw new Error('Cuidador não encontrado');
+  const d = snap.data();
+  return {
+    id: caregiverId,
+    fullName: d.fullName || 'Cuidador',
+    city: d.city || '',
+    state: d.state || '',
+    bio: d.bio || '',
+    dailyRate: d.dailyRate,
+    hourRate: d.hourRate,
+    photoUrl: d.photoUrl || null,
+    classification: d.classification || {},
+    rating: d.rating,
+    reviewCount: d.reviewCount,
+    specialties: d.specialties || [],
+    availableToday: d.availableToday,
+    paymentPreferences: d.paymentPreferences || {},
+  };
+}
+
+async function ic24FamiliaTemNegocioFechado(familyId, caregiverId) {
+  ic24InitFirebase();
+  if (!familyId || !caregiverId) return false;
+  const snap = await ic24Db
+    .collection('job_offers')
+    .where('familyId', '==', familyId)
+    .where('matchedCaregiverId', '==', caregiverId)
+    .where('status', '==', 'matched')
+    .limit(1)
+    .get();
+  return !snap.empty;
+}
+
+async function ic24BuscarAvaliacaoPendente(familyId) {
+  ic24InitFirebase();
+  const snap = await ic24Db
+    .collection('job_offers')
+    .where('familyId', '==', familyId)
+    .where('status', '==', 'matched')
+    .where('ratingRequired', '==', true)
+    .limit(1)
+    .get();
+  if (snap.empty) return null;
+  const o = snap.docs[0].data();
+  return { offerId: snap.docs[0].id, caregiverId: o.matchedCaregiverId, familyId };
+}
+
+async function ic24Passo1Oferta(offerId, payload) {
+  const { action, proposedDailyRate, message } = payload || {};
   ic24InitFirebase();
   const caregiverId = ic24Auth.currentUser?.uid;
   if (!caregiverId) throw new Error('Faça login como cuidador');
@@ -372,10 +491,12 @@ async function ic24ConfirmarPontoFamilia(sessionId) {
       await offerSnap.docs[0].ref.update({
         billingReady: true,
         lastPontoConfirmedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        ratingRequired: true,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
     }
   }
+  return data.caregiverId || null;
 }
 
 async function ic24SyncPontoFromCaregiver(caregiverId, familyId, log, observacoes) {
@@ -466,16 +587,18 @@ async function ic24CriarRelatorioFamilia({ type, caregiverId, texto, gravidade }
   return ref.id;
 }
 
-async function ic24CriarAvaliacao({ caregiverId, nota, texto }) {
+async function ic24CriarAvaliacao({ caregiverId, nota, texto, offerId }) {
   ic24InitFirebase();
   const familyId = ic24Auth.currentUser?.uid;
   if (!familyId) throw new Error('Faça login');
+  if (!nota || nota < 1 || nota > 5) throw new Error('Informe nota de 1 a 5');
   const ref = ic24Db.collection('reviews').doc();
   await ref.set({
     familyId,
     caregiverId,
     rating: nota,
     text: texto || '',
+    offerId: offerId || null,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
   const cgRef = ic24Db.collection('caregivers').doc(caregiverId);
@@ -485,6 +608,12 @@ async function ic24CriarAvaliacao({ caregiverId, nota, texto }) {
     const count = (old.reviewCount || 0) + 1;
     const rating = ((old.rating || 0) * (count - 1) + nota) / count;
     await cgRef.update({ reviewCount: count, rating: Math.round(rating * 10) / 10 });
+  }
+  if (offerId) {
+    await ic24Db.collection('job_offers').doc(offerId).update({
+      ratingRequired: false,
+      ratedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
   }
 }
 

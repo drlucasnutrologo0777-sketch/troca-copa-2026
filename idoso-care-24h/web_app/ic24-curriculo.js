@@ -65,15 +65,29 @@ function ic24ClassificarDocumentos(docsMap) {
   return { score, level, label, stars, verified, missingRequired, documentsCount: verified.length };
 }
 
+function ic24NormalizeUploadFile(file) {
+  if (!file) throw new Error('Arquivo inválido');
+  let type = file.type || '';
+  if (!type || type === 'application/octet-stream') {
+    const name = (file.name || '').toLowerCase();
+    if (name.endsWith('.heic') || name.endsWith('.heif')) type = 'image/heic';
+    else if (name.endsWith('.png')) type = 'image/png';
+    else if (name.endsWith('.webp')) type = 'image/webp';
+    else type = 'image/jpeg';
+  }
+  return { file, contentType: type };
+}
+
 async function ic24UploadFotoPerfil(file) {
   if (!file) throw new Error('Selecione uma foto');
+  const { file: f, contentType } = ic24NormalizeUploadFile(file);
   ic24InitStorage();
   const uid = ic24Auth.currentUser?.uid;
   if (!uid) throw new Error('Faça login como cuidador');
-  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+  const ext = (f.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
   const path = 'caregivers/' + uid + '/profile/photo_' + Date.now() + '.' + ext;
   const ref = ic24Storage.ref().child(path);
-  const snap = await ref.put(file, { contentType: file.type || 'image/jpeg' });
+  const snap = await ref.put(f, { contentType });
   const url = await snap.ref.getDownloadURL();
   await ic24Db.collection('caregivers').doc(uid).set(
     { photoUrl: url, photoPath: path, updatedAt: firebase.firestore.FieldValue.serverTimestamp() },
@@ -87,13 +101,14 @@ async function ic24UploadDocumento(docKey, file) {
   if (!file) throw new Error('Selecione uma foto');
   const meta = IC24_DOC_META[docKey];
   if (!meta) throw new Error('Tipo de documento inválido');
+  const { file: f, contentType } = ic24NormalizeUploadFile(file);
   ic24InitStorage();
   const uid = ic24Auth.currentUser?.uid;
   if (!uid) throw new Error('Faça login como cuidador');
-  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+  const ext = (f.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
   const path = 'caregivers/' + uid + '/documents/' + docKey + '_' + Date.now() + '.' + ext;
   const ref = ic24Storage.ref().child(path);
-  const snap = await ref.put(file, { contentType: file.type || 'image/jpeg' });
+  const snap = await ref.put(f, { contentType });
   const url = await snap.ref.getDownloadURL();
   const docData = {
     documentType: meta.type,
