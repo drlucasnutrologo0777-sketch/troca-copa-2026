@@ -1,7 +1,10 @@
 /* Idoso Care 24H — cobrança PIX/cartão para cliente + taxa plataforma */
 
-const IC24_FEE_LIMIT = 50;
-const IC24_FEE_RATE = 0.07;
+/** Taxa fixa por fechamento de negócio — Apple IAP consumível ic24_taxa_manutencao */
+const IC24_FEE_FIXED_USD = 1.99;
+const IC24_FEE_FIXED_BRL = 10.29;
+const IC24_FEE_CURRENCY = 'USD';
+const IC24_MAX_PENDING_FEES = 1;
 const IC24_CANCEL_FEE_RATE = 0.07;
 const IC24_CANCEL_FEE_EACH = 0.035;
 const IC24_PIX_BENEFICIARIO = {
@@ -10,6 +13,14 @@ const IC24_PIX_BENEFICIARIO = {
   keyDisplay: '11968362005',
   city: 'SAO PAULO',
 };
+
+function ic24FmtTaxaUsd(amount) {
+  return 'US$ ' + Number(amount || 0).toFixed(2);
+}
+
+function ic24FmtTaxaBrl(amount) {
+  return 'R$ ' + Number(amount || 0).toFixed(2).replace('.', ',');
+}
 
 function ic24PixCopiaColaValor(amount, txid, pixKeyOverride, beneficiaryNameOverride) {
   const rawKey = (pixKeyOverride || IC24_PIX_BENEFICIARIO.key).replace(/\s/g, '');
@@ -45,8 +56,12 @@ function ic24CancellationFeePending(d) {
   return Number((d && d.cancellationFeePending) || 0);
 }
 
+function ic24HasPendingPlatformFee(d) {
+  return ic24PlatformFeePending(d) >= IC24_FEE_FIXED_USD - 0.001;
+}
+
 function ic24OffersBlockedByFee(d) {
-  return ic24PlatformFeePending(d) >= IC24_FEE_LIMIT;
+  return ic24HasPendingPlatformFee(d);
 }
 
 function ic24UserBlockedByDebts(d) {
@@ -61,22 +76,35 @@ function ic24HtmlAvisoMultaCancelamento() {
   );
 }
 
-async function ic24AcumularTaxaPlataforma(caregiverId, valorServico) {
-  if (!caregiverId || !valorServico) return;
+async function ic24AcumularTaxaPlataforma(caregiverId, _valorServico, offerId) {
+  if (!caregiverId) return 0;
   ic24InitFirebase();
   const ref = ic24Db.collection('caregivers').doc(caregiverId);
   const snap = await ref.get();
   const cur = snap.exists ? snap.data() : {};
-  const add = Math.round(Number(valorServico) * IC24_FEE_RATE * 100) / 100;
-  const pending = Math.round((ic24PlatformFeePending(cur) + add) * 100) / 100;
+  if (ic24HasPendingPlatformFee(cur)) {
+    return ic24PlatformFeePending(cur);
+  }
   await ref.set(
     {
-      platformFeePending: pending,
+      platformFeePending: IC24_FEE_FIXED_USD,
+      platformFeeCurrency: IC24_FEE_CURRENCY,
+      platformFeePendingOfferId: offerId || null,
       platformFeeUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     },
     { merge: true },
   );
-  return pending;
+  if (offerId) {
+    await ic24Db.collection('job_offers').doc(offerId).set(
+      {
+        platformFeeStatus: 'pending',
+        platformFeeAmount: IC24_FEE_FIXED_USD,
+        platformFeeCurrency: IC24_FEE_CURRENCY,
+      },
+      { merge: true },
+    );
+  }
+  return IC24_FEE_FIXED_USD;
 }
 
 const IC24_DIAS_SEMANA = {
@@ -399,11 +427,68 @@ async function ic24ListarCobrancasCuidador() {
   return ic24SortByCreated(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
 }
 
+async function ic24ResumoFinanceiroCuidador() {
+  const invs = await ic24ListarCobrancasCuidador();
+  const paid = invs.filter((i) => i.status === 'paid');
+  const total = paid.reduce((s, i) => s + Number(i.amount || 0), 0);
+  const pendente = invs.filter((i) => i.status === 'pending').reduce((s, i) => s + Number(i.amount || 0), 0);
+  const now = new Date();
+  const mes = paid
+    .filter((i) => {
+      const d = i.paidAt?.toDate?.() || i.createdAt?.toDate?.();
+      return d && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    })
+    .reduce((s, i) => s + Number(i.amount || 0), 0);
+  return {
+    total,
+    mes,
+    pendente,
+    plantoes: paid.length,
+    movimentos: invs.slice(0, 10).map((i) => ({
+      data: (i.createdAt?.toDate?.() || new Date()).toLocaleDateString('pt-BR'),
+      desc: i.description || 'Cobrança',
+      valor: i.amount,
+    })),
+  };
+}
+
+async function ic24ListarTrabalhosCuidador(caregiverId) {
+  ic24InitFirebase();
+  const cgId = caregiverId || ic24Auth.currentUser?.uid;
+  if (!cgId) return [];
+  const snap = await ic24Db
+    .collection('job_offers')
+    .where('matchedCaregiverId', '==', cgId)
+    .where('status', '==', 'matched')
+    .limit(30)
+    .get();
+  const list = snap.docs.map((d) => {
+    const o = d.data();
+    const when = o.matchedAt?.toDate?.() || null;
+    const fee =
+      o.platformFeeStatus === 'paid'
+        ? 'Taxa paga'
+        : o.platformFeeStatus === 'pending'
+          ? 'Taxa pendente'
+          : 'Concluído';
+    return {
+      data: when ? when.toLocaleDateString('pt-BR') : '—',
+      tipo: o.title || 'Plantão',
+      local: o.city || 'Montes Claros',
+      valor: Number(o.agreedDailyRate || o.dailyRate) || 0,
+      status: fee,
+      offerId: d.id,
+    };
+  });
+  list.sort((a, b) => (a.data < b.data ? 1 : -1));
+  return list;
+}
+
 async function ic24PurchaseTaxaViaStoreKit() {
   const bridge = window.flutter_inappwebview;
   if (!bridge || typeof bridge.callHandler !== 'function') {
     throw new Error(
-      'Pagamento da taxa disponível apenas no app iOS (TestFlight ou App Store). Abra pelo iPhone, não pelo navegador.',
+      'Pagamento da taxa disponível apenas no app iOS (TestFlight ou App Store). Abra pelo iPhone ou iPad, não pelo navegador.',
     );
   }
   const uid = ic24Auth?.currentUser?.uid || null;
@@ -415,6 +500,46 @@ async function ic24PurchaseTaxaViaStoreKit() {
   return r;
 }
 
+async function ic24RegistrarPagamentoTaxa(uid, iap, offerId) {
+  const ref = ic24Db.collection('platform_fee_payments').doc();
+  const txid = 'TAXA' + ref.id.slice(0, 6).toUpperCase();
+  const pay = {
+    id: ref.id,
+    caregiverId: uid,
+    offerId: offerId || null,
+    amount: IC24_FEE_FIXED_USD,
+    currency: IC24_FEE_CURRENCY,
+    method: 'apple_iap',
+    status: 'confirmed',
+    txid,
+    appleProductId: (iap && iap.productId) || 'ic24_taxa_manutencao',
+    appleTransactionId: (iap && iap.transactionId) || null,
+    appleReceipt: (iap && iap.serverVerificationData) || null,
+    note: 'Apple StoreKit confirmado',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
+  await ref.set(pay);
+  await ic24Db.collection('caregivers').doc(uid).set(
+    {
+      platformFeePending: 0,
+      platformFeePendingOfferId: null,
+      platformFeeLastPaidAt: firebase.firestore.FieldValue.serverTimestamp(),
+      platformFeeLastMethod: 'apple_iap',
+    },
+    { merge: true },
+  );
+  if (offerId) {
+    await ic24Db.collection('job_offers').doc(offerId).set(
+      {
+        platformFeeStatus: 'paid',
+        platformFeePaidAt: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
+  }
+  return pay;
+}
+
 async function ic24PagarTaxaPlataforma(metodo) {
   ic24InitFirebase();
   const uid = ic24Auth.currentUser?.uid;
@@ -423,36 +548,13 @@ async function ic24PagarTaxaPlataforma(metodo) {
     throw new Error('A taxa da plataforma só pode ser paga via App Store (IAP)');
   }
   const snap = await ic24Db.collection('caregivers').doc(uid).get();
-  const pending = ic24PlatformFeePending(snap.data());
+  const cg = snap.data() || {};
+  const pending = ic24PlatformFeePending(cg);
+  const offerId = cg.platformFeePendingOfferId || null;
   if (pending <= 0) throw new Error('Nenhuma taxa pendente');
 
   const iap = await ic24PurchaseTaxaViaStoreKit();
-
-  const ref = ic24Db.collection('platform_fee_payments').doc();
-  const txid = 'TAXA' + ref.id.slice(0, 6).toUpperCase();
-  const pay = {
-    id: ref.id,
-    caregiverId: uid,
-    amount: pending,
-    method: 'apple_iap',
-    status: 'confirmed',
-    txid,
-    appleProductId: iap.productId || 'ic24_taxa_manutencao',
-    appleTransactionId: iap.transactionId || null,
-    appleReceipt: iap.serverVerificationData || null,
-    note: 'Apple StoreKit confirmado',
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-  };
-  await ref.set(pay);
-  await ic24Db.collection('caregivers').doc(uid).set(
-    {
-      platformFeePending: 0,
-      platformFeeLastPaidAt: firebase.firestore.FieldValue.serverTimestamp(),
-      platformFeeLastMethod: 'apple_iap',
-    },
-    { merge: true },
-  );
-  return pay;
+  return ic24RegistrarPagamentoTaxa(uid, iap, offerId);
 }
 
 async function ic24ConfirmarTaxaIap(metodo) {

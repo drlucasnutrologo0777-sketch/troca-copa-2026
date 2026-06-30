@@ -20,7 +20,16 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--t)}
-#app{max-width:430px;margin:0 auto;min-height:100%;background:var(--bg);display:flex;flex-direction:column}
+#app{width:100%;max-width:100%;margin:0 auto;min-height:100%;background:var(--bg);display:flex;flex-direction:column}
+@media (min-width:768px){
+  body{background:linear-gradient(160deg,#E8F5EE 0%,#F5F7FA 45%,#E3F2FD 100%)}
+  #app{max-width:820px;min-height:100vh;box-shadow:0 0 48px rgba(0,0,0,.08)}
+  .pad{padding:28px 36px 40px}
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .menu-grid .menu-topic{margin-bottom:0}
+  .cuid-hero{padding:24px 28px}
+}
 .pad{padding:24px 20px 32px;flex:1}
 .logo-wrap{text-align:center;padding:32px 0 24px}
 .logo{
@@ -366,7 +375,12 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <input class="inp" id="cuid-hour" type="number" step="0.01" placeholder="Ex.: 35"/>
 
       <label class="lbl">Valor por dia / diária (R$)</label>
-      <input class="inp" id="cuid-daily" type="number" step="0.01" placeholder="Ex.: 220"/>
+      <input class="inp" id="cuid-daily" type="number" step="0.01" placeholder="Ex.: 220" oninput="atualizarAvisoTaxaDiaria()"/>
+
+      <div class="note" id="aviso-taxa-diaria" style="margin-top:12px">
+        <strong>Taxa de manutenção do app:</strong> <strong>R$ 10,29</strong> por negócio fechado (equivalente a <strong>US$ 1,99</strong> via App Store), cobrada após fechar o negócio — você pode pagar depois de receber a diária.
+        <span id="aviso-taxa-total" style="display:block;margin-top:8px">Informe sua diária acima para ver o total de referência (diária + taxa).</span>
+      </div>
 
       <div class="note" style="margin-top:8px">Seu perfil será analisado pela equipe antes de aparecer para famílias.</div>
 
@@ -974,6 +988,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       </div>
       <div id="cuid-notificacoes" style="display:none;margin-bottom:12px"></div>
 
+      <div class="menu-grid">
       <button type="button" class="menu-topic" onclick="show('cuidador-curriculo')">
         <span class="menu-ic">📋</span>
         <div><b>Currículo Lates</b><small>Dados, certificados e formação — enviar ao contratante</small></div>
@@ -1021,7 +1036,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       </button>
       <button type="button" class="menu-topic" onclick="show('cuidador-taxa')">
         <span class="menu-ic">📊</span>
-        <div><b>Taxa do app (7%)</b><small>Manutenção da plataforma sobre serviços adquiridos</small></div>
+        <div><b>Taxa do app (US$ 1,99)</b><small>R$ 10,29 por negócio — pague após receber a diária</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('cuidador-historico')">
@@ -1034,6 +1049,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <div><b>Denunciar maus-tratos</b><small>Disque Denúncia e Conselho da Pessoa Idosa</small></div>
         <span class="menu-arr">›</span>
       </button>
+      </div>
       <p class="account-foot"><a href="#" onclick="abrirExclusaoConta('cuidador-painel');return false">Privacidade · excluir conta</a></p>
     </div>
   </section>
@@ -1231,7 +1247,8 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <div id="oferta-passo1">
           <p class="hint">Aceite ou envie contra-proposta de valor. Sua forma de recebimento cadastrada em <strong>Oferecer plantão hoje</strong> será aplicada automaticamente.</p>
           <label class="lbl">Contra-proposta diária (R$) — opcional</label>
-          <input class="inp" id="oferta-contra-valor" type="number" placeholder="Deixe vazio para aceitar o valor da família"/>
+          <input class="inp" id="oferta-contra-valor" type="number" placeholder="Deixe vazio para aceitar o valor da família" oninput="atualizarAvisoTaxaOferta()"/>
+          <p class="hint" id="aviso-taxa-oferta" style="margin-top:-6px;margin-bottom:10px">Taxa de manutenção fixa: <strong>R$ 10,29</strong> (US$ 1,99) por negócio — somada à diária como referência.</p>
           <label class="lbl">Mensagem</label>
           <input class="inp" id="oferta-contra-msg" placeholder="Ex.: Posso iniciar às 19h"/>
           <button class="btn btn-p" type="button" style="margin-top:12px" onclick="aceitarOfertaCuidador()">Aceitar oferta</button>
@@ -1367,24 +1384,24 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
   <section class="screen" id="cuidador-taxa">
     <div class="topbar">
       <button type="button" onclick="show('cuidador-painel')">←</button>
-      <h2>Taxa do app (7%)</h2>
+      <h2>Taxa do app (US$ 1,99)</h2>
     </div>
     <div class="pad">
       <div class="note">
-        Taxa de <strong>manutenção da plataforma</strong>: <strong>7%</strong> sobre cada serviço. Quando a taxa pendente atinge <strong>R$ 50,00</strong>, você continua vendo ofertas mas <strong>não pode aceitar nem enviar propostas</strong> até quitar.
+        Taxa fixa de <strong>US$ 1,99</strong> (<strong>R$ 10,29</strong> de referência) por <strong>fechamento de negócio</strong>. Você pode pagar após receber a diária do contratante. Só pode haver <strong>uma taxa pendente</strong> por vez — com taxa em aberto você vê ofertas, mas <strong>não aceita nem envia propostas</strong> até quitar via App Store.
       </div>
       <div id="taxa-alerta"></div>
       <div class="stat-grid" style="margin-top:16px">
-        <div class="stat-box"><b id="taxa-bruto">R$ 0</b><small>Serviços brutos</small></div>
-        <div class="stat-box"><b id="taxa-valor">R$ 0</b><small>Taxa 7% devida</small></div>
-        <div class="stat-box"><b id="taxa-pendente" style="color:var(--err)">R$ 0</b><small>Pendente (limite R$ 50)</small></div>
+        <div class="stat-box"><b id="taxa-bruto">R$ 0</b><small>Diárias recebidas</small></div>
+        <div class="stat-box"><b id="taxa-valor">US$ 1,99</b><small>Taxa por negócio</small></div>
+        <div class="stat-box"><b id="taxa-pendente" style="color:var(--err)">US$ 0</b><small>Taxa pendente</small></div>
       </div>
       <div class="cv" id="taxa-detalhe" style="margin-top:12px"></div>
       <p class="step" style="margin-top:16px">Pagar taxa pendente</p>
-      <p class="hint">Pagamento exclusivo via <strong>Apple App Store</strong> (compra no app).</p>
-      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="pagarTaxaPlataforma()">Pagar taxa via App Store</button>
+      <p class="hint">Pagamento exclusivo via <strong>Apple App Store</strong> — produto consumível <code>ic24_taxa_manutencao</code> (US$ 1,99).</p>
+      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="pagarTaxaPlataforma()">Pagar US$ 1,99 via App Store</button>
       <div class="note" style="margin-top:12px;font-size:12px">
-        <strong>App Store:</strong> produto consumível <code>ic24_taxa_manutencao</code>. Pagamentos registrados em <code>platform_fee_payments</code> no Firebase.
+        Pagamentos registrados em <code>platform_fee_payments</code> no Firebase, vinculados ao plantão fechado.
       </div>
     </div>
   </section>
@@ -1954,6 +1971,25 @@ function ic24Classificacao(d){
   return { label:'Nível Inicial — envie documentos', stars:'★★★☆☆ 4,0', score:0, missingRequired:['CPF','Antecedentes','Curso'] };
 }
 function fmtMoeda(n){ return 'R$ '+Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function atualizarAvisoTaxaDiaria(){
+  const daily=parseFloat(document.getElementById('cuid-daily')?.value)||0;
+  const el=document.getElementById('aviso-taxa-total');
+  if(!el) return;
+  const taxa=typeof IC24_FEE_FIXED_BRL!=='undefined'?IC24_FEE_FIXED_BRL:10.29;
+  if(daily>0){
+    el.innerHTML='Sua diária: <strong>'+fmtMoeda(daily)+'</strong> + taxa de manutenção <strong>'+fmtMoeda(taxa)+'</strong> = <strong>'+fmtMoeda(daily+taxa)+'</strong> (referência: o que você recebe do contratante + taxa paga separadamente ao app via App Store).';
+  }else{
+    el.textContent='Informe sua diária acima para ver o total de referência (diária + R$ 10,29 de taxa).';
+  }
+}
+function atualizarAvisoTaxaOferta(){
+  const v=parseFloat(document.getElementById('oferta-contra-valor')?.value)||parseFloat(document.getElementById('oferta-acao-id')?.dataset?.daily)||0;
+  const el=document.getElementById('aviso-taxa-oferta');
+  if(!el) return;
+  const taxa=typeof IC24_FEE_FIXED_BRL!=='undefined'?IC24_FEE_FIXED_BRL:10.29;
+  if(v>0) el.innerHTML='Diária proposta: <strong>'+fmtMoeda(v)+'</strong> + taxa <strong>'+fmtMoeda(taxa)+'</strong> = <strong>'+fmtMoeda(v+taxa)+'</strong> (referência).';
+  else el.innerHTML='Taxa de manutenção fixa: <strong>R$ 10,29</strong> (US$ 1,99) por negócio — somada à diária como referência.';
+}
 
 async function carregarPainelCuidador(){
   ic24InitFirebase();
@@ -1966,6 +2002,10 @@ async function carregarPainelCuidador(){
     docsMap=await ic24ListDocumentos(uid);
     d.documentsList=Object.entries(docsMap).map(([k,v])=>({key:k,...v}));
     if(d.activeFamilyId) window._activeFamilyId=d.activeFamilyId;
+    try{
+      if(typeof ic24ListarTrabalhosCuidador==='function') d.workHistory=await ic24ListarTrabalhosCuidador(uid);
+      if(typeof ic24ResumoFinanceiroCuidador==='function') d.finance=await ic24ResumoFinanceiroCuidador();
+    }catch(e){ console.warn('painel finance/hist',e); }
   const pixKeyEl=document.getElementById('cob-pix-key');
   const pixTitEl=document.getElementById('cob-pix-titular');
   if(pixKeyEl&&d.pixKey) pixKeyEl.value=d.pixKey;
@@ -2022,10 +2062,8 @@ function renderTaxaAlerta(d){
   const box=document.getElementById('taxa-alerta');
   if(!box) return;
   const pend=ic24PlatformFeePending(d);
-  if(pend>=IC24_FEE_LIMIT){
-    box.innerHTML='<div class="fee-warn"><strong>Taxa pendente: '+fmtMoeda(pend)+'</strong><br/>Limite de R$ 50 atingido. Quite em <b>Taxa do app</b> para aceitar ofertas novamente.</div>';
-  } else if(pend>0){
-    box.innerHTML='<div class="fee-ok">Taxa pendente: '+fmtMoeda(pend)+' de '+fmtMoeda(IC24_FEE_LIMIT)+' — quite antes de atingir o limite.</div>';
+  if(ic24OffersBlockedByFee(d)){
+    box.innerHTML='<div class="fee-warn"><strong>Taxa pendente: '+ic24FmtTaxaUsd(pend)+'</strong><br/>Quite via App Store para aceitar ofertas e enviar propostas novamente.</div>';
   } else box.innerHTML='';
 }
 
@@ -2036,7 +2074,7 @@ function renderOfertasTaxaBloqueio(d){
   if(multa>0){
     box.innerHTML='<div class="fee-warn"><strong>Multa de cancelamento pendente: '+fmtMoeda(multa)+'</strong><br/>Quite para aceitar ofertas e enviar propostas.</div>';
   }else if(ic24OffersBlockedByFee(d)){
-    box.innerHTML='<div class="fee-warn"><strong>Ofertas bloqueadas</strong> — taxa pendente '+fmtMoeda(ic24PlatformFeePending(d))+'. Você pode visualizar, mas não aceitar nem enviar proposta até pagar em Taxa do app (7%).</div>';
+    box.innerHTML='<div class="fee-warn"><strong>Ofertas bloqueadas</strong> — taxa pendente '+ic24FmtTaxaUsd(ic24PlatformFeePending(d))+'. Você pode visualizar, mas não aceitar nem enviar proposta até pagar em Taxa do app (US$ 1,99).</div>';
   } else box.innerHTML='';
 }
 function injetarAvisoMultaCancelamento(elId){
@@ -2149,7 +2187,7 @@ async function aceitarOfertaCuidador(){
     toast('Taxa ou multa pendente — regularize antes de aceitar ofertas');
     show('cuidador-taxa'); return;
   }
-  if(ic24OffersBlockedByFee(window._cuidPainel||{})){ toast('Taxa pendente ≥ R$ 50 — pague em Taxa do app (7%)'); show('cuidador-taxa'); return; }
+  if(ic24OffersBlockedByFee(window._cuidPainel||{})){ toast('Taxa pendente — pague US$ 1,99 em Taxa do app'); show('cuidador-taxa'); return; }
   const id=document.getElementById('oferta-acao-id').value;
   if(!id){ toast('Selecione uma oferta'); return; }
   const prefs=window._cuidPainel?.paymentPreferences||{};
@@ -2169,7 +2207,7 @@ async function contraOfertaCuidador(){
     toast('Taxa ou multa pendente — regularize antes de enviar propostas');
     show('cuidador-taxa'); return;
   }
-  if(ic24OffersBlockedByFee(window._cuidPainel||{})){ toast('Taxa pendente ≥ R$ 50 — pague em Taxa do app (7%)'); show('cuidador-taxa'); return; }
+  if(ic24OffersBlockedByFee(window._cuidPainel||{})){ toast('Taxa pendente — pague US$ 1,99 em Taxa do app'); show('cuidador-taxa'); return; }
   const id=document.getElementById('oferta-acao-id').value;
   const v=parseFloat(document.getElementById('oferta-contra-valor')?.value);
   if(!id||!v||v<=0){ toast('Informe valor da contra-proposta'); return; }
@@ -2221,30 +2259,30 @@ function renderFaturamento(d){
 }
 
 function renderTaxa(d){
-  const fin=d.finance||{total:2640};
+  const fin=d.finance||{total:0,mes:0,pendente:0,plantoes:0};
   const bruto=fin.total||0;
-  const taxa=bruto*0.07;
   const pend=ic24PlatformFeePending(d);
+  const offerId=d.platformFeePendingOfferId||'';
   document.getElementById('taxa-bruto').textContent=fmtMoeda(bruto);
-  document.getElementById('taxa-valor').textContent=fmtMoeda(taxa);
+  document.getElementById('taxa-valor').textContent=ic24FmtTaxaUsd(IC24_FEE_FIXED_USD);
   const pendEl=document.getElementById('taxa-pendente');
-  if(pendEl) pendEl.textContent=fmtMoeda(pend);
+  if(pendEl) pendEl.textContent=pend>0?ic24FmtTaxaUsd(pend):'US$ 0,00';
   document.getElementById('taxa-detalhe').innerHTML=
-    '<p>Taxa de manutenção: <strong>7%</strong> sobre serviços na plataforma.</p>'+
-    '<p style="margin-top:8px">Pendente acumulado: <strong style="color:'+(pend>=IC24_FEE_LIMIT?'var(--err)':'var(--p)')+'">'+fmtMoeda(pend)+'</strong> / limite '+fmtMoeda(IC24_FEE_LIMIT)+'</p>'+
-    (pend>=IC24_FEE_LIMIT?'<p style="margin-top:8px;color:var(--err)">Aceitar ofertas <strong>bloqueado</strong> até quitar.</p>':'')+
-    '<p style="margin-top:8px">Líquido estimado: <strong>'+fmtMoeda(bruto-taxa)+'</strong></p>';
+    '<p>Taxa de manutenção: <strong>'+ic24FmtTaxaUsd(IC24_FEE_FIXED_USD)+'</strong> ('+ic24FmtTaxaBrl(IC24_FEE_FIXED_BRL)+') por negócio fechado (máx. 1 pendente).</p>'+
+    (pend>0?'<p style="margin-top:8px">Taxa pendente: <strong style="color:var(--err)">'+ic24FmtTaxaUsd(pend)+'</strong>'+(offerId?' · plantão <code>'+escapeHtml(String(offerId).slice(0,12))+'…</code>':'')+'</p>':'<p style="margin-top:8px;color:var(--p)">Nenhuma taxa pendente — você pode aceitar novos negócios.</p>')+
+    (ic24OffersBlockedByFee(d)?'<p style="margin-top:8px;color:var(--err)">Aceitar ofertas <strong>bloqueado</strong> até quitar via App Store.</p>':'')+
+    '<p style="margin-top:8px">Diárias recebidas (PIX): <strong>'+fmtMoeda(bruto)+'</strong> · '+Number(fin.plantoes||0)+' cobrança(s) paga(s)</p>';
   renderTaxaAlerta(d);
 }
 
 function renderHistorico(d){
   const list=document.getElementById('historico-lista');
   if(!list) return;
-  const hist=d.workHistory||[
-    {data:'10–11/06',tipo:'Plantão 24h',local:'Montes Claros',valor:420,status:'Concluído'},
-    {data:'05/06',tipo:'Escala 12h',local:'Montes Claros',valor:280,status:'Concluído'},
-    {data:'28/05',tipo:'Diária 8h',local:'Montes Claros',valor:180,status:'Concluído'},
-  ];
+  const hist=d.workHistory||[];
+  if(!hist.length){
+    list.innerHTML='<p class="hint">Nenhum plantão concluído ainda. Após fechar negócio, o histórico aparece aqui.</p>';
+    return;
+  }
   list.innerHTML=hist.map(h=>'<div class="list-item"><b>'+escapeHtml(h.tipo)+' · '+escapeHtml(h.data)+'</b><small>'+escapeHtml(h.local)+' · '+fmtMoeda(h.valor)+' · '+escapeHtml(h.status)+'</small></div>').join('');
 }
 
@@ -2833,6 +2871,7 @@ show=function(id){
   if(id==='familia-ponto') carregarPontoFamilia();
   if(id==='familia-diario') carregarDiarioFamilia();
   if(id==='familia-pagamentos') carregarPagamentosFamilia();
+  if(id==='cuidador-etapa3') atualizarAvisoTaxaDiaria();
   if(id==='cuidador-ofertas'){ renderOfertas(); renderOfertasTaxaBloqueio(window._cuidPainel||{}); }
   if(id==='cuidador-faturamento') carregarCobrancasHistorico();
   if(id==='cuidador-curriculo'&&!window._curriculoBaixadoOnce){
