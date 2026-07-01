@@ -1,0 +1,27 @@
+# Babá ON — Build 46 (2.0.0+46)
+
+## O que mudou vs build 45
+- pubspec.yaml: 2.0.0+46
+- codemagic.yaml: --build-number=46 (resto igual ao 45)
+
+## Codemagic — link
+https://codemagic.io/apps
+
+1. Abra **troca-copa-2026**
+2. **Start new build**
+3. Workflow: **Babá ON — iOS TestFlight**
+4. Branch: **main**
+
+## Repo GitHub (push antes do build)
+https://github.com/drlucasnutrologo0777-sketch/troca-copa-2026
+
+## TestFlight (App Store Connect)
+https://appstoreconnect.apple.com/apps/BABAON_ASC/testflight/ios
+
+## Config mantida do build 45
+- working_directory: baba-on
+- bundle: com.babaon.app
+- build-name: 2.0.0
+- assinatura: AuthKey + CERTIFICATE_PRIVATE_KEY (fetch-signing-files)
+- verify_web_build.sh antes e depois do IPA
+- upload TestFlight com resolve_asc_apple_id.py

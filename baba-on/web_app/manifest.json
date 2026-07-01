@@ -1,0 +1,28 @@
+{
+  "name": "Babá ON",
+  "short_name": "Babá ON",
+  "description": "Mães, pais e babás com segurança e confiança",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#EEF6FD",
+  "theme_color": "#134175",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

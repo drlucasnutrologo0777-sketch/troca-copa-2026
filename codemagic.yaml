@@ -219,3 +219,94 @@ workflows:
         notify:
           success: true
           failure: true
+  baba-on-ios:
+    name: Babá ON — iOS TestFlight
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    working_directory: baba-on
+
+    environment:
+      vars:
+        APP_STORE_CONNECT_ISSUER_ID: b681d77e-4c5b-4154-b3e4-962dab155c2d
+        APP_STORE_CONNECT_KEY_IDENTIFIER: VHR75L74MJ
+        APP_STORE_CONNECT_API_KEY_PATH: ../ios/codemagic_signing/AuthKey_VHR75L74MJ.p8
+        CERTIFICATE_PRIVATE_KEY_PATH: ../ios/codemagic_signing/ios_distribution_private_key.pem
+        BUNDLE_ID: com.babaon.app
+        CM_CERTIFICATE_PASSWORD: TrocaCopa2026
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+
+    scripts:
+      - name: CONFIRMAR BABA ON (nao Troca Copa / Idoso)
+        script: |
+          set -e
+          echo "========== BABA ON — build 1.0.0+1 =========="
+          test -f web_app/index.html
+          bash tool/verify_web_build.sh
+      - name: Verificar credenciais Apple
+        script: |
+          set -e
+          API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
+          test -f "$API_KEY"
+          export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
+          openssl pkey -in "$API_KEY" -noout
+      - name: Perfil App Store
+        script: |
+          set -e
+          API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
+          CERT_KEY="$CERTIFICATE_PRIVATE_KEY_PATH"
+          export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
+          export CERTIFICATE_PRIVATE_KEY="$(cat "$CERT_KEY")"
+          keychain initialize
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --create \
+            --certificate-key=@file:"$CERT_KEY" \
+            --verbose
+          keychain add-certificates
+          xcode-project use-profiles --project ios/Runner.xcodeproj
+      - name: Flutter pub get
+        script: flutter pub get
+      - name: CocoaPods
+        script: cd ios && pod install
+      - name: Build IPA
+        script: |
+          set -e
+          xcode-project use-profiles --project ios/Runner.xcodeproj
+          EXPORT_PLIST="$HOME/export_options.plist"
+          test -f "$EXPORT_PLIST"
+          flutter build ipa --release \
+            --build-name=1.0.0 \
+            --build-number=1 \
+            --export-options-plist="$EXPORT_PLIST"
+          ls -la build/ios/ipa/
+      - name: Upload TestFlight
+        script: |
+          set -e
+          IPA=$(find build/ios/ipa -name "*.ipa" | head -1)
+          test -n "$IPA"
+          API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
+          export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
+          pip3 install --quiet PyJWT requests
+          APP_STORE_APPLE_ID=$(python3 tool/resolve_asc_apple_id.py)
+          echo "Bundle $BUNDLE_ID -> Apple ID $APP_STORE_APPLE_ID"
+          app-store-connect publish \
+            --path "$IPA" \
+            --private-key "@file:$API_KEY" \
+            --altool-additional-arguments "--apple-id $APP_STORE_APPLE_ID" \
+            --max-find-build-wait 900 \
+            --max-build-processing-wait 3600 \
+            --verbose
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+
+    publishing:
+      email:
+        recipients:
+          - drlucasnutrologo0777@gmail.com
+        notify:
+          success: true
+          failure: true
+

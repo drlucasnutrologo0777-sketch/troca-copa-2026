@@ -1,0 +1,30 @@
+App Store Connect — Notas para a equipe de revisão (opcional)
+
+================================================================================
+COPIAR EM: App Store Connect → Versão do app → Informações para revisão do app
+================================================================================
+
+IDOSO CARE 24H — marketplace que conecta famílias a cuidadores de idosos (com.babaon.app). Não é serviço médico ou de emergência. Emergência: 192 ou 190.
+
+CONTAS DEMO (mesma senha nas duas):
+Cuidador: cuidador.demo@ic24test.local / Demo123! (Ana Demo Cuidadora, Montes Claros-MG)
+Família: familia.demo@ic24test.local / Demo123! (Carlos Demo Família, Montes Claros-MG)
+
+Entrar: abrir app → Entrar → e-mail e senha → painel do perfil. Cadastro e dados de teste já prontos.
+
+CUIDADOR: ofertas → aceitar/contra-propor → definir forma de recebimento e duração (diárias) → após família fechar negócio → chat → ponto → diário → faturamento (PIX externo) → Taxa do app (IAP).
+
+FAMÍLIA: cuidadores próximos → proposta/plantão urgente → fechar negócio → chat → confirmar ponto → diário → pagamentos → avaliar/denunciar.
+
+PAGAMENTOS (Guideline 3.1):
+• Diária família→cuidador: PIX/boleto/link externo (fora da App Store).
+• Taxa plataforma: US$ 1,99 por DIÁRIA acordada (referência R$ 10,29/dia) — SOMENTE Apple IAP consumível bo_taxa_manutencao (tela Taxa do app). Ex.: 10 diárias = US$ 19,90 = 10 compras de US$ 1,99. Sem PIX para taxa.
+
+Permissões: câmera/galeria só para perfil e documentos. Sem GPS contínuo. Chat só após acordo.
+
+Exclusão: in-app ou https://baba-on.web.app/exclusao-conta.html
+Privacidade: https://baba-on.web.app/privacidade.html
+Suporte: https://baba-on.web.app/suporte.html
+
+Contato: Eder Lucas Santos · +55 11 96836-2005 · drlucasnutrologo0777@icloud.com
+IAP: testar com conta Sandbox Apple. Obrigado pela revisão.

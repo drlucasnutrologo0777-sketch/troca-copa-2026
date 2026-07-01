@@ -1,0 +1,23 @@
+# Babá ON — build no Codemagic (repo troca-copa-2026)
+
+## Codemagic
+
+1. https://codemagic.io/apps → **troca-copa-2026**
+2. **Start new build** → **Babá ON — iOS TestFlight**
+
+## URGENTE — App Store Connect (bundle ID errado)
+
+Seu app **"IDOSO CARE 24 H"** (Apple ID 6784313862) foi criado com bundle ID **com.drlucasceo07.freteon** (Freteon).
+O IPA do Babá ON usa **com.babaon.app**. A Apple **nao permite trocar** bundle ID depois de criado.
+
+### Faca isto (5 min):
+
+1. https://appstoreconnect.apple.com → **Apps** → **+** → **Novo app**
+2. Nome: **Babá ON**
+3. Bundle ID: **com.babaon.app** (escolha na lista — ja existe no Developer)
+4. SKU: **baba-on**
+5. Idioma: Portugues (Brasil)
+
+O app antigo com freteon pode ficar la ou ser removido — **nao use ele** para este IPA.
+
+Depois rode o build de novo. O Codemagic acha o Apple ID certo sozinho pelo bundle ID.
