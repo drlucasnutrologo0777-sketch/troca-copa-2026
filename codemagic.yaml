@@ -123,7 +123,7 @@ workflows:
       - name: CONFIRMAR IDOSO CARE WEB (nao Troca Copa)
         script: |
           set -e
-          echo "========== IDOSO CARE 24H — BUILD 46 (IAP StoreKit US$ 1,99 ic24_taxa_manutencao) =========="
+          echo "========== IDOSO CARE 24H — BUILD 47 (agenda/plantão + taxa US$ 1,99 IAP) =========="
           echo "Diretorio: $(pwd)"
           test -f web_app/index.html || { echo "ERRO: pasta idoso-care-24h nao encontrada"; exit 1; }
           bash tool/verify_web_build.sh
@@ -180,7 +180,7 @@ workflows:
           echo "Export options: $EXPORT_PLIST"
           flutter build ipa --release \
             --build-name=2.0.0 \
-            --build-number=46 \
+            --build-number=47 \
             --export-options-plist="$EXPORT_PLIST"
           ls -la build/ios/ipa/
           IPA_CHECK=$(find build/ios/ipa -name "*.ipa" | head -1)

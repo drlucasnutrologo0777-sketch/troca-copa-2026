@@ -113,10 +113,6 @@ async function ic24SalvarCuidador() {
   const addr = ic24EnderecoMap('cad');
   const bio = document.getElementById('cuid-bio')?.value?.trim() || '';
   const specialties = window._cuidSpecs || [];
-  const hourRaw = document.getElementById('cuid-hour')?.value?.trim() || '';
-  const dailyRaw = document.getElementById('cuid-daily')?.value?.trim() || '';
-  const hourRate = hourRaw ? parseFloat(hourRaw.replace(',', '.')) : null;
-  const dailyRate = dailyRaw ? parseFloat(dailyRaw.replace(',', '.')) : null;
   const cpf = document.getElementById('cuid-cpf')?.value?.trim() || '';
   const payload = ic24StripUndefined({
     fullName: nome,
@@ -124,8 +120,6 @@ async function ic24SalvarCuidador() {
     ...addr,
     bio,
     specialties,
-    hourRate,
-    dailyRate,
     cpf: cpf || null,
     approved: false,
     rating: 4.5,
@@ -292,9 +286,6 @@ function ic24AvaliarCadastroCuidador(d, docsMap) {
   }
   if (!(d.bio || '').trim()) {
     return { complete: false, screen: 'cuidador-etapa2', message: 'Conte sobre você e suas especialidades' };
-  }
-  if (d.hourRate == null && d.dailyRate == null) {
-    return { complete: false, screen: 'cuidador-etapa3', message: 'Informe valor por hora ou por diária' };
   }
   if (String(d.cpf || '').replace(/\D/g, '').length !== 11) {
     return { complete: false, screen: 'cuidador-curriculo', message: 'Informe seu CPF no currículo' };

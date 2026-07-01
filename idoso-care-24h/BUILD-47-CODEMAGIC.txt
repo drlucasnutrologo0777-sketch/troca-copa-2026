@@ -1,0 +1,31 @@
+# Idoso Care 24H — Build 47 (2.0.0+47)
+
+## O que mudou vs build 46
+- pubspec.yaml: 2.0.0+47
+- codemagic.yaml: --build-number=47
+- web_app: agenda/plantao com valor na publicacao (nao no cadastro)
+- web_app: telas Minhas agendas / Meus plantoes (editar/remover)
+- web_app: ic24-disponibilidade.js (escalas 8h/12h/24h, soma taxa US$ 1,99)
+- Taxa plataforma: US$ 1,99 via IAP ic24_taxa_manutencao (mantido do 46)
+
+## Codemagic — link
+https://codemagic.io/apps
+
+1. Abra **troca-copa-2026**
+2. **Start new build**
+3. Workflow: **Idoso Care 24H — iOS TestFlight**
+4. Branch: **main**
+
+## Repo GitHub (push antes do build)
+https://github.com/drlucasnutrologo0777-sketch/troca-copa-2026
+
+## TestFlight (App Store Connect)
+https://appstoreconnect.apple.com/apps/6784357547/testflight/ios
+
+## Config mantida
+- working_directory: idoso-care-24h
+- bundle: com.idosocare24h.app
+- build-name: 2.0.0
+- assinatura: AuthKey + CERTIFICATE_PRIVATE_KEY (fetch-signing-files)
+- verify_web_build.sh antes e depois do IPA
+- upload TestFlight com resolve_asc_apple_id.py

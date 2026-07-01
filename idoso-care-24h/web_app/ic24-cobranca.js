@@ -99,6 +99,7 @@ async function ic24AcumularTaxaPlataforma(caregiverId, _valorServico, offerId) {
       {
         platformFeeStatus: 'pending',
         platformFeeAmount: IC24_FEE_FIXED_USD,
+        platformFeeAmountBrlReference: IC24_FEE_FIXED_BRL,
         platformFeeCurrency: IC24_FEE_CURRENCY,
       },
       { merge: true },
@@ -508,6 +509,7 @@ async function ic24RegistrarPagamentoTaxa(uid, iap, offerId) {
     caregiverId: uid,
     offerId: offerId || null,
     amount: IC24_FEE_FIXED_USD,
+    amountBrlReference: IC24_FEE_FIXED_BRL,
     currency: IC24_FEE_CURRENCY,
     method: 'apple_iap',
     status: 'confirmed',
@@ -555,6 +557,22 @@ async function ic24PagarTaxaPlataforma(metodo) {
 
   const iap = await ic24PurchaseTaxaViaStoreKit();
   return ic24RegistrarPagamentoTaxa(uid, iap, offerId);
+}
+
+async function ic24ListarTaxasPlataformaCuidador() {
+  ic24InitFirebase();
+  const uid = ic24Auth.currentUser?.uid;
+  if (!uid) return [];
+  const snap = await ic24QuerySnap(
+    () =>
+      ic24Db
+        .collection('platform_fee_payments')
+        .where('caregiverId', '==', uid)
+        .orderBy('createdAt', 'desc')
+        .limit(20),
+    () => ic24Db.collection('platform_fee_payments').where('caregiverId', '==', uid).limit(20),
+  );
+  return ic24SortByCreated(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
 }
 
 async function ic24ConfirmarTaxaIap(metodo) {
