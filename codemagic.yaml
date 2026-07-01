@@ -224,6 +224,13 @@ workflows:
     max_build_duration: 90
     instance_type: mac_mini_m2
     working_directory: baba-on
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+      cancel_previous_builds: true
 
     environment:
       vars:
