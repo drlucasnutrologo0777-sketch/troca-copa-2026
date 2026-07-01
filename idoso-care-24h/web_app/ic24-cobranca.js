@@ -1,8 +1,10 @@
 /* Idoso Care 24H — cobrança PIX/cartão para cliente + taxa plataforma */
 
-/** Taxa fixa por fechamento de negócio — Apple IAP consumível ic24_taxa_manutencao */
-const IC24_FEE_FIXED_USD = 1.99;
-const IC24_FEE_FIXED_BRL = 10.29;
+/** Taxa por diária — Apple IAP consumível ic24_taxa_manutencao (1 unidade = 1 diária) */
+const IC24_FEE_PER_DIARIA_USD = 1.99;
+const IC24_FEE_PER_DIARIA_BRL = 10.29;
+const IC24_FEE_FIXED_USD = IC24_FEE_PER_DIARIA_USD;
+const IC24_FEE_FIXED_BRL = IC24_FEE_PER_DIARIA_BRL;
 const IC24_FEE_CURRENCY = 'USD';
 const IC24_MAX_PENDING_FEES = 1;
 const IC24_CANCEL_FEE_RATE = 0.07;
@@ -56,6 +58,23 @@ function ic24CancellationFeePending(d) {
   return Number((d && d.cancellationFeePending) || 0);
 }
 
+function ic24PlatformFeePendingDiarias(d) {
+  const n = Number((d && d.platformFeePendingDiarias) || 0);
+  if (n > 0) return n;
+  const pend = ic24PlatformFeePending(d);
+  if (pend <= 0.001) return 0;
+  return Math.max(1, Math.round(pend / IC24_FEE_FIXED_USD));
+}
+
+function ic24CalcPlatformFee(diariasCount) {
+  const diarias = Math.max(1, Math.min(366, Math.floor(Number(diariasCount) || 1)));
+  return {
+    diarias,
+    usd: Math.round(diarias * IC24_FEE_PER_DIARIA_USD * 100) / 100,
+    brlReference: Math.round(diarias * IC24_FEE_PER_DIARIA_BRL * 100) / 100,
+  };
+}
+
 function ic24HasPendingPlatformFee(d) {
   return ic24PlatformFeePending(d) >= IC24_FEE_FIXED_USD - 0.001;
 }
@@ -76,7 +95,7 @@ function ic24HtmlAvisoMultaCancelamento() {
   );
 }
 
-async function ic24AcumularTaxaPlataforma(caregiverId, _valorServico, offerId) {
+async function ic24AcumularTaxaPlataforma(caregiverId, diariasCount, offerId) {
   if (!caregiverId) return 0;
   ic24InitFirebase();
   const ref = ic24Db.collection('caregivers').doc(caregiverId);
@@ -85,9 +104,11 @@ async function ic24AcumularTaxaPlataforma(caregiverId, _valorServico, offerId) {
   if (ic24HasPendingPlatformFee(cur)) {
     return ic24PlatformFeePending(cur);
   }
+  const fee = ic24CalcPlatformFee(diariasCount);
   await ref.set(
     {
-      platformFeePending: IC24_FEE_FIXED_USD,
+      platformFeePending: fee.usd,
+      platformFeePendingDiarias: fee.diarias,
       platformFeeCurrency: IC24_FEE_CURRENCY,
       platformFeePendingOfferId: offerId || null,
       platformFeeUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -98,14 +119,15 @@ async function ic24AcumularTaxaPlataforma(caregiverId, _valorServico, offerId) {
     await ic24Db.collection('job_offers').doc(offerId).set(
       {
         platformFeeStatus: 'pending',
-        platformFeeAmount: IC24_FEE_FIXED_USD,
-        platformFeeAmountBrlReference: IC24_FEE_FIXED_BRL,
+        platformFeeAmount: fee.usd,
+        platformFeePendingDiarias: fee.diarias,
+        platformFeeAmountBrlReference: fee.brlReference,
         platformFeeCurrency: IC24_FEE_CURRENCY,
       },
       { merge: true },
     );
   }
-  return IC24_FEE_FIXED_USD;
+  return fee.usd;
 }
 
 const IC24_DIAS_SEMANA = {
@@ -502,6 +524,14 @@ async function ic24PurchaseTaxaViaStoreKit() {
 }
 
 async function ic24RegistrarPagamentoTaxa(uid, iap, offerId) {
+  const cgSnap = await ic24Db.collection('caregivers').doc(uid).get();
+  const cg = cgSnap.exists ? cgSnap.data() : {};
+  const pendingBefore = ic24PlatformFeePending(cg);
+  const diariasBefore = ic24PlatformFeePendingDiarias(cg);
+  const pendingAfter = Math.max(0, Math.round((pendingBefore - IC24_FEE_FIXED_USD) * 100) / 100);
+  const diariasAfter = Math.max(0, diariasBefore - 1);
+  const fullyPaid = pendingAfter <= 0.001 || diariasAfter <= 0;
+
   const ref = ic24Db.collection('platform_fee_payments').doc();
   const txid = 'TAXA' + ref.id.slice(0, 6).toUpperCase();
   const pay = {
@@ -510,6 +540,7 @@ async function ic24RegistrarPagamentoTaxa(uid, iap, offerId) {
     offerId: offerId || null,
     amount: IC24_FEE_FIXED_USD,
     amountBrlReference: IC24_FEE_FIXED_BRL,
+    diariasUnits: 1,
     currency: IC24_FEE_CURRENCY,
     method: 'apple_iap',
     status: 'confirmed',
@@ -517,27 +548,46 @@ async function ic24RegistrarPagamentoTaxa(uid, iap, offerId) {
     appleProductId: (iap && iap.productId) || 'ic24_taxa_manutencao',
     appleTransactionId: (iap && iap.transactionId) || null,
     appleReceipt: (iap && iap.serverVerificationData) || null,
-    note: 'Apple StoreKit confirmado',
+    note: fullyPaid ? 'Apple StoreKit — taxa quitada' : 'Apple StoreKit — 1 diária paga',
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
   await ref.set(pay);
-  await ic24Db.collection('caregivers').doc(uid).set(
-    {
-      platformFeePending: 0,
-      platformFeePendingOfferId: null,
-      platformFeeLastPaidAt: firebase.firestore.FieldValue.serverTimestamp(),
-      platformFeeLastMethod: 'apple_iap',
-    },
-    { merge: true },
-  );
+
+  const cgPatch = fullyPaid
+    ? {
+        platformFeePending: 0,
+        platformFeePendingDiarias: 0,
+        platformFeePendingOfferId: null,
+        platformFeeLastPaidAt: firebase.firestore.FieldValue.serverTimestamp(),
+        platformFeeLastMethod: 'apple_iap',
+      }
+    : {
+        platformFeePending: pendingAfter,
+        platformFeePendingDiarias: diariasAfter,
+        platformFeeLastPartialPaidAt: firebase.firestore.FieldValue.serverTimestamp(),
+      };
+  await ic24Db.collection('caregivers').doc(uid).set(cgPatch, { merge: true });
+
   if (offerId) {
-    await ic24Db.collection('job_offers').doc(offerId).set(
-      {
-        platformFeeStatus: 'paid',
-        platformFeePaidAt: firebase.firestore.FieldValue.serverTimestamp(),
-      },
-      { merge: true },
-    );
+    if (fullyPaid) {
+      await ic24Db.collection('job_offers').doc(offerId).set(
+        {
+          platformFeeStatus: 'paid',
+          platformFeePaidAt: firebase.firestore.FieldValue.serverTimestamp(),
+          platformFeeAmount: 0,
+          platformFeePendingDiarias: 0,
+        },
+        { merge: true },
+      );
+    } else {
+      await ic24Db.collection('job_offers').doc(offerId).set(
+        {
+          platformFeeAmount: pendingAfter,
+          platformFeePendingDiarias: diariasAfter,
+        },
+        { merge: true },
+      );
+    }
   }
   return pay;
 }
@@ -555,8 +605,28 @@ async function ic24PagarTaxaPlataforma(metodo) {
   const offerId = cg.platformFeePendingOfferId || null;
   if (pending <= 0) throw new Error('Nenhuma taxa pendente');
 
-  const iap = await ic24PurchaseTaxaViaStoreKit();
-  return ic24RegistrarPagamentoTaxa(uid, iap, offerId);
+  const units = ic24PlatformFeePendingDiarias(cg);
+  if (units > 1 && typeof confirm === 'function') {
+    const ok = confirm(
+      'Taxa pendente: ' +
+        units +
+        ' diária(s) × US$ 1,99 = ' +
+        ic24FmtTaxaUsd(pending) +
+        '.\n\nSerão ' +
+        units +
+        ' compras na App Store (US$ 1,99 cada). Continuar?',
+    );
+    if (!ok) throw new Error('Pagamento cancelado');
+  }
+
+  let lastPay = null;
+  for (let i = 0; i < units; i++) {
+    const iap = await ic24PurchaseTaxaViaStoreKit();
+    lastPay = await ic24RegistrarPagamentoTaxa(uid, iap, offerId);
+    const snap2 = await ic24Db.collection('caregivers').doc(uid).get();
+    if (ic24PlatformFeePending(snap2.data()) <= 0.001) break;
+  }
+  return lastPay;
 }
 
 async function ic24ListarTaxasPlataformaCuidador() {

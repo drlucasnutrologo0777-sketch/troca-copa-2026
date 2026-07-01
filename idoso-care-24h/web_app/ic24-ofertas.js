@@ -434,7 +434,8 @@ async function ic24FamiliaAceitarContraProposta(responseId, accept, notification
     });
     await ic24VincularFamiliaAtiva(r.caregiverId, familyId);
     if (typeof ic24AcumularTaxaPlataforma === 'function') {
-      await ic24AcumularTaxaPlataforma(r.caregiverId, rate || 0, r.offerId);
+      const diarias = Math.max(1, Number(r.jobDurationDays) || 1);
+      await ic24AcumularTaxaPlataforma(r.caregiverId, diarias, r.offerId);
     }
     if (typeof ic24CriarChatNegocioFechado === 'function') {
       await ic24CriarChatNegocioFechado(familyId, r.caregiverId, r.offerId);

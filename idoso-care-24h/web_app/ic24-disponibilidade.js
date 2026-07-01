@@ -3,25 +3,41 @@
 const IC24_ESCALAS_AGENDA = ['4', '6', '8', '12', '24', '48'];
 const IC24_ESCALAS_PLANTAO = ['12', '24'];
 
-function ic24TaxaBrlRef() {
-  return typeof IC24_FEE_FIXED_BRL !== 'undefined' ? IC24_FEE_FIXED_BRL : 10.29;
+function ic24TaxaBrlRef(diarias) {
+  const unit = typeof IC24_FEE_FIXED_BRL !== 'undefined' ? IC24_FEE_FIXED_BRL : 10.29;
+  const n = Math.max(1, Math.floor(Number(diarias) || 1));
+  return Math.round(unit * n * 100) / 100;
 }
 
-function ic24FmtTotalRefDiariaTaxa(daily) {
+function ic24FmtTotalRefDiariaTaxa(daily, diariasCount) {
   const d = Number(daily) || 0;
-  const taxa = ic24TaxaBrlRef();
+  const n = Math.max(1, Math.floor(Number(diariasCount) || 1));
+  const taxaUnit = typeof IC24_FEE_FIXED_BRL !== 'undefined' ? IC24_FEE_FIXED_BRL : 10.29;
+  const taxa = ic24TaxaBrlRef(n);
   if (d <= 0) return null;
+  const suffix =
+    n > 1
+      ? ' · taxa total ' +
+        (typeof fmtMoeda === 'function' ? fmtMoeda(taxa) : 'R$ ' + taxa.toFixed(2)) +
+        ' (' +
+        n +
+        '× ' +
+        (typeof fmtMoeda === 'function' ? fmtMoeda(taxaUnit) : 'R$ ' + taxaUnit.toFixed(2)) +
+        ')'
+      : '';
   return {
     daily: d,
     taxa,
-    total: d + taxa,
+    taxaUnit,
+    diarias: n,
+    total: d + taxaUnit,
     label:
       'Diária ' +
       (typeof fmtMoeda === 'function' ? fmtMoeda(d) : 'R$ ' + d.toFixed(2)) +
       ' + taxa ' +
-      (typeof fmtMoeda === 'function' ? fmtMoeda(taxa) : 'R$ ' + taxa.toFixed(2)) +
-      ' = ' +
-      (typeof fmtMoeda === 'function' ? fmtMoeda(d + taxa) : 'R$ ' + (d + taxa).toFixed(2)) +
+      (typeof fmtMoeda === 'function' ? fmtMoeda(taxaUnit) : 'R$ ' + taxaUnit.toFixed(2)) +
+      '/dia' +
+      suffix +
       ' (referência)',
   };
 }

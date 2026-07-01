@@ -372,7 +372,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <p class="hint">O valor da diária você define ao publicar <strong>agenda</strong> ou <strong>plantão</strong> no painel — pode alterar quando quiser.</p>
 
       <div class="note" style="margin-top:12px">
-        <strong>Taxa do app:</strong> <strong>R$ 10,29</strong> (US$ 1,99) por negócio fechado — ao publicar disponibilidade mostramos automaticamente <strong>diária + taxa</strong> como referência.
+        <strong>Taxa do app:</strong> <strong>R$ 10,29</strong> (US$ 1,99) <strong>por diária</strong> — ao publicar disponibilidade mostramos automaticamente <strong>diária + taxa/dia</strong> como referência.
       </div>
 
       <div class="note" style="margin-top:8px">Seu perfil será analisado pela equipe antes de aparecer para famílias.</div>
@@ -1145,7 +1145,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       </div>
       <div class="note">Escala de <strong>8 horas</strong> = horário comercial (seg–sex, 8h–18h).</div>
       <p class="step" style="margin-top:16px">Valor da diária por escala (R$)</p>
-      <p class="hint">Informe quanto cobra em cada duração. Ex.: 8h = R$ 200, 12h = R$ 260. A taxa do app (R$ 10,29) é somada na referência abaixo.</p>
+      <p class="hint">Informe quanto cobra em cada duração. Ex.: 8h = R$ 200, 12h = R$ 260. A taxa do app é <strong>R$ 10,29 por diária</strong> (US$ 1,99).</p>
       <div class="row2" style="margin-bottom:8px">
         <div><label class="lbl" style="font-size:11px">4 h</label><input class="inp" id="agenda-rate-4" type="number" min="0" step="1" placeholder="R$" style="margin:0" oninput="atualizarResumoTaxaAgenda()"/></div>
         <div><label class="lbl" style="font-size:11px">6 h</label><input class="inp" id="agenda-rate-6" type="number" min="0" step="1" placeholder="R$" style="margin:0" oninput="atualizarResumoTaxaAgenda()"/></div>
@@ -1198,7 +1198,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         </div>
       </div>
       <label class="lbl">Duração típica (dias)</label>
-      <input class="inp" id="agenda-duracao-dias" type="number" min="1" value="15"/>
+      <input class="inp" id="agenda-duracao-dias" type="number" min="1" value="15" oninput="atualizarResumoTaxaAgenda()"/>
       <button class="btn btn-o" type="button" style="margin-top:8px" onclick="salvarPreferenciasRecebimento()">Salvar forma de recebimento</button>
     </div>
   </section>
@@ -1267,7 +1267,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
           <p class="hint">Aceite ou envie contra-proposta de valor. Sua forma de recebimento cadastrada em <strong>Oferecer plantão hoje</strong> será aplicada automaticamente.</p>
           <label class="lbl">Contra-proposta diária (R$) — opcional</label>
           <input class="inp" id="oferta-contra-valor" type="number" placeholder="Deixe vazio para aceitar o valor da família" oninput="atualizarAvisoTaxaOferta()"/>
-          <p class="hint" id="aviso-taxa-oferta" style="margin-top:-6px;margin-bottom:10px">Taxa de manutenção fixa: <strong>R$ 10,29</strong> (US$ 1,99) por negócio — somada à diária como referência.</p>
+          <p class="hint" id="aviso-taxa-oferta" style="margin-top:-6px;margin-bottom:10px">Taxa de manutenção: <strong>R$ 10,29/dia</strong> (US$ 1,99/dia) — multiplicada pelo número de diárias do trabalho.</p>
           <label class="lbl">Mensagem</label>
           <input class="inp" id="oferta-contra-msg" placeholder="Ex.: Posso iniciar às 19h"/>
           <button class="btn btn-p" type="button" style="margin-top:12px" onclick="aceitarOfertaCuidador()">Aceitar oferta</button>
@@ -1284,7 +1284,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
             <button type="button" class="chip" data-v="quinzenal" onclick="selChip(this,'oferta-pag-freq');toggleOfertaPagSemanal()">Quinzenal</button>
           </div>
           <label class="lbl" style="margin-top:12px">Duração do trabalho (dias)</label>
-          <input class="inp" id="oferta-duracao-dias" type="number" min="1" max="365" value="15" placeholder="Ex.: 15" oninput="atualizarResumoPagOferta()"/>
+          <input class="inp" id="oferta-duracao-dias" type="number" min="1" max="365" value="15" placeholder="Ex.: 15" oninput="atualizarResumoPagOferta();atualizarAvisoTaxaOferta()"/>
           <div id="oferta-pag-dia-semana" style="display:none;margin-top:8px">
             <label class="lbl">Dia da semana para recebimento</label>
             <div class="chip-row" id="oferta-pag-dia">
@@ -1332,7 +1332,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <button type="button" class="chip" data-v="19:00" onclick="selChip(this,'plantao-hoje-inicio')">19:00</button>
       </div>
       <p class="step" style="margin-top:16px">Valor da diária (R$)</p>
-      <p class="hint">Informe quanto cobra em cada escala oferecida hoje. Referência automática: diária + taxa R$ 10,29.</p>
+      <p class="hint">Informe quanto cobra em cada escala oferecida hoje. Referência: diária + taxa de <strong>R$ 10,29/dia</strong> (US$ 1,99/dia).</p>
       <div class="row2">
         <div><label class="lbl" style="font-size:11px">Plantão 12 h</label><input class="inp" id="plantao-rate-12" type="number" min="0" step="1" placeholder="Ex.: 200" style="margin:0" oninput="atualizarResumoTaxaPlantao()"/></div>
         <div><label class="lbl" style="font-size:11px">Plantão 24 h</label><input class="inp" id="plantao-rate-24" type="number" min="0" step="1" placeholder="Ex.: 260" style="margin:0" oninput="atualizarResumoTaxaPlantao()"/></div>
@@ -1358,7 +1358,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         </div>
       </div>
       <label class="lbl">Duração típica do trabalho (dias)</label>
-      <input class="inp" id="plantao-duracao-dias" type="number" min="1" max="365" value="15"/>
+      <input class="inp" id="plantao-duracao-dias" type="number" min="1" max="365" value="15" oninput="atualizarResumoTaxaPlantao()"/>
       <button class="btn btn-p" type="button" onclick="salvarPlantaoHoje()">Publicar plantão</button>
       <button class="btn btn-o" type="button" style="margin-top:8px" onclick="show('cuidador-meus-plantoes')">Ver meus plantões</button>
       <div class="note" style="margin-top:12px" id="plantao-hoje-status">Status: inativo</div>
@@ -1441,18 +1441,18 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
     </div>
     <div class="pad">
       <div class="note">
-        Taxa fixa de <strong>US$ 1,99</strong> (<strong>R$ 10,29</strong> de referência) por <strong>fechamento de negócio</strong>. Você pode pagar após receber a diária do contratante. Só pode haver <strong>uma taxa pendente</strong> por vez — com taxa em aberto você vê ofertas, mas <strong>não aceita nem envia propostas</strong> até quitar via App Store.
+        Taxa de <strong>US$ 1,99 por diária</strong> (<strong>R$ 10,29</strong> de referência). Ex.: 10 diárias = US$ 19,90. Você pode pagar após receber do contratante. Só pode haver <strong>uma cobrança de taxa pendente</strong> por vez — com taxa em aberto você vê ofertas, mas <strong>não aceita nem envia propostas</strong> até quitar via App Store.
       </div>
       <div id="taxa-alerta"></div>
       <div class="stat-grid" style="margin-top:16px">
         <div class="stat-box"><b id="taxa-bruto">R$ 0</b><small>Diárias recebidas</small></div>
-        <div class="stat-box"><b id="taxa-valor">US$ 1,99</b><small>Taxa por negócio</small></div>
+        <div class="stat-box"><b id="taxa-valor">US$ 1,99</b><small>Taxa por diária</small></div>
         <div class="stat-box"><b id="taxa-pendente" style="color:var(--err)">US$ 0</b><small>Taxa pendente</small></div>
       </div>
       <div class="cv" id="taxa-detalhe" style="margin-top:12px"></div>
       <p class="step" style="margin-top:16px">Pagar taxa pendente</p>
-      <p class="hint">Pagamento exclusivo via <strong>Apple App Store</strong> — produto consumível <code>ic24_taxa_manutencao</code> (US$ 1,99).</p>
-      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="pagarTaxaPlataforma()">Pagar US$ 1,99 via App Store</button>
+      <p class="hint">Pagamento via <strong>Apple App Store</strong> — produto consumível <code>ic24_taxa_manutencao</code> (US$ 1,99 por diária; várias compras se o trabalho tiver várias diárias).</p>
+      <button class="btn btn-p" type="button" id="taxa-pagar-btn" style="margin-top:12px" onclick="pagarTaxaPlataforma()">Pagar taxa via App Store</button>
       <div class="note" style="margin-top:12px;font-size:12px">
         Histórico de taxas pagas via App Store (<code>ic24_taxa_manutencao</code>).
       </div>
@@ -2026,20 +2026,22 @@ function atualizarAvisoTaxaDiaria(){
   const daily=parseFloat(document.getElementById('cuid-daily')?.value)||0;
   const el=document.getElementById('aviso-taxa-total');
   if(!el) return;
-  const taxa=typeof IC24_FEE_FIXED_BRL!=='undefined'?IC24_FEE_FIXED_BRL:10.29;
+  const taxaUnit=typeof IC24_FEE_FIXED_BRL!=='undefined'?IC24_FEE_FIXED_BRL:10.29;
   if(daily>0){
-    el.innerHTML='Sua diária: <strong>'+fmtMoeda(daily)+'</strong> + taxa de manutenção <strong>'+fmtMoeda(taxa)+'</strong> = <strong>'+fmtMoeda(daily+taxa)+'</strong> (referência: o que você recebe do contratante + taxa paga separadamente ao app via App Store).';
+    el.innerHTML='Sua diária: <strong>'+fmtMoeda(daily)+'</strong> + taxa <strong>'+fmtMoeda(taxaUnit)+'/dia</strong> (referência; total da taxa = diárias do trabalho × US$ 1,99).';
   }else{
-    el.textContent='Informe sua diária acima para ver o total de referência (diária + R$ 10,29 de taxa).';
+    el.textContent='Informe sua diária acima para ver a referência (diária + R$ 10,29/dia de taxa).';
   }
 }
 function atualizarAvisoTaxaOferta(){
   const v=parseFloat(document.getElementById('oferta-contra-valor')?.value)||parseFloat(document.getElementById('oferta-acao-id')?.dataset?.daily)||0;
   const el=document.getElementById('aviso-taxa-oferta');
   if(!el) return;
-  const taxa=typeof IC24_FEE_FIXED_BRL!=='undefined'?IC24_FEE_FIXED_BRL:10.29;
-  if(v>0) el.innerHTML='Diária proposta: <strong>'+fmtMoeda(v)+'</strong> + taxa <strong>'+fmtMoeda(taxa)+'</strong> = <strong>'+fmtMoeda(v+taxa)+'</strong> (referência).';
-  else el.innerHTML='Taxa de manutenção fixa: <strong>R$ 10,29</strong> (US$ 1,99) por negócio — somada à diária como referência.';
+  const dias=parseInt(document.getElementById('oferta-duracao-dias')?.value,10)||15;
+  const taxaUnit=typeof IC24_FEE_FIXED_BRL!=='undefined'?IC24_FEE_FIXED_BRL:10.29;
+  const taxaTotal=Math.round(taxaUnit*dias*100)/100;
+  if(v>0) el.innerHTML='Diária: <strong>'+fmtMoeda(v)+'</strong> · '+dias+' diária(s) · taxa total <strong>'+fmtMoeda(taxaTotal)+'</strong> ('+dias+'× '+fmtMoeda(taxaUnit)+') — referência.';
+  else el.innerHTML='Taxa de manutenção: <strong>R$ 10,29/dia</strong> (US$ 1,99/dia) — multiplicada pelo número de diárias do trabalho.';
 }
 
 async function carregarPainelCuidador(){
@@ -2128,7 +2130,7 @@ function renderOfertasTaxaBloqueio(d){
   if(multa>0){
     box.innerHTML='<div class="fee-warn"><strong>Multa de cancelamento pendente: '+fmtMoeda(multa)+'</strong><br/>Quite para aceitar ofertas e enviar propostas.</div>';
   }else if(ic24OffersBlockedByFee(d)){
-    box.innerHTML='<div class="fee-warn"><strong>Ofertas bloqueadas</strong> — taxa pendente '+ic24FmtTaxaUsd(ic24PlatformFeePending(d))+'. Você pode visualizar, mas não aceitar nem enviar proposta até pagar em Taxa do app (US$ 1,99).</div>';
+    box.innerHTML='<div class="fee-warn"><strong>Ofertas bloqueadas</strong> — taxa pendente '+ic24FmtTaxaUsd(ic24PlatformFeePending(d))+' ('+ic24PlatformFeePendingDiarias(d)+' diária(s)). Você pode visualizar, mas não aceitar nem enviar proposta até pagar em Taxa do app.</div>';
   } else box.innerHTML='';
 }
 function injetarAvisoMultaCancelamento(elId){
@@ -2226,7 +2228,8 @@ function atualizarResumoPagOferta(){
     const dias=parseInt(document.getElementById('oferta-duracao-dias')?.value,10)||15;
     const rate=taxaDiariaOfertaAtual()||1;
     const calc=ic24CalcularPropostaPagamento(rate,freq,weekDay,dias);
-    el.textContent='Resumo: '+calc.scheduleLabel+' · '+dias+' dias · R$ '+Number(calc.perCycleAmount).toFixed(2)+' por ciclo';
+    const fee=typeof ic24CalcPlatformFee==='function'?ic24CalcPlatformFee(dias):{usd:dias*1.99,diarias:dias};
+    el.textContent='Resumo: '+calc.scheduleLabel+' · '+dias+' diária(s) · R$ '+Number(calc.perCycleAmount).toFixed(2)+' por ciclo · taxa plataforma '+ic24FmtTaxaUsd(fee.usd)+' ('+fee.diarias+'× US$ 1,99)';
   }catch(_){ el.textContent=''; }
 }
 function termosRecebimentoOferta(){
@@ -2241,7 +2244,7 @@ async function aceitarOfertaCuidador(){
     toast('Taxa ou multa pendente — regularize antes de aceitar ofertas');
     show('cuidador-taxa'); return;
   }
-  if(ic24OffersBlockedByFee(window._cuidPainel||{})){ toast('Taxa pendente — pague US$ 1,99 em Taxa do app'); show('cuidador-taxa'); return; }
+  if(ic24OffersBlockedByFee(window._cuidPainel||{})){ toast('Taxa pendente — quite em Taxa do app'); show('cuidador-taxa'); return; }
   const id=document.getElementById('oferta-acao-id').value;
   if(!id){ toast('Selecione uma oferta'); return; }
   const prefs=window._cuidPainel?.paymentPreferences||{};
@@ -2261,7 +2264,7 @@ async function contraOfertaCuidador(){
     toast('Taxa ou multa pendente — regularize antes de enviar propostas');
     show('cuidador-taxa'); return;
   }
-  if(ic24OffersBlockedByFee(window._cuidPainel||{})){ toast('Taxa pendente — pague US$ 1,99 em Taxa do app'); show('cuidador-taxa'); return; }
+  if(ic24OffersBlockedByFee(window._cuidPainel||{})){ toast('Taxa pendente — quite em Taxa do app'); show('cuidador-taxa'); return; }
   const id=document.getElementById('oferta-acao-id').value;
   const v=parseFloat(document.getElementById('oferta-contra-valor')?.value);
   if(!id||!v||v<=0){ toast('Informe valor da contra-proposta'); return; }
@@ -2316,14 +2319,17 @@ function renderTaxa(d){
   const fin=d.finance||{total:0,mes:0,pendente:0,plantoes:0};
   const bruto=fin.total||0;
   const pend=ic24PlatformFeePending(d);
+  const diariasPend=ic24PlatformFeePendingDiarias(d);
   const offerId=d.platformFeePendingOfferId||'';
   document.getElementById('taxa-bruto').textContent=fmtMoeda(bruto);
   document.getElementById('taxa-valor').textContent=ic24FmtTaxaUsd(IC24_FEE_FIXED_USD);
   const pendEl=document.getElementById('taxa-pendente');
   if(pendEl) pendEl.textContent=pend>0?ic24FmtTaxaUsd(pend):'US$ 0,00';
+  const btn=document.getElementById('taxa-pagar-btn');
+  if(btn) btn.textContent=pend>0?(diariasPend>1?'Pagar '+diariasPend+'× US$ 1,99 via App Store ('+ic24FmtTaxaUsd(pend)+')':'Pagar US$ 1,99 via App Store'):'Pagar taxa via App Store';
   document.getElementById('taxa-detalhe').innerHTML=
-    '<p>Taxa de manutenção: <strong>'+ic24FmtTaxaUsd(IC24_FEE_FIXED_USD)+'</strong> ('+ic24FmtTaxaBrl(IC24_FEE_FIXED_BRL)+') por negócio fechado (máx. 1 pendente).</p>'+
-    (pend>0?'<p style="margin-top:8px">Taxa pendente: <strong style="color:var(--err)">'+ic24FmtTaxaUsd(pend)+'</strong>'+(offerId?' · plantão <code>'+escapeHtml(String(offerId).slice(0,12))+'…</code>':'')+'</p>':'<p style="margin-top:8px;color:var(--p)">Nenhuma taxa pendente — você pode aceitar novos negócios.</p>')+
+    '<p>Taxa de manutenção: <strong>'+ic24FmtTaxaUsd(IC24_FEE_FIXED_USD)+'</strong> ('+ic24FmtTaxaBrl(IC24_FEE_FIXED_BRL)+') <strong>por diária</strong> (máx. 1 cobrança pendente por negócio).</p>'+
+    (pend>0?'<p style="margin-top:8px">Taxa pendente: <strong style="color:var(--err)">'+ic24FmtTaxaUsd(pend)+'</strong> · <strong>'+diariasPend+' diária(s)</strong>'+(offerId?' · plantão <code>'+escapeHtml(String(offerId).slice(0,12))+'…</code>':'')+'</p>':'<p style="margin-top:8px;color:var(--p)">Nenhuma taxa pendente — você pode aceitar novos negócios.</p>')+
     (ic24OffersBlockedByFee(d)?'<p style="margin-top:8px;color:var(--err)">Aceitar ofertas <strong>bloqueado</strong> até quitar via App Store.</p>':'')+
     '<p style="margin-top:8px">Diárias recebidas: <strong>'+fmtMoeda(bruto)+'</strong> · '+Number(fin.plantoes||0)+' cobrança(s) paga(s)</p>';
   renderTaxaAlerta(d);
@@ -2356,12 +2362,12 @@ function renderHistorico(d){
 function atualizarResumoTaxaAgenda(){
   const escala=chipVal('agenda-escala')||'8';
   const rates=ic24ColetarRatesByScale('agenda', IC24_ESCALAS_AGENDA);
-  const daily=ic24RateForScale(rates, escala, 0);
+  const dias=parseInt(document.getElementById('agenda-duracao-dias')?.value,10)||1;
   const el=document.getElementById('agenda-taxa-resumo');
   if(!el) return;
   const parts=[];
   Object.keys(rates).sort((a,b)=>Number(a)-Number(b)).forEach(h=>{
-    const ref=ic24FmtTotalRefDiariaTaxa(rates[h]);
+    const ref=ic24FmtTotalRefDiariaTaxa(rates[h], dias);
     if(ref) parts.push(h+'h: '+ref.label);
   });
   if(parts.length) el.innerHTML=parts.join('<br/>');
@@ -2371,9 +2377,10 @@ function atualizarResumoTaxaPlantao(){
   const escala=chipVal('plantao-hoje-escala')||'12';
   const rates=ic24ColetarRatesByScale('plantao', IC24_ESCALAS_PLANTAO);
   const daily=ic24RateForScale(rates, escala, 0);
+  const dias=parseInt(document.getElementById('plantao-duracao-dias')?.value,10)||1;
   const el=document.getElementById('plantao-taxa-resumo');
   if(!el) return;
-  const ref=ic24FmtTotalRefDiariaTaxa(daily);
+  const ref=ic24FmtTotalRefDiariaTaxa(daily, dias);
   if(ref) el.innerHTML='<strong>Escala '+escala+'h:</strong> '+ref.label;
   else el.textContent='Informe o valor da escala '+escala+'h (ex.: R$ 200).';
 }
@@ -2771,9 +2778,11 @@ async function carregarCobrancasHistorico(){
 }
 async function pagarTaxaPlataforma(){
   try{
-    toast('Abrindo App Store…');
+    const d=window._cuidPainel||{};
+    const units=ic24PlatformFeePendingDiarias(d);
+    toast(units>1?'Abrindo App Store ('+units+' compras)…':'Abrindo App Store…');
     await ic24PagarTaxaPlataforma('apple_iap');
-    toast('Taxa paga — compra confirmada pela Apple');
+    toast('Taxa quitada — compra(s) confirmada(s) pela Apple');
     await carregarPainelCuidador();
   }catch(e){ toast(e.message||'Erro ao pagar taxa'); }
 }
