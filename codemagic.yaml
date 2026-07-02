@@ -123,7 +123,7 @@ workflows:
       - name: CONFIRMAR IDOSO CARE WEB (nao Troca Copa)
         script: |
           set -e
-          echo "========== IDOSO CARE 24H — BUILD 50 =========="
+          echo "========== IDOSO CARE 24H — BUILD (pubspec) =========="
           echo "Diretorio: $(pwd)"
           test -f web_app/index.html || { echo "ERRO: pasta idoso-care-24h nao encontrada"; exit 1; }
           bash tool/verify_web_build.sh
@@ -178,9 +178,11 @@ workflows:
             exit 1
           fi
           echo "Export options: $EXPORT_PLIST"
+          BUILD_NUM=$(grep '^version:' pubspec.yaml | sed 's/.*+//')
+          echo "Build number from pubspec: $BUILD_NUM"
           flutter build ipa --release \
             --build-name=2.0.0 \
-            --build-number=48 \
+            --build-number="$BUILD_NUM" \
             --export-options-plist="$EXPORT_PLIST"
           ls -la build/ios/ipa/
           IPA_CHECK=$(find build/ios/ipa -name "*.ipa" | head -1)
