@@ -1,0 +1,63 @@
+IDOSO CARE 24H — CORRIGIR REPROVAÇÃO 2.1(b) (IAP NÃO ENVIADO)
+Submission ID: c2dacf1e-609a-4a2f-8498-7b07d7cbeddb
+Build reprovado: 1.0 (48)
+
+================================================================================
+CAUSA: O produto IAP ic24_taxa_manutencao existe no app mas NÃO foi submetido
+       para revisão no App Store Connect (falta screenshot + Submit for Review).
+================================================================================
+
+PASSO 1 — CONTRATO (obrigatório)
+App Store Connect → Acordos, impostos e banking → Paid Apps → Ativo
+
+PASSO 2 — CRIAR / COMPLETAR O IAP
+App Store Connect → Apps → Idoso Care 24H → Monetização → Compras no app
+  → Gerenciar (ou Features → In-App Purchases)
+
+  Tipo: CONSUMÍVEL (Consumable)
+  ID do produto: ic24_taxa_manutencao   ← EXATAMENTE igual ao app
+  Nome de referência: Taxa manutencao plataforma
+
+  Nome (PT): Taxa de manutenção
+  Descrição (PT):
+    Taxa de manutenção da plataforma Idoso Care 24H. US$ 1,99 por diária
+    de plantão acordada. Pagamento exclusivo pela App Store (consumível).
+    A diária paga pela família ao cuidador continua via PIX fora do app.
+
+  Preço: Tier US$ 1,99 (ou equivalente)
+
+  SCREENSHOT PARA REVISÃO (OBRIGATÓRIO — Apple bloqueia sem isso):
+    Upload: IAP-REVIEW-SCREENSHOT.png (nesta pasta)
+    OU: Desktop\Idoso Care IAP Revisao.png
+    Tela: Menu cuidador → Taxa do app (US$ 1,99) — botão Pagar taxa via App Store
+
+  Status do IAP: Pronto para envio (Ready to Submit)
+
+PASSO 3 — VINCULAR IAP À VERSÃO DO APP
+App Store Connect → Apps → Idoso Care → iOS → Versão 1.0 (ou nova 1.0 build 49)
+  → seção "Compras no app e assinaturas" / In-App Purchases
+  → marque ic24_taxa_manutencao
+  → selecione o build 49 (novo) ou 48 se reutilizar
+
+PASSO 4 — NOVO BINÁRIO (Apple pediu)
+  Codemagic: troca-copa-2026 → Idoso Care 24H — iOS TestFlight → main
+  Build: 2.0.0+49
+  Link: https://codemagic.io/apps
+  TestFlight: https://appstoreconnect.apple.com/apps/6784357547/testflight/ios
+
+PASSO 5 — ENVIAR TUDO JUNTO
+  1. IAP ic24_taxa_manutencao = Ready to Submit + screenshot OK
+  2. Build 49 selecionado na versão
+  3. IAP marcado na versão
+  4. Adicionar para revisão → Enviar
+
+PASSO 6 — RESPONDER À APPLE (copiar RESPOSTA-APPLE-IAP.txt)
+
+================================================================================
+DADOS TÉCNICOS (código)
+  Bundle: com.idosocare24h.app
+  Product ID: ic24_taxa_manutencao
+  Tipo: consumível
+  Tela: Taxa do app (menu cuidador)
+  Demo cuidador: cuidador.demo@ic24test.local / Demo123!
+================================================================================

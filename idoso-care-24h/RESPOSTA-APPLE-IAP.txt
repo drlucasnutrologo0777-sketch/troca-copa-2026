@@ -1,0 +1,25 @@
+Hello App Review Team,
+
+Thank you for your message regarding Submission ID c2dacf1e-609a-4a2f-8498-7b07d7cbeddb.
+
+We have completed the required In-App Purchase setup:
+
+1. Product ID: ic24_taxa_manutencao (Consumable)
+2. Price: US$ 1.99 per unit (= one platform maintenance fee per agreed care day)
+3. App Review screenshot uploaded in App Store Connect for this IAP (Taxa do app screen)
+4. The IAP is now submitted for review together with the new binary (build 49)
+
+How to test IAP (Sandbox):
+- Log in as caregiver: cuidador.demo@ic24test.local / Demo123!
+- Close a job with a family account (or use existing demo match)
+- Open menu → Taxa do app (US$ 1,99)
+- Tap "Pagar taxa via App Store" — consumable ic24_taxa_manutencao
+
+Note: Daily payment family→caregiver uses external PIX (Guideline 3.1). Only the platform fee uses Apple IAP.
+
+Support: https://idoso-care-24h.web.app/suporte.html
+
+Best regards,
+Eder Lucas Santos
+drlucasnutrologo0777@icloud.com
++55 11 96836-2005
