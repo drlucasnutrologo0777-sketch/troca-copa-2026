@@ -549,7 +549,7 @@ async function ic24AssinarDiarioFamilia(logId) {
   });
 }
 
-async function ic24SalvarDiarioComFamilia({ texto, caregiverId, familyId, idosoNome }) {
+async function ic24SalvarDiarioComFamilia({ texto, caregiverId, familyId, idosoNome, childName }) {
   ic24InitFirebase();
   const cgId = caregiverId || ic24Auth.currentUser?.uid;
   let famId = familyId;
@@ -560,7 +560,7 @@ async function ic24SalvarDiarioComFamilia({ texto, caregiverId, familyId, idosoN
     id: ref.id,
     caregiverId: cgId,
     familyId: famId || null,
-    elderlyName: idosoNome || 'Idoso',
+    elderlyName: idosoNome || childName || 'Criança',
     text: texto,
     date: new Date().toISOString().slice(0, 10),
     familySigned: false,

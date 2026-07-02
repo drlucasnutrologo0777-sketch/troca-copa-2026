@@ -8,11 +8,23 @@ const IC24_DOC_META = {
   antecedentes: { type: 'AntecedentesCriminais', label: 'Antecedentes criminais', weight: 30, tier: 'compliance', required: true },
   diploma: { type: 'Diploma', label: 'Diploma / Certificado de formação', weight: 18, tier: 'education' },
   curso: { type: 'CursoBabá', label: 'Curso de Babá / Primeiros Socorros Infantil', weight: 25, tier: 'education', required: true },
-  inss: { type: 'INSS', label: 'INSS / PIS', weight: 5, tier: 'work' },
-  titulo: { type: 'TituloEleitor', label: 'Título de eleitor', weight: 3, tier: 'identity' },
-  reservista: { type: 'Reservista', label: 'Certificado de reservista', weight: 3, tier: 'identity' },
   referencia: { type: 'Referencia', label: 'Comprovante de experiência', weight: 12, tier: 'experience' },
 };
+
+function ic24FormatAddressPublic(cg) {
+  if (!cg) return '';
+  if (cg.address) return String(cg.address);
+  return [
+    cg.street,
+    cg.number ? 'nº ' + cg.number : '',
+    cg.complement,
+    cg.neighborhood,
+    cg.city && cg.state ? cg.city + ' - ' + cg.state : cg.city || cg.state || '',
+    cg.cep ? 'CEP ' + cg.cep : '',
+  ]
+    .filter(Boolean)
+    .join(', ');
+}
 
 let ic24Storage = null;
 
@@ -70,11 +82,12 @@ function ic24NormalizeUploadFile(file) {
   let type = file.type || '';
   if (!type || type === 'application/octet-stream') {
     const name = (file.name || '').toLowerCase();
-    if (name.endsWith('.heic') || name.endsWith('.heif')) type = 'image/heic';
+    if (name.endsWith('.heic') || name.endsWith('.heif')) type = 'image/jpeg';
     else if (name.endsWith('.png')) type = 'image/png';
     else if (name.endsWith('.webp')) type = 'image/webp';
     else type = 'image/jpeg';
   }
+  if (/heic|heif/i.test(type)) type = 'image/jpeg';
   return { file, contentType: type };
 }
 
@@ -93,6 +106,7 @@ async function ic24UploadFotoPerfil(file) {
     { photoUrl: url, photoPath: path, updatedAt: firebase.firestore.FieldValue.serverTimestamp() },
     { merge: true },
   );
+  await ic24Db.collection('users').doc(uid).set({ photoUrl: url }, { merge: true });
   if (typeof ic24RecomputeCurriculo === 'function') await ic24RecomputeCurriculo(uid);
   return url;
 }
@@ -160,6 +174,11 @@ async function ic24RecomputeCurriculo(uid) {
     dailyRate: cg.dailyRate || null,
     city: cg.city || '',
     state: cg.state || '',
+    neighborhood: cg.neighborhood || '',
+    street: cg.street || '',
+    number: cg.number || '',
+    cep: cg.cep || '',
+    address: ic24FormatAddressPublic(cg),
     photoUrl: cg.photoUrl || null,
     classification,
     documents: documentsPublic,
@@ -227,7 +246,6 @@ async function ic24CarregarCurriculoPorToken(token) {
   }
   delete curriculum.email;
   delete curriculum.phone;
-  delete curriculum.address;
   return { request: req, curriculum };
 }
 

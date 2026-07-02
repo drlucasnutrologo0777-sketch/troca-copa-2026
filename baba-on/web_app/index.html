@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#134175"/>
 <title>Babá ON</title>
-<!-- Babá ON iOS build 1.0.0+1 -->
+<!-- Babá ON iOS build 1.0.0+3 -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" href="favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
@@ -364,7 +364,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <p class="step">Etapa 2 de 3 — Perfil</p>
       <div class="progress"><i class="done"></i><i class="done"></i><i></i></div>
       <h1 class="h1">Sobre você</h1>
-      <p class="hint">Conte sua experiência e especialidades (Alzheimer, Parkinson, medicação…).</p>
+      <p class="hint">Conte sua experiência e especialidades (bebês, rotina de sono, refeição…).</p>
 
       <label class="lbl">Sobre mim</label>
       <textarea class="inp" id="cuid-bio" rows="4" style="height:auto;padding:12px 14px" placeholder="Ex.: 8 anos de experiência, plantões diurnos e 12x36…"></textarea>
@@ -378,7 +378,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
 
       <label class="lbl">Especialidades</label>
       <div class="row2" style="margin-bottom:8px">
-        <input class="inp" id="cuid-spec" placeholder="Ex.: Alzheimer" style="margin:0"/>
+        <input class="inp" id="cuid-spec" placeholder="Ex.: Bebês 0–2 anos" style="margin:0"/>
         <button class="btn btn-o" type="button" style="height:50px;margin:0" onclick="addEspecialidade()">+ Add</button>
       </div>
       <div id="cuid-spec-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
@@ -457,7 +457,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <input class="inp" id="fam-crianca" placeholder="Ex.: Sofia, 8 meses"/>
 
       <label class="lbl">Necessidades de cuidado</label>
-      <input class="inp" id="fam-necessidades" placeholder="Ex.: Alzheimer, medicação, banho..."/>
+      <input class="inp" id="fam-necessidades" placeholder="Ex.: Rotina de sono, alergias, medicação…"/>
 
       <button class="btn btn-s" type="button" style="margin-top:8px" onclick="finalizarFamilia()">Concluir cadastro — mãe/pai</button>
     </div>
@@ -622,27 +622,6 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
         <input type="file" accept="image/*" onchange="anexar(this)"/>
       </div>
 
-      <div class="doc" data-doc="inss">
-        <div class="ic">🔢</div>
-        <div><b>Número do INSS / PIS</b><small>Cartão ou extrato</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
-      <div class="doc" data-doc="titulo">
-        <div class="ic">🗳️</div>
-        <div><b>Título de eleitor</b><small>Opcional, se disponível</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
-      <div class="doc" data-doc="reservista">
-        <div class="ic">⚔️</div>
-        <div><b>Certificado de reservista</b><small>Quando aplicável</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
       <div class="doc" data-doc="referencia">
         <div class="ic">📞</div>
         <div><b>Comprovante de experiência / referência</b><small>Declaração ou contracheque anterior</small></div>
@@ -654,52 +633,18 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
     </div>
   </section>
 
-  <!-- ========== FAMÍLIA PESQUISA CUIDADOR (antes do match) ========== -->
+  <!-- ========== FAMÍLIA — PERFIL DA BABÁ (antes do match) ========== -->
   <section class="screen" id="pesquisa">
     <div class="topbar">
       <button type="button" onclick="voltarDePesquisa()">←</button>
       <h2>Perfil da babá</h2>
     </div>
-    <div class="pad">
-      <div style="text-align:center;margin-bottom:16px">
-        <div class="photo-pick has" style="width:90px;height:90px;margin:0 auto 10px">
-          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Crect fill='%232E8B57' width='90' height='90'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='28' font-family='sans-serif'%3EMS%3C/text%3E%3C/svg%3E" alt=""/>
-        </div>
-        <h1 class="h1" style="font-size:20px">Maria Silva <span class="badge-v">✓ Verificado</span></h1>
-        <p style="color:var(--m);font-size:14px">★★★★★ 4.9 · São Paulo, SP</p>
-      </div>
-
-      <div class="note" style="margin-bottom:16px">
-        Solicite o <strong>Currículo Lates</strong> com fotos dos documentos e classificação automática antes do match.
-      </div>
-
-      <label class="lbl">ID do cuidador (Firebase UID)</label>
-      <input class="inp" id="pesquisa-baba-id" placeholder="Cole o UID ou use demo_caregiver_maria"/>
-
-      <button class="btn btn-o" type="button" style="margin-bottom:12px" onclick="solicitarCurriculoContratante()">Solicitar currículo Lates</button>
-      <div class="note" id="pesquisa-curriculo-link" style="display:none;margin-bottom:16px;font-size:12px;word-break:break-all"></div>
-
-      <p class="step">Prévia do perfil</p>
-      <div class="cv">
-        <p><strong>Formação:</strong> Curso de Babá / Primeiros Socorros Infantil + Primeiros Socorros</p>
-        <p><strong>Experiência:</strong> 8 anos · Alzheimer, Parkinson, medicação</p>
-        <p><strong>Sobre:</strong> Profissional dedicada, referências disponíveis. Plantões diurnos e 12x36.</p>
-        <p><strong>Valor:</strong> R$ 220/diária</p>
-      </div>
-
-      <p class="step">Documentos verificados — toque para ampliar</p>
-      <div class="gallery" id="galeria">
-        <div class="gal-item" onclick="verFoto('RG')"><div class="ph">📄<br/>RG</div></div>
-        <div class="gal-item" onclick="verFoto('CPF')"><div class="ph">📄<br/>CPF</div></div>
-        <div class="gal-item" onclick="verFoto('Comprovante')"><div class="ph">📄<br/>Endereço</div></div>
-        <div class="gal-item" onclick="verFoto('CTPS')"><div class="ph">📄<br/>CTPS</div></div>
-        <div class="gal-item" onclick="verFoto('Antecedentes')"><div class="ph">📄<br/>Antecedentes</div></div>
-        <div class="gal-item" onclick="verFoto('Diploma')"><div class="ph">📄<br/>Diploma</div></div>
-        <div class="gal-item" onclick="verFoto('Curso')"><div class="ph">📄<br/>Curso</div></div>
-        <div class="gal-item" onclick="verFoto('Referência')"><div class="ph">📄<br/>Experiência</div></div>
-      </div>
-
-      <button class="btn btn-p" type="button" onclick="abrirChatNegocio()">Abrir chat</button>
+    <div class="pad" id="pesquisa-pad">
+      <input type="hidden" id="pesquisa-baba-id"/>
+      <div id="pesquisa-conteudo"><p class="hint">Carregando perfil…</p></div>
+      <button class="btn btn-o" type="button" style="margin-top:12px" onclick="solicitarCurriculoContratante()">Abrir currículo completo</button>
+      <div class="note" id="pesquisa-curriculo-link" style="display:none;margin-top:12px;font-size:12px;word-break:break-all"></div>
+      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="abrirChatNegocio()">Abrir chat</button>
       <p class="hint" style="margin-top:12px;text-align:center;font-size:12px">Chat liberado somente após fechar negócio em Minhas ofertas.</p>
     </div>
   </section>
@@ -742,12 +687,12 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       </button>
       <button type="button" class="menu-topic" onclick="show('mae-ponto')">
         <span class="menu-ic">🕐</span>
-        <div><b>Cartão de ponto</b><small>Autenticar diária do cuidador após expediente</small></div>
+        <div><b>Cartão de ponto</b><small>Confirmar entrada e saída da babá após o plantão</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('mae-diario')">
         <span class="menu-ic">📝</span>
-        <div><b>Assinar diário do idoso</b><small>Sumário diário do cuidador — ciência da família</small></div>
+        <div><b>Assinar diário da criança</b><small>Sumário diário da babá — ciência da família</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('mae-pagamentos')">
@@ -762,17 +707,17 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       </button>
       <button type="button" class="menu-topic" onclick="show('mae-recomendacao')">
         <span class="menu-ic">✉️</span>
-        <div><b>Carta de recomendação</b><small>Solicitar carta formal ao cuidador</small></div>
+        <div><b>Carta de recomendação</b><small>Solicitar carta formal à babá</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('mae-curriculo')">
         <span class="menu-ic">📄</span>
-        <div><b>Solicitar currículo Lates</b><small>Documentos verificados + classificação</small></div>
+        <div><b>Solicitar currículo</b><small>Documentos verificados + classificação</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('mae-irregularidade')">
         <span class="menu-ic">⚠️</span>
-        <div><b>Notificar irregularidades</b><small>Relato de conduta inadequada do cuidador</small></div>
+        <div><b>Notificar irregularidades</b><small>Relato de conduta inadequada da babá</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('mae-contato')">
@@ -855,7 +800,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
   <section class="screen" id="mae-ponto">
     <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Cartão de ponto</h2></div>
     <div class="pad">
-      <p class="hint">Confirme entrada, intervalo e saída registrados pelo cuidador após o expediente.</p>
+      <p class="hint">Confirme entrada, intervalo e saída registrados pela babá após o plantão.</p>
       <div id="fam-ponto-list"></div>
     </div>
   </section>
@@ -863,7 +808,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
   <section class="screen" id="mae-diario">
     <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Diário da criança</h2></div>
     <div class="pad">
-      <p class="hint">Leia o sumário do cuidador e assine eletronicamente.</p>
+      <p class="hint">Leia o sumário da babá e assine eletronicamente.</p>
       <div id="fam-diario-list"></div>
     </div>
   </section>
@@ -882,8 +827,8 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
   <section class="screen" id="mae-avaliar">
     <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Avaliar babá</h2></div>
     <div class="pad">
-      <label class="lbl">ID do cuidador</label>
-      <input class="inp" id="avaliar-cuid-id" placeholder="UID do cuidador"/>
+      <label class="lbl">Selecione a babá</label>
+      <select class="sel" id="avaliar-cuid-id"><option value="">Carregando babás…</option></select>
       <label class="lbl">Nota (1 a 5)</label>
       <input class="inp" id="avaliar-nota" type="number" min="1" max="5" placeholder="5"/>
       <label class="lbl">Comentário</label>
@@ -895,8 +840,8 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
   <section class="screen" id="mae-recomendacao">
     <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Carta de recomendação</h2></div>
     <div class="pad">
-      <label class="lbl">ID do cuidador</label>
-      <input class="inp" id="rec-cuid-id" placeholder="UID do cuidador"/>
+      <label class="lbl">Selecione a babá</label>
+      <select class="sel" id="rec-cuid-id"><option value="">Carregando babás…</option></select>
       <label class="lbl">Mensagem</label>
       <textarea class="inp" id="rec-texto" rows="4" style="height:auto;padding:12px" placeholder="Descreva o serviço prestado…"></textarea>
       <button class="btn btn-p" type="button" onclick="solicitarCartaFamilia()">Solicitar carta de recomendação</button>
@@ -906,19 +851,18 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
   <section class="screen" id="mae-curriculo">
     <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Solicitar currículo</h2></div>
     <div class="pad">
-      <label class="lbl">ID do cuidador</label>
-      <input class="inp" id="fam-curriculo-cuid-id" placeholder="UID do cuidador"/>
-      <button class="btn btn-p" type="button" onclick="solicitarCurriculoFamilia()">Gerar link Currículo Lates</button>
+      <p class="hint">Escolha uma babá abaixo e toque em <strong>Ver currículo</strong>. Não é necessário ID técnico.</p>
+      <input type="hidden" id="fam-curriculo-cuid-id"/>
+      <div id="fam-curriculo-list"><p class="hint">Carregando babás…</p></div>
       <div class="note" id="fam-curriculo-link" style="display:none;margin-top:12px;font-size:12px;word-break:break-all"></div>
-      <button class="btn btn-o" type="button" style="margin-top:12px" onclick="irPesquisaDe('mae-curriculo')">Ver perfil completo</button>
     </div>
   </section>
 
   <section class="screen" id="mae-irregularidade">
     <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Notificar irregularidades</h2></div>
     <div class="pad">
-      <label class="lbl">ID do cuidador</label>
-      <input class="inp" id="irr-cuid-id" placeholder="UID (se souber)"/>
+      <label class="lbl">Babá (opcional)</label>
+      <select class="sel" id="irr-cuid-id"><option value="">Não sei / não se aplica</option></select>
       <label class="lbl">Descrição</label>
       <textarea class="inp" id="irr-texto" rows="4" style="height:auto;padding:12px"></textarea>
       <button class="btn btn-p" type="button" onclick="enviarIrregularidade()">Enviar notificação</button>
@@ -939,8 +883,8 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
   <section class="screen" id="mae-denunciar">
     <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Denunciar babá</h2></div>
     <div class="pad">
-      <label class="lbl">ID do cuidador</label>
-      <input class="inp" id="den-cuid-id" placeholder="UID do cuidador"/>
+      <label class="lbl">Selecione a babá</label>
+      <select class="sel" id="den-cuid-id"><option value="">Carregando babás…</option></select>
       <label class="lbl">Motivo</label>
       <textarea class="inp" id="den-texto" rows="4" style="height:auto;padding:12px"></textarea>
       <button class="btn btn-p" type="button" style="background:var(--err)" onclick="denunciarBabaFamilia()">Registrar denúncia</button>
@@ -981,7 +925,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <h2>Chat do match</h2>
     </div>
     <div class="pad" style="display:flex;flex-direction:column;min-height:70vh">
-      <div class="note" id="chatLockNote">Chat bloqueado — feche o negócio com o cuidador em Minhas ofertas para conversar.</div>
+      <div class="note" id="chatLockNote">Chat bloqueado — feche o negócio com a babá em Minhas ofertas para conversar.</div>
       <div class="chat-msgs" id="chatMsgs"></div>
       <div class="chat-bar">
         <input class="inp" id="chatInput" placeholder="Digite sua mensagem..." style="margin:0"/>
@@ -1043,7 +987,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       </button>
       <button type="button" class="menu-topic" onclick="show('baba-diario')">
         <span class="menu-ic">📝</span>
-        <div><b>Diário da criança</b><small>Sumário diário, assinatura e repasse ao próximo cuidador</small></div>
+        <div><b>Diário da criança</b><small>Sumário diário, assinatura e repasse à próxima babá</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('baba-ofertas')">
@@ -1105,7 +1049,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <div class="cv" id="cuid-curriculo-dados"></div>
       <div class="note" style="margin-top:12px">
         <strong>Certificados verificados pelo app</strong><br/>
-        ✓ Antecedentes criminais &nbsp; ✓ Curso cuidador de idosos<br/>
+        ✓ Antecedentes criminais &nbsp; ✓ Curso de Babá / Primeiros Socorros<br/>
         ✓ Primeiros socorros &nbsp; ✓ CTPS / documentos
       </div>
       <p class="lbl" style="margin-top:14px">Classificação automática</p>
@@ -1248,7 +1192,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <input class="inp" id="ponto-hora-manual" type="time"/>
       <div class="obs-balloon">
         <label class="lbl">💬 Observações do plantão</label>
-        <textarea class="inp" id="ponto-obs" rows="3" style="height:auto;padding:12px;margin-bottom:0" placeholder="Ex.: Idoso dormiu após almoço, medicação 14h aplicada…"></textarea>
+        <textarea class="inp" id="ponto-obs" rows="3" style="height:auto;padding:12px;margin-bottom:0" placeholder="Ex.: Bebê dormiu após almoço, brincou no parque, medicação 14h…"></textarea>
       </div>
       <div class="note">Status: <span id="ponto-status">Aguardando entrada</span></div>
       <div class="ponto-log" id="ponto-log">Nenhum registro hoje.</div>
@@ -1263,7 +1207,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <h2>Diário da criança</h2>
     </div>
     <div class="pad">
-      <p class="hint">Sumário dos cuidados do dia. O familiar acessa no menu dele e pode repassar ao próximo cuidador.</p>
+      <p class="hint">Sumário dos cuidados do dia. A família acessa no menu dela e pode repassar à próxima babá.</p>
       <label class="lbl">Sumário de cuidados — hoje</label>
       <textarea class="inp" id="diario-texto" rows="6" style="height:auto;padding:12px 14px" placeholder="Medicação, alimentação, humor, mobilidade, observações…"></textarea>
       <div class="sig-box" id="diario-assinatura">
@@ -1271,7 +1215,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
         <button class="btn btn-o" type="button" onclick="assinarDiario()">Assinar sumário do dia</button>
       </div>
       <button class="btn btn-p" type="button" style="margin-top:12px" onclick="salvarDiario()">Salvar diário</button>
-      <button class="btn btn-s" type="button" style="margin-top:8px" onclick="enviarDiarioProximoBaba()">Enviar ao próximo cuidador</button>
+      <button class="btn btn-s" type="button" style="margin-top:8px" onclick="enviarDiarioProximoBaba()">Enviar à próxima babá</button>
     </div>
   </section>
 
@@ -1518,7 +1462,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <h2>Denunciar maus-tratos</h2>
     </div>
     <div class="pad">
-      <p class="hint">Se suspeitar de violência ou negligência contra idoso, denuncie imediatamente.</p>
+      <p class="hint">Se suspeitar de violência ou negligência contra criança, denuncie imediatamente (Disque 100).</p>
       <div class="list-item">
         <b>Disque 100 — Direitos Humanos</b>
         <small>Ligação gratuita, 24 h — denúncias de violações de direitos</small>
@@ -1594,13 +1538,14 @@ async function syncDocumentosUI(){
 function irPesquisaDe(deOnde){
   window._pesquisaVoltar=deOnde||'mae-painel';
   show('pesquisa');
+  carregarPesquisaBaba(window._cuidadorSelecionado);
 }
 function voltarDePesquisa(){ show(window._pesquisaVoltar||'mae-painel'); }
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
   const btn=document.getElementById('btnIrLogin');
-  if(btn) btn.style.display=(id==='login'||id==='welcome')?'none':'block';
+  if(btn) btn.style.display='none';
   window.scrollTo(0,0);
 }
 function irWelcome(){ show('welcome'); }
@@ -1638,9 +1583,12 @@ function validarEnderecoCad(){
   if(!document.getElementById('cad-uf').value.trim()){ toast('UF obrigatória'); return false; }
   return true;
 }
-function irBabaEtapa2(){
+async function irBabaEtapa2(){
   if(!validarEnderecoCad()) return;
-  show('baba-etapa2');
+  try{
+    await ic24SalvarBaba();
+    show('baba-etapa2');
+  }catch(e){ toast(e.message||'Erro ao salvar endereço'); }
 }
 function addEspecialidade(){
   const inp=document.getElementById('cuid-spec');
@@ -1681,7 +1629,7 @@ async function finalizarBaba(){
     if(uid) await ic24RecomputeCurriculo(uid);
     await carregarPainelBaba();
     show('baba-painel');
-    toast('Cadastro salvo — área do cuidador aberta!');
+    toast('Cadastro salvo — área da babá aberta!');
   }catch(e){ toast(e.message||'Erro ao salvar no Firestore'); }
 }
 function maskCep(el){
@@ -1858,11 +1806,12 @@ function fotoPerfilEtapa2(input){
     toast('Foto selecionada — será enviada ao finalizar o cadastro');
     return;
   }
-  ic24UploadFotoPerfil(f).then(()=>{
+  ic24UploadFotoPerfil(f).then((url)=>{
     window._pendingProfilePhoto=null;
     window._photoUploaded=true;
+    if(window._babaPainel) window._babaPainel.photoUrl=url;
     toast('Foto salva no Firebase');
-  }).catch(e=>{ toast(e.message||'Erro ao enviar foto — tente outra imagem'); input.value=''; window._pendingProfilePhoto=null; });
+  }).catch(e=>{ toast(e.message||'Erro ao enviar foto — tente JPG ou PNG'); input.value=''; window._pendingProfilePhoto=null; });
 }
 async function fotoPerfilPainel(input){
   const f=input.files[0];
@@ -1876,6 +1825,8 @@ async function fotoPerfilPainel(input){
     ic24InitFirebase();
     if(!ic24Auth.currentUser){ toast('Faça login como babá'); return; }
     await ic24UploadFotoPerfil(f);
+    window._photoUploaded=true;
+    if(window._babaPainel) window._babaPainel.photoUrl=(await ic24Db.collection('caregivers').doc(ic24Auth.currentUser.uid).get()).data()?.photoUrl;
     toast('Foto de perfil salva no Firebase Storage');
     await carregarPainelBaba();
   }catch(e){ toast(e.message||'Erro ao salvar foto'); }
@@ -1924,7 +1875,8 @@ async function finalizar(){
   }catch(e){ toast(e.message||'Erro ao salvar no Firestore'); }
 }
 async function solicitarCurriculoContratante(){
-  const caregiverId=(document.getElementById('pesquisa-baba-id')?.value||'').trim()||IC24_DEMO_CAREGIVER;
+  const caregiverId=(document.getElementById('pesquisa-baba-id')?.value||'').trim()||window._cuidadorSelecionado||'';
+  if(!caregiverId){ toast('Escolha uma babá em Babás próximos ou Solicitar currículo'); return; }
   try{
     ic24InitFirebase();
     if(!ic24Auth.currentUser){ toast('Faça login como família'); irLogin(); return; }
@@ -2183,12 +2135,14 @@ function renderCurriculo(d, cls, docsMap){
   const classBox=document.getElementById('cuid-classificacao-box');
   if(!box) return;
   const regiao=[d.city,d.state].filter(Boolean).join(' — ')||'—';
+  const endereco=(typeof ic24FormatAddressPublic==='function'?ic24FormatAddressPublic(d):d.address)||regiao;
   const specs=(d.specialties||window._cuidSpecs||[]).join(', ')||'—';
   const docCount=docsMap?Object.keys(docsMap).length:(d.documentsCount||0);
   box.innerHTML=
     '<p><strong>Nome:</strong> '+escapeHtml(d.fullName||'—')+'</p>'+
+    '<p><strong>Endereço:</strong> '+escapeHtml(endereco||'—')+'</p>'+
     '<p><strong>Região:</strong> '+escapeHtml(regiao)+'</p>'+
-    '<p class="hint" style="font-size:12px">Telefone, e-mail e endereço completo não aparecem no currículo enviado ao contratante.</p>'+
+    '<p class="hint" style="font-size:12px">Telefone e e-mail não aparecem no currículo — contato pelo chat após fechar negócio.</p>'+
     '<p><strong>Sobre:</strong> '+escapeHtml(d.bio||document.getElementById('cuid-bio')?.value||'—')+'</p>'+
     '<p><strong>Especialidades:</strong> '+escapeHtml(specs)+'</p>'+
     '<p><strong>Valores:</strong> '+escapeHtml(typeof ic24ExibirRateCaregiver==='function'?ic24ExibirRateCaregiver(d):'Publique agenda ou plantão com diária')+'</p>'+
@@ -2203,9 +2157,9 @@ function renderRecomendacoes(d){
   const list=document.getElementById('cuid-recomendacoes-list');
   if(!list) return;
   const recs=d.recommendations||[
-    {nome:'Família Silva', nota:5, texto:'Profissional dedicada, pontual e carinhosa com minha mãe.'},
-    {nome:'Sr. João M.', nota:5, texto:'Excelente cuidado com medicação e alimentação.'},
-    {nome:'Dra. Ana P.', nota:4, texto:'Recomendo — comunicação clara com a família.'},
+    {nome:'Família Silva', nota:5, texto:'Profissional dedicada, pontual e carinhosa com nosso bebê.'},
+    {nome:'Mãe Joana M.', nota:5, texto:'Excelente cuidado com rotina de sono e alimentação.'},
+    {nome:'Pai Carlos P.', nota:4, texto:'Recomendo — comunicação clara com a família.'},
   ];
   list.innerHTML=recs.map(r=>'<div class="list-item"><b>'+escapeHtml(r.nome)+' · '+('★'.repeat(r.nota))+'</b><small>'+escapeHtml(r.texto)+'</small></div>').join('');
 }
@@ -2697,7 +2651,7 @@ async function enviarDiarioProximoBaba(){
   if(!texto){ toast('Salve o diário antes de enviar'); return; }
   try{
     await ic24SalvarPainelBaba({diario:{texto,assinado:!!window._babaPainel.diario?.assinado,repasseProximo:true,repasseEm:new Date().toISOString()}});
-    toast('Diário enviado ao próximo cuidador');
+    toast('Diário enviado à próxima babá');
   }catch(e){ toast(e.message||'Erro ao enviar'); }
 }
 
@@ -2885,6 +2839,63 @@ async function pagarTaxaPlataforma(){
 }
 
 /* ========== PAINEL CONTRATANTE / FAMÍLIA ========== */
+async function preencherSelectBabas(selectId, incluirVazio){
+  const sel=document.getElementById(selectId);
+  if(!sel) return;
+  sel.innerHTML='<option value="">Carregando…</option>';
+  try{
+    const cgs=await ic24ListarBabasProximos();
+    if(!cgs.length){ sel.innerHTML='<option value="">Nenhuma babá cadastrada</option>'; return; }
+    sel.innerHTML=(incluirVazio?'<option value="">Não sei / não se aplica</option>':'<option value="">Selecione a babá…</option>')+
+      cgs.map(c=>'<option value="'+escapeHtml(c.id)+'">'+escapeHtml(c.fullName||'Babá')+'</option>').join('');
+  }catch(e){ sel.innerHTML='<option value="">Erro ao carregar babás</option>'; }
+}
+
+async function carregarCurriculoListaFamilia(){
+  const list=document.getElementById('fam-curriculo-list');
+  if(!list) return;
+  list.innerHTML='<p class="hint">Carregando babás…</p>';
+  try{
+    const cgs=await ic24ListarBabasProximos();
+    list.innerHTML=cgs.length?cgs.map(c=>{
+      const foto=c.photoUrl?'<img src="'+escapeHtml(c.photoUrl)+'" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;margin-right:10px;vertical-align:middle"/>':'';
+      return '<div class="list-item"><div style="display:flex;align-items:center">'+foto+'<div><b>'+escapeHtml(c.fullName||'Babá')+'</b><small>'+
+        escapeHtml([c.city,c.state].filter(Boolean).join(' - '))+'</small></div></div>'+
+        '<button class="btn btn-p" type="button" style="margin-top:8px;height:40px;width:100%" onclick="abrirCurriculoBaba(\''+c.id+'\')">Ver currículo</button>'+
+        '<button class="btn btn-o" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirPerfilBabaFamilia(\''+c.id+'\')">Ver perfil</button></div>';
+    }).join(''):'<p class="hint">Nenhuma babá cadastrada ainda.</p>';
+  }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
+async function carregarPesquisaBaba(id){
+  const box=document.getElementById('pesquisa-conteudo');
+  const hid=document.getElementById('pesquisa-baba-id');
+  if(!box) return;
+  if(!id){
+    box.innerHTML='<p class="hint">Escolha uma babá em <strong>Babás próximos</strong> ou <strong>Solicitar currículo</strong>.</p>';
+    if(hid) hid.value='';
+    return;
+  }
+  window._cuidadorSelecionado=id;
+  if(hid) hid.value=id;
+  const linkBox=document.getElementById('pesquisa-curriculo-link');
+  if(linkBox){ linkBox.style.display='none'; linkBox.innerHTML=''; }
+  box.innerHTML='<p class="hint">Carregando perfil…</p>';
+  try{
+    const p=await ic24CarregarPerfilBabaPublico(id);
+    const endereco=(typeof ic24FormatAddressPublic==='function'?ic24FormatAddressPublic(p):p.address)||[p.city,p.state].filter(Boolean).join(' - ');
+    const foto=p.photoUrl?'<img src="'+escapeHtml(p.photoUrl)+'" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 12px"/>':'';
+    const cls=p.classification||{};
+    box.innerHTML=
+      '<div style="text-align:center;margin-bottom:16px">'+foto+
+      '<h1 class="h1" style="font-size:20px">'+escapeHtml(p.fullName||'Babá')+'</h1>'+
+      '<p style="color:var(--m);font-size:14px">'+escapeHtml(cls.stars||'Classificação pendente')+' · '+escapeHtml([p.city,p.state].filter(Boolean).join(', '))+'</p></div>'+
+      '<div class="cv"><p><strong>Endereço:</strong> '+escapeHtml(endereco||'—')+'</p>'+
+      '<p><strong>Sobre:</strong> '+escapeHtml(p.bio||'—')+'</p>'+
+      '<p><strong>Valores:</strong> '+escapeHtml(typeof ic24ExibirRateCaregiver==='function'?ic24ExibirRateCaregiver(p):'—')+'</p></div>';
+  }catch(e){ box.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
 async function carregarPainelFamilia(){
   ic24InitFirebase();
   const uid=ic24Auth.currentUser?.uid;
@@ -2912,7 +2923,7 @@ async function carregarProximosFamilia(){
       '<button class="btn btn-o" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirCurriculoBaba(\''+c.id+'\')">Ver currículo</button>'+
       '<button class="btn btn-p" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirPropostaBabá(\''+c.id+'\',\'mae-proximos\')">Oferecer proposta</button></div>';
     }).join(''):
-      '<p class="hint">Nenhum cuidador com plantão hoje. Peça para ativarem "Oferecer plantão hoje".</p>';
+      '<p class="hint">Nenhuma babá disponível hoje. Peça para ativarem "Oferecer plantão hoje".</p>';
   }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
 }
 
@@ -2927,8 +2938,10 @@ async function abrirPerfilBabaFamilia(id){
     const foto=p.photoUrl?'<img src="'+escapeHtml(p.photoUrl)+'" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:12px;display:block"/>':'';
     const prefs=p.paymentPreferences||{};
     const rec=prefs.paymentSchedule==='semanal'?'Semanal':prefs.paymentSchedule==='quinzenal'?'Quinzenal':'Diária';
+    const endereco=(typeof ic24FormatAddressPublic==='function'?ic24FormatAddressPublic(p):p.address)||[p.city,p.state].filter(Boolean).join(' - ');
     box.innerHTML=foto+'<h3 style="margin:0 0 8px">'+escapeHtml(p.fullName)+'</h3>'+
       '<p class="hint">'+escapeHtml([p.city,p.state].filter(Boolean).join(' - '))+'</p>'+
+      '<p style="font-size:14px"><strong>Endereço:</strong> '+escapeHtml(endereco||'—')+'</p>'+
       '<p style="font-size:14px">'+escapeHtml(p.bio||'')+'</p>'+
       '<p><strong>'+escapeHtml(typeof ic24ExibirRateCaregiver==='function'?ic24ExibirRateCaregiver(p):'Consulte agenda/plantão')+'</strong> · Recebimento: '+rec+'</p>'+
       (p.availableToday?'<p style="color:var(--p)">✓ Disponível hoje</p>':'')+
@@ -2938,13 +2951,18 @@ async function abrirPerfilBabaFamilia(id){
 }
 
 async function abrirCurriculoBaba(id){
-  document.getElementById('pesquisa-baba-id').value=id;
-  document.getElementById('fam-curriculo-cuid-id').value=id;
+  window._cuidadorSelecionado=id;
+  const hid=document.getElementById('pesquisa-baba-id');
+  const famHid=document.getElementById('fam-curriculo-cuid-id');
+  if(hid) hid.value=id;
+  if(famHid) famHid.value=id;
   try{
     ic24InitFirebase();
     if(!ic24Auth.currentUser){ toast('Faça login como família'); irLogin(); return; }
     const r=await ic24SolicitarCurriculo(id);
     const fullLink=location.origin+location.pathname.replace(/index\.html?$/,'')+r.link;
+    const box=document.getElementById('fam-curriculo-link');
+    if(box){ box.style.display='block'; box.innerHTML='<strong>Currículo:</strong><br/><a href="'+fullLink+'" target="_blank" rel="noopener">'+fullLink+'</a>'; }
     toast('Currículo liberado');
     window.open(fullLink,'_blank');
   }catch(e){ toast(e.message||'Erro ao solicitar currículo'); }
@@ -2953,7 +2971,7 @@ async function abrirCurriculoBaba(id){
 function abrirPropostaBabá(id, voltar){
   window._propostaVoltar=voltar||'mae-proximos';
   document.getElementById('proposta-cuid-id').value=id;
-  document.getElementById('proposta-cuid-nome').textContent='Proposta direta ao cuidador selecionado';
+  document.getElementById('proposta-cuid-nome').textContent='Proposta direta à babá selecionada';
   show('mae-baba-proposta');
 }
 
@@ -2984,7 +3002,7 @@ function abrirPerfilBaba(id){
 async function publicarOfertaUrgente(){
   try{
     await ic24CriarOferta({
-      title:'Plantão '+(document.getElementById('urg-elderly').value.trim()||'idoso'),
+      title:'Plantão '+(document.getElementById('urg-elderly').value.trim()||'criança'),
       elderlyType:document.getElementById('urg-elderly').value.trim(),
       careNeeds:document.getElementById('urg-needs').value.trim(),
       dailyRate:parseFloat(document.getElementById('urg-valor').value)||0,
@@ -3017,7 +3035,7 @@ async function carregarOfertasFamilia(){
       const resps=await ic24ListarRespostasOferta(o.id);
       resps.forEach(r=>{
         if(r.status==='awaiting_terms') return;
-        html+='<div class="list-item" style="margin-left:12px;border-style:dashed"><b>'+escapeHtml(r.status==='pending_family'?'Aguardando sua resposta':'Proposta cuidador')+'</b><small>'+
+        html+='<div class="list-item" style="margin-left:12px;border-style:dashed"><b>'+escapeHtml(r.status==='pending_family'?'Aguardando sua resposta':'Proposta da babá')+'</b><small>'+
           (r.action==='counter'?'Contra: R$ '+r.proposedDailyRate:'Aceitou')+
           (r.scheduleLabel?' · '+escapeHtml(r.scheduleLabel):'')+
           (r.message?' · '+escapeHtml(r.message):'')+'</small>';
@@ -3076,11 +3094,11 @@ async function carregarDiarioFamilia(){
   if(!list) return;
   try{
     const rows=await ic24ListarDiariosFamilia();
-    list.innerHTML=rows.length?rows.map(r=>'<div class="list-item"><b>'+escapeHtml(r.date||'')+' — '+escapeHtml(r.elderlyName||'Idoso')+'</b>'+
+    list.innerHTML=rows.length?rows.map(r=>'<div class="list-item"><b>'+escapeHtml(r.date||'')+' — '+escapeHtml(r.elderlyName||r.childName||'Criança')+'</b>'+
       '<p style="font-size:14px;margin:8px 0">'+escapeHtml(r.text||'')+'</p>'+
       (r.familySigned?'<small style="color:var(--p)">✓ Assinado pela família</small>':
       '<button class="btn btn-p" type="button" style="margin-top:8px;height:40px" onclick="assinarDiarioFamilia(\''+r.id+'\')">Assinar diário</button>')+
-      '</div>').join(''):'<p class="hint">Nenhum diário disponível. O cuidador registra ao fim do dia.</p>';
+      '</div>').join(''):'<p class="hint">Nenhum diário disponível. A babá registra ao fim do dia.</p>';
   }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
 }
 
@@ -3159,16 +3177,8 @@ async function solicitarCartaFamilia(){
 }
 
 async function solicitarCurriculoFamilia(){
-  const caregiverId=document.getElementById('fam-curriculo-cuid-id')?.value?.trim();
-  if(!caregiverId){ toast('Informe o ID do cuidador'); return; }
-  try{
-    const r=await ic24SolicitarCurriculo(caregiverId);
-    const fullLink=location.origin+location.pathname.replace(/index\.html?$/,'')+r.link;
-    const box=document.getElementById('fam-curriculo-link');
-    if(box){ box.style.display='block'; box.innerHTML='<a href="'+fullLink+'" target="_blank">'+fullLink+'</a>'; }
-    window.open(fullLink,'_blank');
-    toast('Currículo Lates gerado');
-  }catch(e){ toast(e.message||'Erro'); }
+  toast('Escolha uma babá na lista e toque em Ver currículo');
+  show('mae-curriculo');
 }
 
 async function enviarIrregularidade(){
@@ -3231,17 +3241,27 @@ async function sairConta(){
   }catch(e){ toast(e.message||'Erro ao sair'); }
 }
 async function esqueciSenha(){
-  const email=document.getElementById('email')?.value?.trim();
+  let email=document.getElementById('email')?.value?.trim();
+  if(!email){
+    email=window.prompt('Informe o e-mail cadastrado para receber o link de redefinição:');
+    email=(email||'').trim();
+  }
+  if(!email){ toast('Informe seu e-mail'); return; }
   try{
     await ic24RecuperarSenha(email);
-    toast('Link de recuperação enviado ao e-mail');
-  }catch(e){ toast(e.message||'Erro ao enviar e-mail'); }
+    toast('Link enviado para '+email+' — confira caixa de entrada e spam');
+  }catch(e){ toast(ic24AuthError(e)||e.message||'Erro ao enviar e-mail'); }
 }
 
 const _famShowOrig=show;
 show=function(id){
   _famShowOrig(id);
   if(id==='mae-proximos') carregarProximosFamilia();
+  if(id==='mae-curriculo') carregarCurriculoListaFamilia();
+  if(id==='mae-avaliar') preencherSelectBabas('avaliar-cuid-id');
+  if(id==='mae-recomendacao') preencherSelectBabas('rec-cuid-id');
+  if(id==='mae-irregularidade') preencherSelectBabas('irr-cuid-id', true);
+  if(id==='mae-denunciar') preencherSelectBabas('den-cuid-id');
   if(id==='mae-ofertas') carregarOfertasFamilia();
   if(id==='mae-ponto') carregarPontoFamilia();
   if(id==='mae-diario') carregarDiarioFamilia();

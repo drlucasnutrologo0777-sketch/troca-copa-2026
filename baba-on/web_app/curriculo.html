@@ -57,6 +57,7 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--t
         '<div style="font-size:12px;opacity:.85">Currículo Lates · Babá ON</div>'+
         '<h1>'+esc(c.fullName)+'</h1>'+
         '<div class="sub">'+esc(c.city)+(c.state?', '+esc(c.state):'')+' · CPF '+esc(c.cpfMasked)+'</div>'+
+        (c.address?'<div class="sub" style="margin-top:6px">📍 '+esc(c.address)+'</div>':'')+
         '<div class="stars">'+(cls.stars||'★★★★☆')+'</div>'+
         '<span class="badge">'+esc(cls.label||'Classificação pendente')+'</span>'+
       '</div>'+
@@ -66,6 +67,7 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--t
       '</div>'+
       '<div class="card"><h2>Sobre</h2><p>'+esc(c.bio||'—')+'</p></div>'+
       '<div class="card"><h2>Especialidades</h2><p>'+esc((c.specialties||[]).join(' · ')||'—')+'</p></div>'+
+      '<div class="card"><h2>Endereço</h2><p>'+esc(c.address||'—')+'</p></div>'+
       '<div class="card"><h2>Valores</h2>'+
         '<p><strong>Hora:</strong> '+fmt(c.hourRate)+' &nbsp; <strong>Diária:</strong> '+fmt(c.dailyRate)+'</p>'+
         (c.city?'<p><strong>Região:</strong> '+esc(c.city)+(c.state?', '+esc(c.state):'')+'</p>':'')+
@@ -81,7 +83,7 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--t
       '</div>'+
       '<div class="card" style="font-size:13px;color:var(--m)">'+
         'Solicitado por: <strong>'+esc(request.familyName||'Contratante')+'</strong><br/>'+
-        'Este currículo é confidencial — sem telefone, e-mail ou endereço completo. Contato pelo chat após fechar negócio.'+
+        'Este currículo é confidencial — sem telefone ou e-mail. Contato pelo chat após fechar negócio.'+
       '</div>'+
       '<p class="brand"><b>Babá ON</b> — Mães, pais e babás com segurança e confiança</p>';
   }catch(e){

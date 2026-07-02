@@ -1,1 +1,19 @@
+Babá ON — Build 1.0.0+3 (testado 8/8 OK)
+
+Codemagic (disparo automático no push main):
 https://codemagic.io/apps
+
+Repo: troca-copa-2026
+Workflow: Babá ON — iOS TestFlight
+Branch: main
+
+Web atualizado (sem textos idoso):
+https://baba-on-3634a.web.app
+
+Teste E2E: cadastro → negócio → currículo → PIX → IAP → anti-PIX = 8/8 OK
+
+Contas demo:
+  baba.demo@babaon.test.local / Demo123!
+  pai.demo@babaon.test.local / Demo123!
+
+Esqueci senha: funciona com e-mail real (Gmail/iCloud). Demo .test.local usa senha Demo123!

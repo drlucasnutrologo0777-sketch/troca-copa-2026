@@ -352,7 +352,33 @@ async function ic24ExcluirConta(senha) {
 
 async function ic24RecuperarSenha(email) {
   ic24InitFirebase();
-  const addr = (email || '').trim();
+  const addr = (email || '').trim().toLowerCase();
   if (!addr) throw new Error('Informe seu e-mail');
-  await ic24Auth.sendPasswordResetEmail(addr);
+  if (addr.endsWith('.test.local') || addr.includes('@babaon.test.local')) {
+    throw new Error(
+      'Contas demo não recebem e-mail. Senha demo: Demo123! — use e-mail real (Gmail/iCloud) para recuperação.',
+    );
+  }
+  try {
+    await ic24Auth.sendPasswordResetEmail(addr, {
+      url: 'https://baba-on-3634a.web.app/index.html',
+      handleCodeInApp: false,
+    });
+  } catch (err) {
+    const apiKey = IC24_FB.apiKey;
+    const r = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requestType: 'PASSWORD_RESET',
+          email: addr,
+          continueUrl: 'https://baba-on-3634a.web.app/index.html',
+        }),
+      },
+    );
+    const j = await r.json();
+    if (j.error) throw new Error(j.error.message || 'Não foi possível enviar o e-mail');
+  }
 }

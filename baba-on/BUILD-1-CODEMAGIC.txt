@@ -4,6 +4,6 @@ Babá ON — Codemagic
 
 Bundle: com.babaon.app
 IAP: bo_taxa_manutencao
-Build: 1.0.0+1
+Build: 1.0.0+3
 
 App Store Connect: crie app Babá ON com bundle com.babaon.app antes do primeiro upload.
