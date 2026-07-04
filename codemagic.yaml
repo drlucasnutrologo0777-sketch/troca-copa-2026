@@ -180,6 +180,10 @@ workflows:
           echo "Export options: $EXPORT_PLIST"
           BUILD_NUM=$(grep '^version:' pubspec.yaml | sed 's/.*+//')
           echo "Build number from pubspec: $BUILD_NUM"
+          if [ -z "$BUILD_NUM" ] || [ "$BUILD_NUM" -le 51 ]; then
+            echo "ERRO: pubspec build number deve ser maior que 51 (atual: $BUILD_NUM)"
+            exit 1
+          fi
           flutter build ipa --release \
             --build-name=2.0.0 \
             --build-number="$BUILD_NUM" \

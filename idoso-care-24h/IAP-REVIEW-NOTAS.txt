@@ -1,0 +1,27 @@
+App Store Connect — Notas para a equipe de revisão
+================================================================================
+Build: 1.0 (52+) · IAP: ic24_taxa_manutencao
+================================================================================
+
+IMPORTANT — IN-APP PURCHASE TEST (read first)
+The demo caregiver account is pre-configured with ONE pending platform fee (US$ 1.99 / 1 care day) so you can test IAP immediately:
+1. Log in: cuidador.demo@ic24test.local / Demo123!
+2. Menu → Taxa do app
+3. You MUST see "Taxa pendente: US$ 1.99" (not US$ 0.00)
+4. Tap "Pagar taxa via App Store" → confirm consumable ic24_taxa_manutencao with Sandbox Apple ID
+
+If pending fee shows US$ 0.00, contact us — demo data needs refresh before review.
+
+APP OVERVIEW
+Idoso Care 24H connects families with elderly caregivers (com.idosocare24h.app). NOT medical or emergency service. Emergencies: 192 or 190.
+
+DEMO ACCOUNTS (password: Demo123!)
+• Caregiver: cuidador.demo@ic24test.local
+• Family: familia.demo@ic24test.local
+
+PAYMENTS (Guideline 3.1)
+• Family → caregiver daily pay: external PIX (not IAP)
+• Platform fee ONLY: Apple IAP ic24_taxa_manutencao (consumable, one unit per care day)
+
+Support: https://idoso-care-24h.web.app/suporte.html
+Contact: Eder Lucas Santos · drlucasnutrologo0777@icloud.com · +55 11 96836-2005

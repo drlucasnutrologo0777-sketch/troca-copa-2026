@@ -134,11 +134,20 @@ async function ic24ListDocumentos(uid) {
   return map;
 }
 
-async function ic24RecomputeCurriculo(uid) {
+async function ic24MontarCurriculoSnapshot(uid, opts = {}) {
   ic24InitFirebase();
-  const docsMap = await ic24ListDocumentos(uid);
+  let docsMap = {};
+  try {
+    docsMap = await ic24ListDocumentos(uid);
+  } catch (_) {
+    /* família pode não ter permissão em documentos ainda não aprovados */
+  }
   const cgSnap = await ic24Db.collection('caregivers').doc(uid).get();
-  const cg = cgSnap.exists ? cgSnap.data() : {};
+  if (!cgSnap.exists) throw new Error('Cuidador não encontrado');
+  const cg = cgSnap.data() || {};
+  if (!cg.fullName && !String(cg.cpf || '').replace(/\D/g, '')) {
+    throw new Error('Currículo ainda não disponível — cuidador precisa completar o cadastro');
+  }
   const classification = ic24ClassificarDocumentos(
     Object.fromEntries(Object.entries(docsMap).map(([k, v]) => [k, { url: v.fileUrl }])),
   );
@@ -169,18 +178,24 @@ async function ic24RecomputeCurriculo(uid) {
     kycStatus: classification.missingRequired.length === 0 ? 'pending_review' : 'incomplete',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
-  await ic24Db.collection('caregivers').doc(uid).set(
-    {
-      classification,
-      documentsCount: classification.documentsCount,
-      certificatesVerified: curriculum.certificatesVerified,
-      kycStatus: curriculum.kycStatus,
-      curriculumUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    },
-    { merge: true },
-  );
-  await ic24Db.collection('curriculum_public').doc(uid).set(curriculum, { merge: true });
+  if (opts.persist) {
+    await ic24Db.collection('caregivers').doc(uid).set(
+      {
+        classification,
+        documentsCount: classification.documentsCount,
+        certificatesVerified: curriculum.certificatesVerified,
+        kycStatus: curriculum.kycStatus,
+        curriculumUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
+    await ic24Db.collection('curriculum_public').doc(uid).set(curriculum, { merge: true });
+  }
   return curriculum;
+}
+
+async function ic24RecomputeCurriculo(uid) {
+  return ic24MontarCurriculoSnapshot(uid, { persist: true });
 }
 
 function ic24Token() {
@@ -193,18 +208,19 @@ async function ic24SolicitarCurriculo(caregiverId) {
   ic24InitFirebase();
   const familyId = ic24Auth.currentUser?.uid;
   if (!familyId) throw new Error('Faça login como família/contratante');
+  if (!caregiverId) throw new Error('Selecione um cuidador');
   const userSnap = await ic24Db.collection('users').doc(familyId).get();
   if ((userSnap.data()?.role || '') !== 'family') throw new Error('Apenas contratantes podem solicitar currículo');
   const token = ic24Token();
   const curSnap = await ic24Db.collection('curriculum_public').doc(caregiverId).get();
-  if (!curSnap.exists) throw new Error('Currículo ainda não disponível — cuidador precisa enviar documentos');
+  const curriculum = curSnap.exists ? curSnap.data() : await ic24MontarCurriculoSnapshot(caregiverId);
   await ic24Db.collection('cv_requests').doc(token).set({
     token,
     familyId,
     caregiverId,
     status: 'shared',
     familyName: userSnap.data()?.fullName || 'Contratante',
-    curriculum: curSnap.data(),
+    curriculum,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     sharedAt: firebase.firestore.FieldValue.serverTimestamp(),
     expiresAt: firebase.firestore.Timestamp.fromDate(new Date(Date.now() + 7 * 24 * 3600 * 1000)),

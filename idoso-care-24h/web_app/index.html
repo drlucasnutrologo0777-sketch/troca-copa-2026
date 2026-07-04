@@ -632,46 +632,12 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <button type="button" onclick="voltarDePesquisa()">←</button>
       <h2>Perfil do cuidador</h2>
     </div>
-    <div class="pad">
-      <div style="text-align:center;margin-bottom:16px">
-        <div class="photo-pick has" style="width:90px;height:90px;margin:0 auto 10px">
-          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Crect fill='%232E8B57' width='90' height='90'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='28' font-family='sans-serif'%3EMS%3C/text%3E%3C/svg%3E" alt=""/>
-        </div>
-        <h1 class="h1" style="font-size:20px">Maria Silva <span class="badge-v">✓ Verificado</span></h1>
-        <p style="color:var(--m);font-size:14px">★★★★★ 4.9 · São Paulo, SP</p>
-      </div>
-
-      <div class="note" style="margin-bottom:16px">
-        Solicite o <strong>Currículo Lates</strong> com fotos dos documentos e classificação automática antes do match.
-      </div>
-
-      <label class="lbl">ID do cuidador (Firebase UID)</label>
-      <input class="inp" id="pesquisa-cuidador-id" placeholder="Cole o UID ou use demo_caregiver_maria"/>
-
-      <button class="btn btn-o" type="button" style="margin-bottom:12px" onclick="solicitarCurriculoContratante()">Solicitar currículo Lates</button>
-      <div class="note" id="pesquisa-curriculo-link" style="display:none;margin-bottom:16px;font-size:12px;word-break:break-all"></div>
-
-      <p class="step">Prévia do perfil</p>
-      <div class="cv">
-        <p><strong>Formação:</strong> Curso de Cuidador de Idosos + Primeiros Socorros</p>
-        <p><strong>Experiência:</strong> 8 anos · Alzheimer, Parkinson, medicação</p>
-        <p><strong>Sobre:</strong> Profissional dedicada, referências disponíveis. Plantões diurnos e 12x36.</p>
-        <p><strong>Valor:</strong> R$ 220/diária</p>
-      </div>
-
-      <p class="step">Documentos verificados — toque para ampliar</p>
-      <div class="gallery" id="galeria">
-        <div class="gal-item" onclick="verFoto('RG')"><div class="ph">📄<br/>RG</div></div>
-        <div class="gal-item" onclick="verFoto('CPF')"><div class="ph">📄<br/>CPF</div></div>
-        <div class="gal-item" onclick="verFoto('Comprovante')"><div class="ph">📄<br/>Endereço</div></div>
-        <div class="gal-item" onclick="verFoto('CTPS')"><div class="ph">📄<br/>CTPS</div></div>
-        <div class="gal-item" onclick="verFoto('Antecedentes')"><div class="ph">📄<br/>Antecedentes</div></div>
-        <div class="gal-item" onclick="verFoto('Diploma')"><div class="ph">📄<br/>Diploma</div></div>
-        <div class="gal-item" onclick="verFoto('Curso')"><div class="ph">📄<br/>Curso</div></div>
-        <div class="gal-item" onclick="verFoto('Referência')"><div class="ph">📄<br/>Experiência</div></div>
-      </div>
-
-      <button class="btn btn-p" type="button" onclick="abrirChatNegocio()">Abrir chat</button>
+    <div class="pad" id="pesquisa-pad">
+      <input type="hidden" id="pesquisa-cuidador-id"/>
+      <div id="pesquisa-conteudo"><p class="hint">Carregando perfil…</p></div>
+      <button class="btn btn-o" type="button" style="margin-top:12px" onclick="solicitarCurriculoContratante()">Abrir currículo completo</button>
+      <div class="note" id="pesquisa-curriculo-link" style="display:none;margin-top:12px;font-size:12px;word-break:break-all"></div>
+      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="abrirChatNegocio()">Abrir chat</button>
       <p class="hint" style="margin-top:12px;text-align:center;font-size:12px">Chat liberado somente após fechar negócio em Minhas ofertas.</p>
     </div>
   </section>
@@ -877,11 +843,10 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
   <section class="screen" id="familia-curriculo">
     <div class="topbar"><button type="button" onclick="show('familia-painel')">←</button><h2>Solicitar currículo</h2></div>
     <div class="pad">
-      <label class="lbl">ID do cuidador</label>
-      <input class="inp" id="fam-curriculo-cuid-id" placeholder="UID do cuidador"/>
-      <button class="btn btn-p" type="button" onclick="solicitarCurriculoFamilia()">Gerar link Currículo Lates</button>
+      <p class="hint">Escolha um cuidador abaixo e toque em <strong>Ver currículo</strong>. Não é necessário ID técnico.</p>
+      <input type="hidden" id="fam-curriculo-cuid-id"/>
+      <div id="fam-curriculo-list"><p class="hint">Carregando cuidadores…</p></div>
       <div class="note" id="fam-curriculo-link" style="display:none;margin-top:12px;font-size:12px;word-break:break-all"></div>
-      <button class="btn btn-o" type="button" style="margin-top:12px" onclick="irPesquisaDe('familia-curriculo')">Ver perfil completo</button>
     </div>
   </section>
 
@@ -1556,6 +1521,7 @@ async function syncDocumentosUI(){
 function irPesquisaDe(deOnde){
   window._pesquisaVoltar=deOnde||'familia-painel';
   show('pesquisa');
+  carregarPesquisaCuidador(window._cuidadorSelecionado);
 }
 function voltarDePesquisa(){ show(window._pesquisaVoltar||'familia-painel'); }
 function show(id){
@@ -1886,7 +1852,8 @@ async function finalizar(){
   }catch(e){ toast(e.message||'Erro ao salvar no Firestore'); }
 }
 async function solicitarCurriculoContratante(){
-  const caregiverId=(document.getElementById('pesquisa-cuidador-id')?.value||'').trim()||IC24_DEMO_CAREGIVER;
+  const caregiverId=(document.getElementById('pesquisa-cuidador-id')?.value||'').trim()||window._cuidadorSelecionado||'';
+  if(!caregiverId){ toast('Escolha um cuidador em Cuidadores próximos ou Solicitar currículo'); return; }
   try{
     ic24InitFirebase();
     if(!ic24Auth.currentUser){ toast('Faça login como família'); irLogin(); return; }
@@ -2326,7 +2293,11 @@ function renderTaxa(d){
   const pendEl=document.getElementById('taxa-pendente');
   if(pendEl) pendEl.textContent=pend>0?ic24FmtTaxaUsd(pend):'US$ 0,00';
   const btn=document.getElementById('taxa-pagar-btn');
-  if(btn) btn.textContent=pend>0?(diariasPend>1?'Pagar '+diariasPend+'× US$ 1,99 via App Store ('+ic24FmtTaxaUsd(pend)+')':'Pagar US$ 1,99 via App Store'):'Pagar taxa via App Store';
+  if(btn){
+    btn.disabled=pend<=0.001;
+    btn.textContent=pend>0?(diariasPend>1?'Pagar '+diariasPend+'× taxa via App Store ('+ic24FmtTaxaUsd(pend)+')':'Pagar taxa via App Store ('+ic24FmtTaxaUsd(pend)+')'):'Sem taxa pendente — feche um negócio primeiro';
+    btn.style.opacity=pend>0?'1':'0.55';
+  }
   document.getElementById('taxa-detalhe').innerHTML=
     '<p>Taxa de manutenção: <strong>'+ic24FmtTaxaUsd(IC24_FEE_FIXED_USD)+'</strong> ('+ic24FmtTaxaBrl(IC24_FEE_FIXED_BRL)+') <strong>por diária</strong> (máx. 1 cobrança pendente por negócio).</p>'+
     (pend>0?'<p style="margin-top:8px">Taxa pendente: <strong style="color:var(--err)">'+ic24FmtTaxaUsd(pend)+'</strong> · <strong>'+diariasPend+' diária(s)</strong>'+(offerId?' · plantão <code>'+escapeHtml(String(offerId).slice(0,12))+'…</code>':'')+'</p>':'<p style="margin-top:8px;color:var(--p)">Nenhuma taxa pendente — você pode aceitar novos negócios.</p>')+
@@ -2779,6 +2750,11 @@ async function carregarCobrancasHistorico(){
 async function pagarTaxaPlataforma(){
   try{
     const d=window._cuidPainel||{};
+    const pend=ic24PlatformFeePending(d);
+    if(pend<=0.001){
+      toast('Sem taxa pendente. Feche um negócio (família + cuidador) ou use a conta demo preparada para revisão.');
+      return;
+    }
     const units=ic24PlatformFeePendingDiarias(d);
     toast(units>1?'Abrindo App Store ('+units+' compras)…':'Abrindo App Store…');
     await ic24PagarTaxaPlataforma('apple_iap');
@@ -2788,6 +2764,54 @@ async function pagarTaxaPlataforma(){
 }
 
 /* ========== PAINEL CONTRATANTE / FAMÍLIA ========== */
+async function carregarCurriculoListaFamilia(){
+  const list=document.getElementById('fam-curriculo-list');
+  if(!list) return;
+  list.innerHTML='<p class="hint">Carregando cuidadores…</p>';
+  try{
+    ic24InitFirebase();
+    if(!ic24Auth.currentUser){ list.innerHTML='<p class="hint">Faça login como família.</p>'; return; }
+    let cgs=await ic24ListarCuidadoresAprovados();
+    if(!cgs.length) cgs=await ic24ListarCuidadoresProximos();
+    list.innerHTML=cgs.length?cgs.map(c=>{
+      const foto=c.photoUrl?'<img src="'+escapeHtml(c.photoUrl)+'" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;margin-right:10px;vertical-align:middle"/>':'';
+      return '<div class="list-item"><div style="display:flex;align-items:center">'+foto+'<div><b>'+escapeHtml(c.fullName||'Cuidador')+'</b><small>'+
+        escapeHtml([c.city,c.state].filter(Boolean).join(' - '))+'</small></div></div>'+
+        '<button class="btn btn-p" type="button" style="margin-top:8px;height:40px;width:100%" onclick="abrirCurriculoCuidador(\''+c.id+'\')">Ver currículo</button>'+
+        '<button class="btn btn-o" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirPerfilCuidadorFamilia(\''+c.id+'\')">Ver perfil</button></div>';
+    }).join(''):'<p class="hint">Nenhum cuidador cadastrado ainda. Veja também <strong>Cuidadores próximos</strong>.</p>';
+  }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
+async function carregarPesquisaCuidador(id){
+  const box=document.getElementById('pesquisa-conteudo');
+  const hid=document.getElementById('pesquisa-cuidador-id');
+  if(!box) return;
+  if(!id){
+    box.innerHTML='<p class="hint">Escolha um cuidador em <strong>Cuidadores próximos</strong> ou <strong>Solicitar currículo</strong>.</p>';
+    if(hid) hid.value='';
+    return;
+  }
+  window._cuidadorSelecionado=id;
+  if(hid) hid.value=id;
+  const linkBox=document.getElementById('pesquisa-curriculo-link');
+  if(linkBox){ linkBox.style.display='none'; linkBox.innerHTML=''; }
+  box.innerHTML='<p class="hint">Carregando perfil…</p>';
+  try{
+    const p=await ic24CarregarPerfilCuidadorPublico(id);
+    const endereco=[p.city,p.state].filter(Boolean).join(' - ');
+    const foto=p.photoUrl?'<img src="'+escapeHtml(p.photoUrl)+'" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 12px"/>':'';
+    const cls=p.classification||{};
+    box.innerHTML=
+      '<div style="text-align:center;margin-bottom:16px">'+foto+
+      '<h1 class="h1" style="font-size:20px">'+escapeHtml(p.fullName||'Cuidador')+'</h1>'+
+      '<p style="color:var(--m);font-size:14px">'+escapeHtml(cls.stars||'Classificação pendente')+' · '+escapeHtml(endereco||'—')+'</p></div>'+
+      '<div class="note" style="margin-bottom:16px">Solicite o <strong>Currículo Lates</strong> com fotos dos documentos e classificação automática antes do match.</div>'+
+      '<div class="cv"><p><strong>Sobre:</strong> '+escapeHtml(p.bio||'—')+'</p>'+
+      '<p><strong>Valores:</strong> '+escapeHtml(typeof ic24ExibirRateCaregiver==='function'?ic24ExibirRateCaregiver(p):'—')+'</p></div>';
+  }catch(e){ box.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
 async function carregarPainelFamilia(){
   ic24InitFirebase();
   const uid=ic24Auth.currentUser?.uid;
@@ -2841,6 +2865,7 @@ async function abrirPerfilCuidadorFamilia(id){
 }
 
 async function abrirCurriculoCuidador(id){
+  window._cuidadorSelecionado=id;
   document.getElementById('pesquisa-cuidador-id').value=id;
   document.getElementById('fam-curriculo-cuid-id').value=id;
   try{
@@ -2848,6 +2873,8 @@ async function abrirCurriculoCuidador(id){
     if(!ic24Auth.currentUser){ toast('Faça login como família'); irLogin(); return; }
     const r=await ic24SolicitarCurriculo(id);
     const fullLink=location.origin+location.pathname.replace(/index\.html?$/,'')+r.link;
+    const box=document.getElementById('fam-curriculo-link');
+    if(box){ box.style.display='block'; box.innerHTML='<strong>Currículo:</strong><br/><a href="'+fullLink+'" target="_blank" rel="noopener">'+fullLink+'</a>'; }
     toast('Currículo liberado');
     window.open(fullLink,'_blank');
   }catch(e){ toast(e.message||'Erro ao solicitar currículo'); }
@@ -3025,16 +3052,8 @@ async function solicitarCartaFamilia(){
 }
 
 async function solicitarCurriculoFamilia(){
-  const caregiverId=document.getElementById('fam-curriculo-cuid-id')?.value?.trim();
-  if(!caregiverId){ toast('Informe o ID do cuidador'); return; }
-  try{
-    const r=await ic24SolicitarCurriculo(caregiverId);
-    const fullLink=location.origin+location.pathname.replace(/index\.html?$/,'')+r.link;
-    const box=document.getElementById('fam-curriculo-link');
-    if(box){ box.style.display='block'; box.innerHTML='<a href="'+fullLink+'" target="_blank">'+fullLink+'</a>'; }
-    window.open(fullLink,'_blank');
-    toast('Currículo Lates gerado');
-  }catch(e){ toast(e.message||'Erro'); }
+  toast('Escolha um cuidador na lista e toque em Ver currículo');
+  show('familia-curriculo');
 }
 
 async function enviarIrregularidade(){
@@ -3108,6 +3127,7 @@ const _famShowOrig=show;
 show=function(id){
   _famShowOrig(id);
   if(id==='familia-proximos') carregarProximosFamilia();
+  if(id==='familia-curriculo') carregarCurriculoListaFamilia();
   if(id==='familia-ofertas') carregarOfertasFamilia();
   if(id==='familia-ponto') carregarPontoFamilia();
   if(id==='familia-diario') carregarDiarioFamilia();
