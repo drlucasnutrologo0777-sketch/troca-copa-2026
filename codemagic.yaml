@@ -254,9 +254,11 @@ workflows:
       - name: CONFIRMAR BABA ON (nao Troca Copa / Idoso)
         script: |
           set -e
-          echo "========== BABA ON — build 1.0.0+1 =========="
-          test -f web_app/index.html
+          echo "========== BABA ON — BUILD (pubspec) =========="
+          echo "Diretorio: $(pwd)"
+          test -f web_app/index.html || { echo "ERRO: pasta baba-on nao encontrada"; exit 1; }
           bash tool/verify_web_build.sh
+          echo "Commit: $(git rev-parse --short HEAD 2>/dev/null || echo local)"
       - name: Verificar credenciais Apple
         script: |
           set -e
@@ -289,11 +291,19 @@ workflows:
           xcode-project use-profiles --project ios/Runner.xcodeproj
           EXPORT_PLIST="$HOME/export_options.plist"
           test -f "$EXPORT_PLIST"
+          BUILD_NUM=$(grep '^version:' pubspec.yaml | sed 's/.*+//')
+          echo "Build number from pubspec: $BUILD_NUM"
+          if [ -z "$BUILD_NUM" ] || [ "$BUILD_NUM" -le 2 ]; then
+            echo "ERRO: pubspec build number deve ser > 2 (TestFlight ja tem build 2). Atual: $BUILD_NUM"
+            exit 1
+          fi
           flutter build ipa --release \
             --build-name=1.0.0 \
-            --build-number=2 \
+            --build-number="$BUILD_NUM" \
             --export-options-plist="$EXPORT_PLIST"
           ls -la build/ios/ipa/
+          IPA_CHECK=$(find build/ios/ipa -name "*.ipa" | head -1)
+          bash tool/verify_web_build.sh --ipa "$IPA_CHECK"
       - name: Upload TestFlight
         script: |
           set -e

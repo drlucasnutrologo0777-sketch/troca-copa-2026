@@ -1,0 +1,35 @@
+BABÁ ON — CHECKLIST ANTES DE ENVIAR (espelho build 53 Idoso Care)
+================================================================
+
+[ ] 1. App GRÁTIS na loja (Monetização → Preço e disponibilidade → Grátis)
+[ ] 2. Firebase regras publicadas:
+      cd baba-on\firebase-deploy && DEPLOY-CLIQUE.bat
+[ ] 3. Demo IAP com taxa pendente:
+      node baba-on\scripts\seed_review_iap_demo.mjs
+[ ] 4. IAP bo_taxa_manutencao (App Store Connect → Monetização)
+      Tipo: CONSUMÍVEL · US$ 1,99
+      SEM imagem promocional (Guideline 2.3.2)
+      Screenshot revisão: tela Taxa do app → Pagar taxa via App Store
+[ ] 5. Versão iOS 1.0 build 4:
+      IAP bo_taxa_manutencao marcado na versão
+      Notas revisão: IAP-REVIEW-NOTAS.txt
+[ ] 6. Codemagic: Babá ON — iOS TestFlight → branch main
+[ ] 7. Paid Apps Agreement ativo (Acordos, impostos e banking)
+
+URLs legais (devem abrir no navegador):
+  https://baba-on-3634a.web.app/privacidade.html
+  https://baba-on-3634a.web.app/termos.html
+  https://baba-on-3634a.web.app/suporte.html
+  https://baba-on-3634a.web.app/exclusao-conta.html
+
+Demo revisão Apple:
+  baba.demo@babaon.test.local / Demo123!
+  Menu → Taxa do app → US$ 1,99 pendente → Pagar via App Store
+
+Reprovações Idoso Care 53 (evitar repetir):
+  2.3.2 — Remover imagem promocional do IAP
+  2.1(b) — IAP não enviado / product not found → enviar IAP JUNTO com o build
+  Preço app pago — app deve ser GRÁTIS (só IAP pós-serviço)
+
+Bundle: com.babaon.app
+Product ID: bo_taxa_manutencao

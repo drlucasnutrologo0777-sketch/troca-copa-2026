@@ -1,30 +1,51 @@
-App Store Connect — Notas para a equipe de revisão (opcional)
-
+App Store Connect — Review Notes (English — paste in Version → App Review Information)
+Build: 1.0 (4) · Bundle: com.babaon.app · IAP: bo_taxa_manutencao
+First IAP submitted WITH this version (selected under In-App Purchases and Subscriptions).
 ================================================================================
-COPIAR EM: App Store Connect → Versão do app → Informações para revisão do app
-================================================================================
 
-IDOSO CARE 24H — marketplace que conecta famílias a cuidadores de idosos (com.babaon.app). Não é serviço médico ou de emergência. Emergência: 192 ou 190.
+IN-APP PURCHASE TEST — READ FIRST
+Product ID (exact): bo_taxa_manutencao · Consumable · US$ 1.99 tier
 
-CONTAS DEMO (mesma senha nas duas):
-Cuidador: cuidador.demo@ic24test.local / Demo123! (Ana Demo Cuidadora, Montes Claros-MG)
-Família: familia.demo@ic24test.local / Demo123! (Carlos Demo Família, Montes Claros-MG)
+The demo babysitter account is pre-seeded with ONE pending platform fee (US$ 1.99 / 1 care day):
 
-Entrar: abrir app → Entrar → e-mail e senha → painel do perfil. Cadastro e dados de teste já prontos.
+1. Log in: baba.demo@babaon.test.local / Demo123!
+2. Menu → Taxa do app
+3. Confirm: Taxa pendente: US$ 1.99 (must NOT be US$ 0.00)
+4. Tap Pagar taxa via App Store
+5. Complete consumable bo_taxa_manutencao with a Sandbox Apple ID
 
-CUIDADOR: ofertas → aceitar/contra-propor → definir forma de recebimento e duração (diárias) → após família fechar negócio → chat → ponto → diário → faturamento (PIX externo) → Taxa do app (IAP).
+If pending fee shows US$ 0.00, contact us — run seed_review_iap_demo.mjs before review.
 
-FAMÍLIA: cuidadores próximos → proposta/plantão urgente → fechar negócio → chat → confirmar ponto → diário → pagamentos → avaliar/denunciar.
+APP OVERVIEW
+Babá ON connects parents with professional babysitters in Brazil. NOT medical or emergency service. Emergency: 190 (Police) or 192 (SAMU). Child protection: 100.
 
-PAGAMENTOS (Guideline 3.1):
-• Diária família→cuidador: PIX/boleto/link externo (fora da App Store).
-• Taxa plataforma: US$ 1,99 por DIÁRIA acordada (referência R$ 10,29/dia) — SOMENTE Apple IAP consumível bo_taxa_manutencao (tela Taxa do app). Ex.: 10 diárias = US$ 19,90 = 10 compras de US$ 1,99. Sem PIX para taxa.
+DEMO ACCOUNTS (password both: Demo123!)
+• Babysitter: baba.demo@babaon.test.local — Ana Demo Babá
+• Parent: pai.demo@babaon.test.local — Pai Demo Família
 
-Permissões: câmera/galeria só para perfil e documentos. Sem GPS contínuo. Chat só após acordo.
+Sign in: open app → Entrar → email + password → profile home.
 
-Exclusão: in-app ou https://baba-on.web.app/exclusao-conta.html
-Privacidade: https://baba-on.web.app/privacidade.html
-Suporte: https://baba-on.web.app/suporte.html
+BABYSITTER FLOW
+Offers → accept/counter → payment method & duration (days) → parent closes deal → chat → clock-in → care log → billing (external PIX) → Taxa do app (IAP).
 
-Contato: Eder Lucas Santos · +55 11 96836-2005 · drlucasnutrologo0777@icloud.com
-IAP: testar com conta Sandbox Apple. Obrigado pela revisão.
+PARENT FLOW
+Nearby babysitters → proposal/urgent shift → close deal → chat → confirm clock-in → care log → payments → rate/report.
+
+PAYMENTS (Guideline 3.1)
+• Parent → babysitter daily pay: external PIX/bank link (outside App Store). No IAP.
+• Platform fee: US$ 1.99 per agreed care day — ONLY Apple IAP consumable bo_taxa_manutencao (Taxa do app). Example: 10 days = 10 × US$ 1.99 purchases. No PIX for platform fee.
+
+APP PRICE
+The app is FREE to download. Platform fee is charged only in-app after a completed booking agreement.
+
+PERMISSIONS
+Camera/photo library: profile and documents only. No continuous GPS. Chat only after both parties agree.
+
+ACCOUNT & LEGAL
+Delete account: in-app or https://baba-on-3634a.web.app/exclusao-conta.html
+Privacy: https://baba-on-3634a.web.app/privacidade.html
+Support: https://baba-on-3634a.web.app/suporte.html
+
+Contact: Eder Lucas Santos · +55 11 96836-2005 · drlucasnutrologo0777@icloud.com
+
+Thank you for reviewing Babá ON.

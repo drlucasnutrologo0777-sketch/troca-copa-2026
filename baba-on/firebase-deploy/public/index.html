@@ -622,27 +622,6 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
         <input type="file" accept="image/*" onchange="anexar(this)"/>
       </div>
 
-      <div class="doc" data-doc="inss">
-        <div class="ic">🔢</div>
-        <div><b>Número do INSS / PIS</b><small>Cartão ou extrato</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
-      <div class="doc" data-doc="titulo">
-        <div class="ic">🗳️</div>
-        <div><b>Título de eleitor</b><small>Opcional, se disponível</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
-      <div class="doc" data-doc="reservista">
-        <div class="ic">⚔️</div>
-        <div><b>Certificado de reservista</b><small>Quando aplicável</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
       <div class="doc" data-doc="referencia">
         <div class="ic">📞</div>
         <div><b>Comprovante de experiência / referência</b><small>Declaração ou contracheque anterior</small></div>
@@ -2877,17 +2856,14 @@ async function carregarCurriculoListaFamilia(){
   if(!list) return;
   list.innerHTML='<p class="hint">Carregando babás…</p>';
   try{
-    ic24InitFirebase();
-    if(!ic24Auth.currentUser){ list.innerHTML='<p class="hint">Faça login como família.</p>'; return; }
-    let cgs=await ic24ListarBabasAprovados();
-    if(!cgs.length) cgs=await ic24ListarBabasProximos();
+    const cgs=await ic24ListarBabasProximos();
     list.innerHTML=cgs.length?cgs.map(c=>{
       const foto=c.photoUrl?'<img src="'+escapeHtml(c.photoUrl)+'" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;margin-right:10px;vertical-align:middle"/>':'';
       return '<div class="list-item"><div style="display:flex;align-items:center">'+foto+'<div><b>'+escapeHtml(c.fullName||'Babá')+'</b><small>'+
         escapeHtml([c.city,c.state].filter(Boolean).join(' - '))+'</small></div></div>'+
         '<button class="btn btn-p" type="button" style="margin-top:8px;height:40px;width:100%" onclick="abrirCurriculoBaba(\''+c.id+'\')">Ver currículo</button>'+
         '<button class="btn btn-o" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirPerfilBabaFamilia(\''+c.id+'\')">Ver perfil</button></div>';
-    }).join(''):'<p class="hint">Nenhuma babá cadastrada ainda. Veja também <strong>Babás próximas</strong>.</p>';
+    }).join(''):'<p class="hint">Nenhuma babá cadastrada ainda.</p>';
   }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
 }
 

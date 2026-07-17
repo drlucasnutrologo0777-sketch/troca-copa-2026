@@ -1,0 +1,379 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+    function isAdmin() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    function isCaregiver() {
+      return signedIn() && userDoc().data.role == 'caregiver';
+    }
+    function isFamily() {
+      return signedIn() && userDoc().data.role == 'family';
+    }
+    function clientRefMe() {
+      return /databases/$(database)/documents/clients/$(request.auth.uid);
+    }
+    function caregiverRefMe() {
+      return /databases/$(database)/documents/caregivers/$(request.auth.uid);
+    }
+    function isChatMember(chat) {
+      return signedIn() && request.auth.uid in chat.data.participants;
+    }
+    function ic24FeeUsd() {
+      return 1.99;
+    }
+    function ic24FeeBrlReference() {
+      return 10.29;
+    }
+    function ic24NoPendingPlatformFee(data) {
+      return !('platformFeePending' in data)
+        || data.platformFeePending == null
+        || data.platformFeePending == 0;
+    }
+    function isValidPlatformFeeAccrual() {
+      let d = request.resource.data;
+      return d.platformFeeCurrency == 'USD'
+        && d.platformFeePendingDiarias is int
+        && d.platformFeePendingDiarias >= 1
+        && d.platformFeePendingDiarias <= 366
+        && d.platformFeePending == d.platformFeePendingDiarias * ic24FeeUsd();
+    }
+    function isValidPlatformFeePaymentCreate() {
+      let p = request.resource.data;
+      return p.caregiverId == request.auth.uid
+        && p.amount == ic24FeeUsd()
+        && p.currency == 'USD'
+        && p.method == 'apple_iap'
+        && p.status == 'confirmed';
+    }
+    function isCaregiverFeeClearUpdate() {
+      return isCaregiver() && isOwner(caregiverId)
+        && request.resource.data.platformFeePending == 0
+        && (!('platformFeePendingDiarias' in request.resource.data)
+          || request.resource.data.platformFeePendingDiarias == 0)
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly([
+            'platformFeePending',
+            'platformFeePendingDiarias',
+            'platformFeePendingOfferId',
+            'platformFeeLastPaidAt',
+            'platformFeeLastMethod',
+            'updatedAt',
+          ]);
+    }
+    function isCaregiverFeePartialPayUpdate() {
+      return isCaregiver() && isOwner(caregiverId)
+        && resource.data.platformFeePendingDiarias is int
+        && resource.data.platformFeePendingDiarias > 1
+        && request.resource.data.platformFeePendingDiarias == resource.data.platformFeePendingDiarias - 1
+        && request.resource.data.platformFeePending == resource.data.platformFeePending - ic24FeeUsd()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly([
+            'platformFeePending',
+            'platformFeePendingDiarias',
+            'platformFeeLastPartialPaidAt',
+            'updatedAt',
+          ]);
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    function isRatingOnlyUpdate() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['rating', 'reviewCount', 'updatedAt']);
+    }
+    function isFamilyMatchLinkUpdate() {
+      return isFamily()
+        && ic24NoPendingPlatformFee(resource.data)
+        && isValidPlatformFeeAccrual()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly([
+            'activeFamilyId',
+            'platformFeePending',
+            'platformFeePendingDiarias',
+            'platformFeeCurrency',
+            'platformFeePendingOfferId',
+            'platformFeeUpdatedAt',
+            'updatedAt',
+          ]);
+    }
+
+    match /caregivers/{caregiverId} {
+      allow read: if resource.data.approved == true
+        || isOwner(caregiverId)
+        || isAdmin()
+        || (isFamily() && resource.data.availableToday == true);
+      allow create: if isOwner(caregiverId) && isCaregiver();
+      allow update: if isOwner(caregiverId) || isAdmin()
+        || (isFamily() && isRatingOnlyUpdate())
+        || (isFamily() && isFamilyMatchLinkUpdate())
+        || isCaregiverFeeClearUpdate()
+        || isCaregiverFeePartialPayUpdate();
+      allow delete: if isOwner(caregiverId) || isAdmin();
+
+      match /documents/{docId} {
+        allow read: if isOwner(caregiverId) || isAdmin()
+          || (isFamily() && get(/databases/$(database)/documents/caregivers/$(caregiverId)).data.approved == true);
+        allow create, update: if isOwner(caregiverId);
+        allow delete: if isOwner(caregiverId) || isAdmin();
+      }
+      match /experiences/{expId} {
+        allow read: if signedIn();
+        allow create, update, delete: if isOwner(caregiverId);
+      }
+      match /references/{refId} {
+        allow read: if signedIn();
+        allow create, update, delete: if isOwner(caregiverId);
+      }
+    }
+
+    match /clients/{clientId} {
+      allow read: if isOwner(clientId) || isAdmin();
+      allow create, update: if isOwner(clientId) && isFamily();
+      allow delete: if isOwner(clientId) || isAdmin();
+    }
+
+    match /patients/{patientId} {
+      allow read: if signedIn() && (
+        resource.data.clientRef == clientRefMe() || isAdmin()
+      );
+      allow create: if isFamily()
+        && request.resource.data.clientRef == clientRefMe();
+      allow update: if isFamily()
+        && resource.data.clientRef == clientRefMe();
+    }
+
+    match /jobs/{jobId} {
+      allow read: if signedIn();
+      allow create: if isFamily()
+        && request.resource.data.clientRef == clientRefMe();
+      allow update: if isFamily()
+        && resource.data.clientRef == clientRefMe();
+      allow delete: if isAdmin() || (isFamily() && resource.data.clientRef == clientRefMe());
+    }
+
+    match /job_interactions/{id} {
+      allow read: if signedIn();
+      allow create: if isCaregiver();
+      allow update, delete: if false;
+    }
+
+    match /negotiations/{id} {
+      allow read: if signedIn();
+      allow create, update: if signedIn();
+    }
+
+    match /matches/{matchId} {
+      allow read: if signedIn() && (
+        resource.data.clientRef == clientRefMe()
+        || resource.data.caregiverRef == caregiverRefMe()
+        || resource.data.familyId == request.auth.uid
+        || resource.data.caregiverId == request.auth.uid
+        || isAdmin()
+      );
+      allow create: if signedIn();
+      allow update: if signedIn() || isAdmin();
+    }
+
+    match /chats/{chatId} {
+      allow read, update: if isChatMember(resource.data);
+      allow create: if signedIn()
+        && request.auth.uid in request.resource.data.participants;
+      match /messages/{msgId} {
+        allow read, create: if isChatMember(
+          get(/databases/$(database)/documents/chats/$(chatId)).data
+        );
+      }
+    }
+
+    match /notifications/{id} {
+      allow read, update: if signedIn() && resource.data.userId == request.auth.uid;
+      allow create, delete: if false;
+    }
+
+    /** Coleção legada — somente leitura admin; novos registros usam invoices */
+    match /payments/{id} {
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /checkins/{id} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /checkouts/{id} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /care_logs/{id} {
+      allow read: if signedIn() && (
+        resource.data.familyId == request.auth.uid
+        || resource.data.caregiverId == request.auth.uid
+        || isAdmin()
+      );
+      allow create: if isCaregiver()
+        && request.resource.data.caregiverId == request.auth.uid;
+      allow update: if isFamily()
+        && resource.data.familyId == request.auth.uid;
+    }
+
+    match /ponto_sessions/{id} {
+      allow read: if signedIn() && (
+        resource.data.familyId == request.auth.uid
+        || resource.data.caregiverId == request.auth.uid
+        || isAdmin()
+      );
+      allow create: if isCaregiver()
+        && request.resource.data.caregiverId == request.auth.uid;
+      allow update: if (isFamily()
+        && resource.data.familyId == request.auth.uid)
+        || (isCaregiver()
+        && resource.data.caregiverId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['log', 'updatedAt', 'status']));
+    }
+
+    match /job_offers/{id} {
+      allow read: if signedIn();
+      allow create: if isFamily()
+        && request.resource.data.familyId == request.auth.uid;
+      allow update: if isAdmin()
+        || (isFamily() && resource.data.familyId == request.auth.uid)
+        || (isCaregiver() && resource.data.status in ['open', 'negotiating', 'awaiting_terms']
+          && request.resource.data.status in ['awaiting_terms', 'negotiating', 'pending_family_approval'])
+        || (isCaregiver() && resource.data.matchedCaregiverId == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly([
+              'platformFeeStatus',
+              'platformFeePaidAt',
+              'platformFeeAmount',
+              'platformFeePendingDiarias',
+              'updatedAt',
+            ]));
+    }
+
+    match /offer_responses/{id} {
+      allow read: if signedIn();
+      allow create: if isCaregiver()
+        && request.resource.data.caregiverId == request.auth.uid;
+      allow update: if signedIn() && (
+        resource.data.familyId == request.auth.uid
+        || resource.data.caregiverId == request.auth.uid
+        || isAdmin()
+      );
+    }
+
+    match /family_reports/{id} {
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.familyId == request.auth.uid);
+      allow create: if isFamily()
+        && request.resource.data.familyId == request.auth.uid;
+    }
+
+    match /support_tickets/{id} {
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.userId == request.auth.uid);
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid;
+    }
+
+    match /disputes/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update: if isAdmin();
+    }
+
+    match /wallets/{caregiverId} {
+      allow read: if isOwner(caregiverId) || isAdmin();
+      allow write: if false;
+    }
+
+    match /withdrawals/{id} {
+      allow read: if signedIn();
+      allow create: if isCaregiver();
+      allow update: if isAdmin();
+    }
+
+    match /reviews/{id} {
+      allow read: if true;
+      allow create: if signedIn();
+    }
+
+    match /reports/{id} {
+      allow read: if isAdmin();
+      allow create: if signedIn();
+    }
+
+    match /platform/{doc} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    /** Snapshot público do currículo (URLs das fotos — acesso via token em cv_requests) */
+    match /curriculum_public/{caregiverId} {
+      allow read: if signedIn();
+      allow write: if isOwner(caregiverId) || isAdmin();
+    }
+
+    /** Contratante solicita currículo — doc id = token secreto na URL curriculo.html?t= */
+    match /cv_requests/{token} {
+      allow read: if true;
+      allow create: if isFamily()
+        && request.resource.data.familyId == request.auth.uid;
+      allow update: if isAdmin()
+        || (signedIn() && resource.data.familyId == request.auth.uid);
+    }
+
+    match /invoices/{id} {
+      allow read: if signedIn() && (
+        resource.data.caregiverId == request.auth.uid
+        || resource.data.familyId == request.auth.uid
+        || isAdmin()
+      );
+      allow create: if isCaregiver()
+        && request.resource.data.caregiverId == request.auth.uid;
+      allow update: if isAdmin()
+        || (isCaregiver() && resource.data.caregiverId == request.auth.uid)
+        || (isFamily() && resource.data.familyId == request.auth.uid);
+    }
+
+    match /platform_fee_payments/{id} {
+      allow read: if signedIn() && (
+        resource.data.caregiverId == request.auth.uid || isAdmin()
+      );
+      allow create: if isCaregiver() && isValidPlatformFeePaymentCreate();
+      allow update: if isAdmin();
+    }
+
+    match /family_notifications/{id} {
+      allow read: if signedIn() && resource.data.familyId == request.auth.uid;
+      allow create: if signedIn();
+      allow update: if signedIn() && resource.data.familyId == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
+    match /caregiver_notifications/{id} {
+      allow read: if signedIn() && resource.data.caregiverId == request.auth.uid;
+      allow create: if signedIn();
+      allow update: if signedIn() && resource.data.caregiverId == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+  }
+}

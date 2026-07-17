@@ -1,19 +1,25 @@
-Babá ON — Build 1.0.0+3 (testado 8/8 OK)
+Babá ON — Build 1.0.0+6 (paridade Idoso Care build 53)
 
-Codemagic (disparo automático no push main):
-https://codemagic.io/apps
+Codemagic: troca-copa-2026 → Babá ON — iOS TestFlight → main
+Web: https://baba-on-3634a.web.app
 
-Repo: troca-copa-2026
-Workflow: Babá ON — iOS TestFlight
-Branch: main
+ANTES DA REVISÃO APPLE:
+  node scripts/seed_review_iap_demo.mjs
+  firebase-deploy\DEPLOY-CLIQUE.bat
 
-Web atualizado (sem textos idoso):
-https://baba-on-3634a.web.app
-
-Teste E2E: cadastro → negócio → currículo → PIX → IAP → anti-PIX = 8/8 OK
-
-Contas demo:
+Demo IAP (taxa US$ 1,99 pendente):
   baba.demo@babaon.test.local / Demo123!
-  pai.demo@babaon.test.local / Demo123!
+  Menu → Taxa do app → Pagar taxa via App Store
 
-Esqueci senha: funciona com e-mail real (Gmail/iCloud). Demo .test.local usa senha Demo123!
+IAP App Store Connect:
+  bo_taxa_manutencao (Consumível US$ 1,99)
+  Enviar JUNTO com build 5 — sem imagem promocional
+
+App na loja: GRÁTIS (só IAP pós-serviço)
+
+Correções build 5 vs build 4:
+  - Currículo on-demand (ic24MontarCurriculoSnapshot)
+  - Lista babás aprovadas + login guard
+  - Docs INSS / Título / Reservista
+  - Privacidade: endereço removido do CV exportado
+  - bundleStamp baba_v5 (cache WebView iOS)
