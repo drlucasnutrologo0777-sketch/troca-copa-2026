@@ -39,8 +39,8 @@ if [ "${1:-}" = "--ipa" ]; then
     echo "ERRO: flutter_inappwebview ausente no IPA"
     exit 1
   }
-  BUILD_NUM=$(unzip -p "$IPA" 'Payload/Runner.app/Info.plist' | plutil -extract CFBundleVersion raw - 2>/dev/null || true)
-  echo "CFBundleVersion no IPA: ${BUILD_NUM:-desconhecido} (esperado ${EXPECTED_BUILD})"
+  BUILD_NUM=$(bash tool/ipa_bundle_version.sh "$IPA")
+  echo "CFBundleVersion no IPA: ${BUILD_NUM} (esperado ${EXPECTED_BUILD})"
   if [ "${BUILD_NUM:-}" != "${EXPECTED_BUILD}" ]; then
     echo "ERRO: CFBundleVersion esperado ${EXPECTED_BUILD}, obtido ${BUILD_NUM:-vazio}"
     exit 1

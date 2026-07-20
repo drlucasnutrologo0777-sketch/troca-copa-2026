@@ -217,10 +217,10 @@ workflows:
             echo "ERRO: .ipa nao encontrado"
             exit 1
           fi
-          BUILD_NUM=$(unzip -p "$IPA" 'Payload/Runner.app/Info.plist' | plutil -extract CFBundleVersion raw 2>/dev/null || true)
-          echo "CFBundleVersion no IPA antes do upload: ${BUILD_NUM:-vazio} (obrigatorio ${IC24_BUILD_NUMBER}, > 53)"
+          BUILD_NUM=$(bash tool/ipa_bundle_version.sh "$IPA")
+          echo "CFBundleVersion no IPA antes do upload: ${BUILD_NUM} (obrigatorio ${IC24_BUILD_NUMBER}, > 53)"
           if [ -z "${BUILD_NUM:-}" ] || [ "$BUILD_NUM" -le 53 ]; then
-            echo "ERRO: IPA build ${BUILD_NUM:-vazio} — NAO enviar. Faca Start new build (nao Rebuild)."
+            echo "ERRO: IPA build ${BUILD_NUM:-vazio} — deve ser > 53"
             exit 1
           fi
           if [ "${BUILD_NUM}" != "${IC24_BUILD_NUMBER}" ]; then
