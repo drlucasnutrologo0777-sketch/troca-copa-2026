@@ -1,27 +1,48 @@
-App Store Connect — Notas para a equipe de revisão
-================================================================================
-Build: 1.0 (52+) · IAP: ic24_taxa_manutencao
+App Store Connect — Review Notes (English — paste in Version → App Review Information)
+Build: 1.0 (53) · Bundle: com.idosocare24h.app · IAP: ic24_taxa_manutencao
+First IAP submitted WITH this version (selected under In-App Purchases and Subscriptions).
 ================================================================================
 
-IMPORTANT — IN-APP PURCHASE TEST (read first)
-The demo caregiver account is pre-configured with ONE pending platform fee (US$ 1.99 / 1 care day) so you can test IAP immediately:
+IN-APP PURCHASE TEST — READ FIRST
+Product ID (exact): ic24_taxa_manutencao · Consumable · US$ 1.99 tier
+
+The demo caregiver account is pre-seeded with ONE pending platform fee (US$ 1.99 / 1 care day):
+
 1. Log in: cuidador.demo@ic24test.local / Demo123!
 2. Menu → Taxa do app
-3. You MUST see "Taxa pendente: US$ 1.99" (not US$ 0.00)
-4. Tap "Pagar taxa via App Store" → confirm consumable ic24_taxa_manutencao with Sandbox Apple ID
+3. Confirm: Taxa pendente: US$ 1.99 (must NOT be US$ 0.00)
+4. Tap Pagar taxa via App Store
+5. Complete consumable ic24_taxa_manutencao with a Sandbox Apple ID
 
 If pending fee shows US$ 0.00, contact us — demo data needs refresh before review.
 
 APP OVERVIEW
-Idoso Care 24H connects families with elderly caregivers (com.idosocare24h.app). NOT medical or emergency service. Emergencies: 192 or 190.
+Idoso Care 24H connects families with elderly caregivers. NOT medical or emergency service. Emergency: 192 (SAMU) or 190 (police).
 
-DEMO ACCOUNTS (password: Demo123!)
-• Caregiver: cuidador.demo@ic24test.local
-• Family: familia.demo@ic24test.local
+DEMO ACCOUNTS (password both: Demo123!)
+• Caregiver: cuidador.demo@ic24test.local — Ana Demo Cuidadora, Montes Claros-MG
+• Family: familia.demo@ic24test.local — Carlos Demo Família, Montes Claros-MG
+
+Sign in: open app → Entrar → email + password → profile home. Registration and test data are ready.
+
+CAREGIVER FLOW
+Offers → accept/counter → payment method & duration (days) → family closes deal → chat → clock-in → care log → billing (external PIX) → Taxa do app (IAP).
+
+FAMILY FLOW
+Nearby caregivers → proposal/urgent shift → close deal → chat → confirm clock-in → care log → payments → rate/report.
 
 PAYMENTS (Guideline 3.1)
-• Family → caregiver daily pay: external PIX (not IAP)
-• Platform fee ONLY: Apple IAP ic24_taxa_manutencao (consumable, one unit per care day)
+• Family → caregiver daily pay: external PIX/bank link (outside App Store). No IAP.
+• Platform fee: US$ 1.99 per agreed care day — ONLY Apple IAP consumable ic24_taxa_manutencao (Taxa do app). Example: 10 days = 10 × US$ 1.99 purchases. No PIX for platform fee.
 
+PERMISSIONS
+Camera/photo library: profile and documents only. No continuous GPS. Chat only after both parties agree.
+
+ACCOUNT & LEGAL
+Delete account: in-app or https://idoso-care-24h.web.app/exclusao-conta.html
+Privacy: https://idoso-care-24h.web.app/privacidade.html
 Support: https://idoso-care-24h.web.app/suporte.html
-Contact: Eder Lucas Santos · drlucasnutrologo0777@icloud.com · +55 11 96836-2005
+
+Contact: Eder Lucas Santos · +55 11 96836-2005 · drlucasnutrologo0777@icloud.com
+
+Thank you for reviewing Idoso Care 24H.

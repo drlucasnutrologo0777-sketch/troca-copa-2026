@@ -115,6 +115,8 @@ workflows:
         CERTIFICATE_PRIVATE_KEY_PATH: ../ios/codemagic_signing/ios_distribution_private_key.pem
         BUNDLE_ID: com.idosocare24h.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
+        IC24_BUILD_NAME: "2.0.0"
+        IC24_BUILD_NUMBER: "58"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -160,7 +162,18 @@ workflows:
           keychain add-certificates
           xcode-project use-profiles --project ios/Runner.xcodeproj
       - name: Flutter pub get
-        script: flutter pub get
+        script: |
+          set -e
+          rm -rf build/ios build/ios/ipa build/ios/archive .dart_tool
+          flutter clean
+          flutter pub get
+          grep '^version:' pubspec.yaml
+          PUBSPEC_NUM=$(grep '^version:' pubspec.yaml | sed -E 's/version: .*\+([0-9]+)/\1/')
+          if [ "$PUBSPEC_NUM" != "$IC24_BUILD_NUMBER" ]; then
+            echo "ERRO: pubspec +${PUBSPEC_NUM} != IC24_BUILD_NUMBER=${IC24_BUILD_NUMBER}"
+            exit 1
+          fi
+          test -f ios/IC24_IOS_BUILD.txt && cat ios/IC24_IOS_BUILD.txt
       - name: CocoaPods
         script: |
           cd ios
@@ -168,6 +181,12 @@ workflows:
       - name: Build IPA
         script: |
           set -e
+          echo "Gerando Idoso Care CFBundleVersion=${IC24_BUILD_NUMBER} (TestFlight ultimo=53)"
+          if [ "$IC24_BUILD_NUMBER" -le 53 ]; then
+            echo "ERRO: build deve ser > 53"
+            exit 1
+          fi
+          rm -rf build/ios/ipa build/ios/archive
           xcode-project use-profiles --project ios/Runner.xcodeproj
           EXPORT_PLIST="/Users/builder/export_options.plist"
           if [ ! -f "$EXPORT_PLIST" ]; then
@@ -178,15 +197,14 @@ workflows:
             exit 1
           fi
           echo "Export options: $EXPORT_PLIST"
-          BUILD_NUM=$(grep '^version:' pubspec.yaml | sed 's/.*+//')
-          echo "Build number from pubspec: $BUILD_NUM"
-          if [ -z "$BUILD_NUM" ] || [ "$BUILD_NUM" -le 51 ]; then
-            echo "ERRO: pubspec build number deve ser maior que 51 (atual: $BUILD_NUM)"
-            exit 1
+          if [ -f ios/Flutter/Generated.xcconfig ]; then
+            sed -i.bak "s/FLUTTER_BUILD_NAME=.*/FLUTTER_BUILD_NAME=${IC24_BUILD_NAME}/" ios/Flutter/Generated.xcconfig
+            sed -i.bak "s/FLUTTER_BUILD_NUMBER=.*/FLUTTER_BUILD_NUMBER=${IC24_BUILD_NUMBER}/" ios/Flutter/Generated.xcconfig
           fi
+          grep CFBundleVersion ios/Runner/Info.plist || true
           flutter build ipa --release \
-            --build-name=2.0.0 \
-            --build-number="$BUILD_NUM" \
+            --build-name="$IC24_BUILD_NAME" \
+            --build-number="$IC24_BUILD_NUMBER" \
             --export-options-plist="$EXPORT_PLIST"
           ls -la build/ios/ipa/
           IPA_CHECK=$(find build/ios/ipa -name "*.ipa" | head -1)
@@ -199,12 +217,22 @@ workflows:
             echo "ERRO: .ipa nao encontrado"
             exit 1
           fi
+          BUILD_NUM=$(unzip -p "$IPA" 'Payload/Runner.app/Info.plist' | plutil -extract CFBundleVersion raw 2>/dev/null || true)
+          echo "CFBundleVersion no IPA antes do upload: ${BUILD_NUM:-vazio} (obrigatorio ${IC24_BUILD_NUMBER}, > 53)"
+          if [ -z "${BUILD_NUM:-}" ] || [ "$BUILD_NUM" -le 53 ]; then
+            echo "ERRO: IPA build ${BUILD_NUM:-vazio} — NAO enviar. Faca Start new build (nao Rebuild)."
+            exit 1
+          fi
+          if [ "${BUILD_NUM}" != "${IC24_BUILD_NUMBER}" ]; then
+            echo "ERRO: IPA ${BUILD_NUM} != ${IC24_BUILD_NUMBER}"
+            exit 1
+          fi
           API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
           export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
           pip3 install --quiet PyJWT requests
           APP_STORE_APPLE_ID=$(python3 tool/resolve_asc_apple_id.py)
           echo "Bundle $BUNDLE_ID -> Apple ID $APP_STORE_APPLE_ID"
-          echo "Enviando Idoso Care para App Store Connect: $IPA"
+          echo "Enviando Idoso Care build ${BUILD_NUM} para App Store Connect: $IPA"
           app-store-connect publish \
             --path "$IPA" \
             --private-key "@file:$API_KEY" \
@@ -212,7 +240,7 @@ workflows:
             --max-find-build-wait 900 \
             --max-build-processing-wait 3600 \
             --verbose
-          echo "Upload concluido. TestFlight no App Store Connect."
+          echo "Upload concluido (build ${BUILD_NUM}). TestFlight no App Store Connect."
 
     artifacts:
       - build/ios/ipa/*.ipa

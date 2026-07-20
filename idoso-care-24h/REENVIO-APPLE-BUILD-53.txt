@@ -1,5 +1,49 @@
-RESPOSTA APPLE — Resolution Center (build 53, 14/jul/2026)
+IDOSO CARE 24H — REENVIO APPLE (continuidade build 53)
 Submission ID: c2dacf1e-609a-4a2f-8498-7b07d7cbeddb
+================================================================================
+
+CHECKLIST (ordem)
+
+[ ] 1. SEED DEMO (taxa US$ 1,99 pendente) — RODE ANTES DA REVISÃO
+      node idoso-care-24h\scripts\seed_review_iap_demo.mjs
+      (Acabei de rodar — OK em 13/07/2026)
+
+[ ] 2. CODEMAGIC — build 53
+      https://codemagic.io/apps
+      troca-copa-2026 → Idoso Care 24H — iOS TestFlight → branch main
+      Log deve mostrar: Build number from pubspec: 53
+
+[ ] 3. TESTFLIGHT — aguardar processamento
+      https://appstoreconnect.apple.com/apps/6784357547/testflight/ios
+      Build: 1.0 (53)
+
+[ ] 4. IAP ic24_taxa_manutencao (App Store Connect → Monetização)
+      Nome: Taxa de manutenção (SEM preço)
+      Descrição: Taxa da plataforma por diária (SEM preço)
+      Screenshot revisão: Desktop\Idoso Care IAP Apple 2026-07-04\1-Screenshot-Revisao-IAP-2026-07-04.png
+      Imagem promocional: 2-Imagem-Promocional-1024-2026-07-04.png (OU apague promo)
+      Status: Pronto para envio
+
+[ ] 5. VERSÃO 1.0
+      Build 53 selecionado
+      IAP ic24_taxa_manutencao marcado
+      Notas revisão: IAP-REVIEW-NOTAS.txt
+
+[ ] 6. ENVIAR PARA REVISÃO
+
+[ ] 7. RESPONDER À APPLE — texto abaixo (inglês)
+
+================================================================================
+FOTOS (Área de Trabalho)
+C:\Users\drluc\Desktop\Idoso Care IAP Apple 2026-07-04\
+
+DEMO
+Cuidador: cuidador.demo@ic24test.local / Demo123!
+Família: familia.demo@ic24test.local / Demo123!
+
+================================================================================
+RESPOSTA PARA APP STORE CONNECT — Resolution Center (copiar)
+Atualizado: 14/jul/2026 — reprovação build 53
 ================================================================================
 
 Hello App Review Team,

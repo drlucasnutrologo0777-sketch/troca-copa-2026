@@ -279,6 +279,7 @@ async function ic24CarregarDadosCuidador(uid) {
 
 function ic24AvaliarCadastroCuidador(d, docsMap) {
   d = d || {};
+  docsMap = docsMap || {};
   const cep = String(d.cep || '').replace(/\D/g, '');
   if (!d.street || !d.number || cep.length !== 8 || !d.city || !d.state) {
     return { complete: false, screen: 'cuidador-etapa1', message: 'Complete seu endereço para continuar o cadastro' };
@@ -286,20 +287,10 @@ function ic24AvaliarCadastroCuidador(d, docsMap) {
   if (!(d.bio || '').trim()) {
     return { complete: false, screen: 'cuidador-etapa2', message: 'Conte sobre você e suas especialidades' };
   }
-  if (!d.photoUrl && !d.basicSignupComplete) {
-    return { complete: false, screen: 'cuidador-etapa2', message: 'Envie sua foto de perfil' };
-  }
-  return { complete: true, screen: 'cuidador-painel', message: '' };
-}
-
-/** CPF e documentos — complemento no painel, não bloqueia cadastro inicial */
-function ic24AvaliarDocumentacaoCuidador(d, docsMap) {
-  d = d || {};
-  docsMap = docsMap || {};
   if (String(d.cpf || '').replace(/\D/g, '').length !== 11) {
     return { complete: false, screen: 'cuidador-curriculo', message: 'Informe seu CPF no currículo' };
   }
-  const missingDocs = IC24_DOCS_OBRIGATORIOS.filter((k) => !(docsMap[k]?.fileUrl || docsMap[k]?.url));
+  const missingDocs = IC24_DOCS_OBRIGATORIOS.filter((k) => !docsMap[k]?.fileUrl);
   if (missingDocs.length) {
     return {
       complete: false,

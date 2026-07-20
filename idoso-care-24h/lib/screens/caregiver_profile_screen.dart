@@ -8,14 +8,9 @@ import '../widgets/app_widgets.dart';
 import 'chat_screen.dart';
 
 class CaregiverProfileScreen extends StatefulWidget {
-  const CaregiverProfileScreen({
-    super.key,
-    required this.caregiverId,
-    this.viewAsSelf = false,
-  });
+  const CaregiverProfileScreen({super.key, required this.caregiverId});
 
   final String caregiverId;
-  final bool viewAsSelf;
 
   @override
   State<CaregiverProfileScreen> createState() => _CaregiverProfileScreenState();
@@ -55,7 +50,7 @@ class _CaregiverProfileScreenState extends State<CaregiverProfileScreen> {
           return const AppScaffold(title: 'Perfil', child: Center(child: Text('Cuidador não encontrado')));
         }
         return AppScaffold(
-          title: widget.viewAsSelf ? 'Meu perfil público' : c.fullName,
+          title: c.fullName,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -95,18 +90,11 @@ class _CaregiverProfileScreenState extends State<CaregiverProfileScreen> {
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.primary),
                 ),
               const SizedBox(height: 16),
-              if (!widget.viewAsSelf)
-                PrimaryButton(
-                  label: 'Solicitar contato',
-                  onPressed: _requestContact,
-                  loading: _loading,
-                )
-              else
-                Text(
-                  'É assim que famílias veem seu perfil na busca.',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.textSecondary, height: 1.4),
-                ),
+              PrimaryButton(
+                label: 'Solicitar contato',
+                onPressed: _requestContact,
+                loading: _loading,
+              ),
             ],
           ),
         );

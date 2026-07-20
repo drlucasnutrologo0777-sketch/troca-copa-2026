@@ -45,8 +45,8 @@ class _HomeShellState extends State<HomeShell> {
 
     final destinations = <NavigationDestination>[
       NavigationDestination(
-        icon: Icon(isCaregiver ? Icons.home_outlined : Icons.search),
-        label: isCaregiver ? 'Início' : 'Buscar',
+        icon: Icon(isCaregiver ? Icons.badge_outlined : Icons.search),
+        label: isCaregiver ? 'Cadastro' : 'Buscar',
       ),
       const NavigationDestination(icon: Icon(Icons.chat_bubble_outline), label: 'Chat'),
       if (isAdmin)

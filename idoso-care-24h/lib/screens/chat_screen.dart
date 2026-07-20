@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -54,69 +53,62 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Column(
         children: [
           Expanded(
-            child: demo
-                ? StreamBuilder<List<Map<String, dynamic>>>(
-                    stream: fs.chatMessagesDemo(widget.chatId),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
+            child: StreamBuilder(
+              stream: demo ? fs.chatMessagesDemo(widget.chatId) : fs.chatMessages(widget.chatId),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                      final messages = snapshot.data ?? [];
-                      if (messages.isEmpty) {
-                        return const Center(child: Text('Inicie a conversa com uma mensagem.'));
-                      }
-                      return ListView.builder(
-                        itemCount: messages.length,
-                        itemBuilder: (context, index) {
-                          final data = messages[index];
-                          return Align(
-                            alignment: Alignment.centerLeft,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(vertical: 4),
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(data['text'] as String? ?? ''),
-                            ),
-                          );
-                        },
+                if (demo) {
+                  final messages = snapshot.data ?? [];
+                  if (messages.isEmpty) {
+                    return const Center(child: Text('Inicie a conversa com uma mensagem.'));
+                  }
+                  return ListView.builder(
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final data = messages[index];
+                      return Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(data['text'] as String? ?? ''),
+                        ),
                       );
                     },
-                  )
-                : StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                    stream: fs.chatMessages(widget.chatId),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
+                  );
+                }
 
-                      final docs = snapshot.data!.docs;
-                      if (docs.isEmpty) {
-                        return const Center(child: Text('Inicie a conversa com uma mensagem.'));
-                      }
-                      return ListView.builder(
-                        itemCount: docs.length,
-                        itemBuilder: (context, index) {
-                          final data = docs[index].data();
-                          return Align(
-                            alignment: Alignment.centerLeft,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(vertical: 4),
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(data['text'] as String? ?? ''),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
+                final docs = snapshot.data!.docs;
+                if (docs.isEmpty) {
+                  return const Center(child: Text('Inicie a conversa com uma mensagem.'));
+                }
+                return ListView.builder(
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final data = docs[index].data();
+                    return Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(data['text'] as String? ?? ''),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
           Row(
             children: [

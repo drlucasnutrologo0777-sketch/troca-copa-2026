@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,44 +16,37 @@ class AdminPanelScreen extends StatelessWidget {
 
     return AppScaffold(
       title: 'Aprovação de Cuidadores',
-      child: demo
-          ? StreamBuilder<List<Map<String, dynamic>>>(
-              stream: fs.pendingCaregiversDemo(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+      child: StreamBuilder(
+        stream: demo ? fs.pendingCaregiversDemo() : fs.pendingCaregivers(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                final list = snapshot.data ?? [];
-                if (list.isEmpty) return const Center(child: Text('Nenhum cuidador pendente.'));
-                return ListView.builder(
-                  itemCount: list.length,
-                  itemBuilder: (context, index) {
-                    final data = list[index];
-                    final uid = data['uid'] as String;
-                    return _card(context, uid, data);
-                  },
-                );
+          if (demo) {
+            final list = snapshot.data ?? [];
+            if (list.isEmpty) return const Center(child: Text('Nenhum cuidador pendente.'));
+            return ListView.builder(
+              itemCount: list.length,
+              itemBuilder: (context, index) {
+                final data = list[index];
+                final uid = data['uid'] as String;
+                return _card(context, uid, data);
               },
-            )
-          : StreamBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
-              stream: fs.pendingCaregivers(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+            );
+          }
 
-                final docs = snapshot.data ?? [];
-                if (docs.isEmpty) return const Center(child: Text('Nenhum cuidador pendente.'));
-                return ListView.builder(
-                  itemCount: docs.length,
-                  itemBuilder: (context, index) {
-                    final doc = docs[index];
-                    return _card(context, doc.id, doc.data());
-                  },
-                );
-              },
-            ),
+          final docs = snapshot.data ?? [];
+          if (docs.isEmpty) return const Center(child: Text('Nenhum cuidador pendente.'));
+          return ListView.builder(
+            itemCount: docs.length,
+            itemBuilder: (context, index) {
+              final doc = docs[index];
+              return _card(context, doc.id, doc.data());
+            },
+          );
+        },
+      ),
     );
   }
 
