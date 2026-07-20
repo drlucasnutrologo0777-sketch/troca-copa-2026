@@ -15,4 +15,8 @@ if [ -z "$INFO" ]; then
   unzip -l "$IPA" | head -30 >&2 || true
   exit 1
 fi
-/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$INFO"
+if [ "${2:-}" = "--short" ]; then
+  /usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$INFO"
+else
+  /usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$INFO"
+fi

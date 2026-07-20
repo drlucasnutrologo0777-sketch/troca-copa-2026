@@ -115,8 +115,8 @@ workflows:
         CERTIFICATE_PRIVATE_KEY_PATH: ../ios/codemagic_signing/ios_distribution_private_key.pem
         BUNDLE_ID: com.idosocare24h.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
-        IC24_BUILD_NAME: "2.0.0"
-        IC24_BUILD_NUMBER: "58"
+        IC24_BUILD_NAME: "2.0.1"
+        IC24_BUILD_NUMBER: "59"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -181,11 +181,17 @@ workflows:
       - name: Build IPA
         script: |
           set -e
-          echo "Gerando Idoso Care CFBundleVersion=${IC24_BUILD_NUMBER} (TestFlight ultimo=53)"
+          echo "Gerando Idoso Care ${IC24_BUILD_NAME} (${IC24_BUILD_NUMBER}) — train 2.0.0 fechado na Apple"
           if [ "$IC24_BUILD_NUMBER" -le 53 ]; then
             echo "ERRO: build deve ser > 53"
             exit 1
           fi
+          if [ "$IC24_BUILD_NAME" = "2.0.0" ]; then
+            echo "ERRO: CFBundleShortVersionString 2.0.0 ja aprovado — use 2.0.1+"
+            exit 1
+          fi
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${IC24_BUILD_NAME}" ios/Runner/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${IC24_BUILD_NUMBER}" ios/Runner/Info.plist
           rm -rf build/ios/ipa build/ios/archive
           xcode-project use-profiles --project ios/Runner.xcodeproj
           EXPORT_PLIST="/Users/builder/export_options.plist"
@@ -218,13 +224,23 @@ workflows:
             exit 1
           fi
           BUILD_NUM=$(bash tool/ipa_bundle_version.sh "$IPA")
-          echo "CFBundleVersion no IPA antes do upload: ${BUILD_NUM} (obrigatorio ${IC24_BUILD_NUMBER}, > 53)"
+          SHORT_VER=$(bash tool/ipa_bundle_version.sh "$IPA" --short)
+          echo "CFBundleVersion no IPA: ${BUILD_NUM} (obrigatorio ${IC24_BUILD_NUMBER}, > 53)"
+          echo "CFBundleShortVersionString no IPA: ${SHORT_VER} (obrigatorio ${IC24_BUILD_NAME}, > 2.0.0)"
           if [ -z "${BUILD_NUM:-}" ] || [ "$BUILD_NUM" -le 53 ]; then
             echo "ERRO: IPA build ${BUILD_NUM:-vazio} — deve ser > 53"
             exit 1
           fi
           if [ "${BUILD_NUM}" != "${IC24_BUILD_NUMBER}" ]; then
             echo "ERRO: IPA ${BUILD_NUM} != ${IC24_BUILD_NUMBER}"
+            exit 1
+          fi
+          if [ -z "${SHORT_VER:-}" ] || [ "$SHORT_VER" = "2.0.0" ]; then
+            echo "ERRO: versao marketing ${SHORT_VER:-vazia} — train 2.0.0 fechado na Apple"
+            exit 1
+          fi
+          if [ "${SHORT_VER}" != "${IC24_BUILD_NAME}" ]; then
+            echo "ERRO: IPA marketing ${SHORT_VER} != ${IC24_BUILD_NAME}"
             exit 1
           fi
           API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"

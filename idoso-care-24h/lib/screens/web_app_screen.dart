@@ -7,7 +7,7 @@ import '../services/web_app_bundle.dart';
 class WebAppScreen extends StatefulWidget {
   const WebAppScreen({super.key});
 
-  static const buildLabel = 'Build 58 · Web App';
+  static const buildLabel = 'Build 59 · Web App';
 
   @override
   State<WebAppScreen> createState() => _WebAppScreenState();
