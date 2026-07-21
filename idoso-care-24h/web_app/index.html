@@ -1858,14 +1858,14 @@ async function solicitarCurriculoContratante(){
     ic24InitFirebase();
     if(!ic24Auth.currentUser){ toast('Faça login como família'); irLogin(); return; }
     const r=await ic24SolicitarCurriculo(caregiverId);
-    const fullLink=location.origin+location.pathname.replace(/index\.html?$/,'')+r.link;
+    const fullLink=new URL(r.link, location.href).href;
     const box=document.getElementById('pesquisa-curriculo-link');
     if(box){
       box.style.display='block';
-      box.innerHTML='<strong>Currículo liberado:</strong><br/><a href="'+fullLink+'" target="_blank" rel="noopener">'+fullLink+'</a>';
+      box.innerHTML='<strong>Currículo liberado:</strong><br/><a href="'+fullLink+'">'+fullLink+'</a>';
     }
-    window.open(fullLink,'_blank');
     toast('Currículo Lates gerado — link válido por 7 dias');
+    location.href=fullLink;
   }catch(e){ toast(e.message||'Erro ao solicitar currículo'); }
 }
 async function salvarCpfEClassificar(){
@@ -2872,11 +2872,11 @@ async function abrirCurriculoCuidador(id){
     ic24InitFirebase();
     if(!ic24Auth.currentUser){ toast('Faça login como família'); irLogin(); return; }
     const r=await ic24SolicitarCurriculo(id);
-    const fullLink=location.origin+location.pathname.replace(/index\.html?$/,'')+r.link;
+    const fullLink=new URL(r.link, location.href).href;
     const box=document.getElementById('fam-curriculo-link');
-    if(box){ box.style.display='block'; box.innerHTML='<strong>Currículo:</strong><br/><a href="'+fullLink+'" target="_blank" rel="noopener">'+fullLink+'</a>'; }
+    if(box){ box.style.display='block'; box.innerHTML='<strong>Currículo:</strong><br/><a href="'+fullLink+'">'+fullLink+'</a>'; }
     toast('Currículo liberado');
-    window.open(fullLink,'_blank');
+    location.href=fullLink;
   }catch(e){ toast(e.message||'Erro ao solicitar currículo'); }
 }
 

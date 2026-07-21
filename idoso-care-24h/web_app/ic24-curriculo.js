@@ -231,7 +231,7 @@ async function ic24SolicitarCurriculo(caregiverId) {
 }
 
 async function ic24CarregarCurriculoPorToken(token) {
-  ic24InitFirebase();
+  ic24InitFirebase({ requireAuth: false });
   const reqSnap = await ic24Db.collection('cv_requests').doc(token).get();
   if (!reqSnap.exists) throw new Error('Solicitação não encontrada ou link inválido');
   const req = reqSnap.data();

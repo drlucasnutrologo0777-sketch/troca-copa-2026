@@ -12,11 +12,20 @@ const IC24_FB = {
 let ic24Auth = null;
 let ic24Db = null;
 
-function ic24InitFirebase() {
-  if (!window.firebase) throw new Error('Firebase SDK não carregou');
+function ic24InitFirebase(opts) {
+  const requireAuth = !opts || opts.requireAuth !== false;
+  if (!window.firebase) throw new Error('Firebase SDK não carregou. Verifique conexão e reabra o app.');
   if (!firebase.apps.length) firebase.initializeApp(IC24_FB);
-  ic24Auth = firebase.auth();
+  if (typeof firebase.firestore !== 'function') {
+    throw new Error('Firebase Firestore não carregou');
+  }
   ic24Db = firebase.firestore();
+  if (requireAuth) {
+    if (typeof firebase.auth !== 'function') {
+      throw new Error('Firebase Auth não carregou. Feche e abra o app de novo.');
+    }
+    ic24Auth = firebase.auth();
+  }
   return { auth: ic24Auth, db: ic24Db };
 }
 

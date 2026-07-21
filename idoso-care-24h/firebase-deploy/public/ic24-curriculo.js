@@ -70,11 +70,12 @@ function ic24NormalizeUploadFile(file) {
   let type = file.type || '';
   if (!type || type === 'application/octet-stream') {
     const name = (file.name || '').toLowerCase();
-    if (name.endsWith('.heic') || name.endsWith('.heif')) type = 'image/heic';
+    if (name.endsWith('.heic') || name.endsWith('.heif')) type = 'image/jpeg';
     else if (name.endsWith('.png')) type = 'image/png';
     else if (name.endsWith('.webp')) type = 'image/webp';
     else type = 'image/jpeg';
   }
+  if (/heic|heif/i.test(type)) type = 'image/jpeg';
   return { file, contentType: type };
 }
 
@@ -230,7 +231,7 @@ async function ic24SolicitarCurriculo(caregiverId) {
 }
 
 async function ic24CarregarCurriculoPorToken(token) {
-  ic24InitFirebase();
+  ic24InitFirebase({ requireAuth: false });
   const reqSnap = await ic24Db.collection('cv_requests').doc(token).get();
   if (!reqSnap.exists) throw new Error('Solicitação não encontrada ou link inválido');
   const req = reqSnap.data();
