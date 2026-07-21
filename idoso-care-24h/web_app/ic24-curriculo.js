@@ -6,8 +6,8 @@ const IC24_DOC_META = {
   comprovante: { type: 'Comprovante', label: 'Comprovante de endereço', weight: 8, tier: 'identity' },
   ctps: { type: 'CarteiraTrabalho', label: 'Carteira de Trabalho', weight: 12, tier: 'work' },
   antecedentes: { type: 'AntecedentesCriminais', label: 'Antecedentes criminais', weight: 30, tier: 'compliance', required: true },
-  diploma: { type: 'Diploma', label: 'Diploma de enfermagem (técnico, auxiliar ou superior)', weight: 20, tier: 'education' },
-  curso: { type: 'CursoCuidador', label: 'Curso de Cuidador de Idosos', weight: 25, tier: 'education' },
+  diploma: { type: 'Diploma', label: 'Diploma / Certificado de formação', weight: 18, tier: 'education' },
+  curso: { type: 'CursoCuidador', label: 'Curso de Cuidador de Idosos', weight: 25, tier: 'education', required: true },
   inss: { type: 'INSS', label: 'INSS / PIS', weight: 5, tier: 'work' },
   titulo: { type: 'TituloEleitor', label: 'Título de eleitor', weight: 3, tier: 'identity' },
   reservista: { type: 'Reservista', label: 'Certificado de reservista', weight: 3, tier: 'identity' },
@@ -28,17 +28,7 @@ function ic24MaskCpf(cpf) {
   return '***.***.' + d.slice(6, 9) + '-' + d.slice(9);
 }
 
-function ic24ExperienciaCursoOk(cg) {
-  return String(cg?.cursoExperienciaTexto || '').trim().length >= 20;
-}
-
-function ic24HasCursoOuExperiencia(docsMap, cg) {
-  const uploaded = Object.keys(docsMap || {});
-  return (uploaded.includes('curso') && docsMap.curso?.url) || ic24ExperienciaCursoOk(cg);
-}
-
-function ic24ClassificarDocumentos(docsMap, cg) {
-  cg = cg || {};
+function ic24ClassificarDocumentos(docsMap) {
   const uploaded = Object.keys(docsMap || {});
   let score = 0;
   const verified = [];
@@ -51,13 +41,6 @@ function ic24ClassificarDocumentos(docsMap, cg) {
       missingRequired.push(meta.label);
     }
   });
-  if (ic24ExperienciaCursoOk(cg) && !uploaded.includes('curso')) {
-    score += 15;
-    verified.push({ key: 'experiencia', label: 'Experiência como cuidador (descrita)', type: 'Experiencia', tier: 'experience' });
-  }
-  if (!ic24HasCursoOuExperiencia(docsMap, cg)) {
-    missingRequired.push('Curso de cuidador ou descrição de experiência');
-  }
   const specs = (window._cuidSpecs || []).length;
   if (specs >= 2) score += 8;
   if (specs >= 4) score += 7;
@@ -65,10 +48,7 @@ function ic24ClassificarDocumentos(docsMap, cg) {
   let label = 'Nível Inicial — documentação incompleta';
   let stars = '★★★☆☆ 4,0';
   const hasAntec = uploaded.includes('antecedentes');
-  const hasCurso =
-    uploaded.includes('curso') ||
-    uploaded.includes('diploma') ||
-    ic24ExperienciaCursoOk(cg);
+  const hasCurso = uploaded.includes('curso') || uploaded.includes('diploma');
   if (score >= 85 && hasAntec && hasCurso) {
     level = 'senior';
     label = 'Nível Sênior — Especialista certificado';
@@ -90,11 +70,12 @@ function ic24NormalizeUploadFile(file) {
   let type = file.type || '';
   if (!type || type === 'application/octet-stream') {
     const name = (file.name || '').toLowerCase();
-    if (name.endsWith('.heic') || name.endsWith('.heif')) type = 'image/heic';
+    if (name.endsWith('.heic') || name.endsWith('.heif')) type = 'image/jpeg';
     else if (name.endsWith('.png')) type = 'image/png';
     else if (name.endsWith('.webp')) type = 'image/webp';
     else type = 'image/jpeg';
   }
+  if (/heic|heif/i.test(type)) type = 'image/jpeg';
   return { file, contentType: type };
 }
 
@@ -154,14 +135,22 @@ async function ic24ListDocumentos(uid) {
   return map;
 }
 
-async function ic24RecomputeCurriculo(uid) {
+async function ic24MontarCurriculoSnapshot(uid, opts = {}) {
   ic24InitFirebase();
-  const docsMap = await ic24ListDocumentos(uid);
+  let docsMap = {};
+  try {
+    docsMap = await ic24ListDocumentos(uid);
+  } catch (_) {
+    /* família pode não ter permissão em documentos ainda não aprovados */
+  }
   const cgSnap = await ic24Db.collection('caregivers').doc(uid).get();
-  const cg = cgSnap.exists ? cgSnap.data() : {};
+  if (!cgSnap.exists) throw new Error('Cuidador não encontrado');
+  const cg = cgSnap.data() || {};
+  if (!cg.fullName && !String(cg.cpf || '').replace(/\D/g, '')) {
+    throw new Error('Currículo ainda não disponível — cuidador precisa completar o cadastro');
+  }
   const classification = ic24ClassificarDocumentos(
     Object.fromEntries(Object.entries(docsMap).map(([k, v]) => [k, { url: v.fileUrl }])),
-    cg,
   );
   const documentsPublic = Object.entries(docsMap).map(([key, d]) => ({
     key,
@@ -174,7 +163,6 @@ async function ic24RecomputeCurriculo(uid) {
   const curriculum = {
     caregiverId: uid,
     fullName: cg.fullName || '',
-    email: cg.email || '',
     cpfMasked: ic24MaskCpf(cg.cpf),
     bio: cg.bio || '',
     specialties: cg.specialties || [],
@@ -182,9 +170,7 @@ async function ic24RecomputeCurriculo(uid) {
     dailyRate: cg.dailyRate || null,
     city: cg.city || '',
     state: cg.state || '',
-    address: cg.address || '',
     photoUrl: cg.photoUrl || null,
-    cursoExperienciaTexto: cg.cursoExperienciaTexto || '',
     classification,
     documents: documentsPublic,
     certificatesVerified: classification.verified.map((v) => v.key),
@@ -193,18 +179,24 @@ async function ic24RecomputeCurriculo(uid) {
     kycStatus: classification.missingRequired.length === 0 ? 'pending_review' : 'incomplete',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
-  await ic24Db.collection('caregivers').doc(uid).set(
-    {
-      classification,
-      documentsCount: classification.documentsCount,
-      certificatesVerified: curriculum.certificatesVerified,
-      kycStatus: curriculum.kycStatus,
-      curriculumUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    },
-    { merge: true },
-  );
-  await ic24Db.collection('curriculum_public').doc(uid).set(curriculum, { merge: true });
+  if (opts.persist) {
+    await ic24Db.collection('caregivers').doc(uid).set(
+      {
+        classification,
+        documentsCount: classification.documentsCount,
+        certificatesVerified: curriculum.certificatesVerified,
+        kycStatus: curriculum.kycStatus,
+        curriculumUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
+    await ic24Db.collection('curriculum_public').doc(uid).set(curriculum, { merge: true });
+  }
   return curriculum;
+}
+
+async function ic24RecomputeCurriculo(uid) {
+  return ic24MontarCurriculoSnapshot(uid, { persist: true });
 }
 
 function ic24Token() {
@@ -217,18 +209,19 @@ async function ic24SolicitarCurriculo(caregiverId) {
   ic24InitFirebase();
   const familyId = ic24Auth.currentUser?.uid;
   if (!familyId) throw new Error('Faça login como família/contratante');
+  if (!caregiverId) throw new Error('Selecione um cuidador');
   const userSnap = await ic24Db.collection('users').doc(familyId).get();
   if ((userSnap.data()?.role || '') !== 'family') throw new Error('Apenas contratantes podem solicitar currículo');
   const token = ic24Token();
   const curSnap = await ic24Db.collection('curriculum_public').doc(caregiverId).get();
-  if (!curSnap.exists) throw new Error('Currículo ainda não disponível — cuidador precisa enviar documentos');
+  const curriculum = curSnap.exists ? curSnap.data() : await ic24MontarCurriculoSnapshot(caregiverId);
   await ic24Db.collection('cv_requests').doc(token).set({
     token,
     familyId,
     caregiverId,
     status: 'shared',
     familyName: userSnap.data()?.fullName || 'Contratante',
-    curriculum: curSnap.data(),
+    curriculum,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     sharedAt: firebase.firestore.FieldValue.serverTimestamp(),
     expiresAt: firebase.firestore.Timestamp.fromDate(new Date(Date.now() + 7 * 24 * 3600 * 1000)),
@@ -249,6 +242,9 @@ async function ic24CarregarCurriculoPorToken(token) {
     if (!curSnap.exists) throw new Error('Currículo não encontrado');
     curriculum = curSnap.data();
   }
+  delete curriculum.email;
+  delete curriculum.phone;
+  delete curriculum.address;
   return { request: req, curriculum };
 }
 

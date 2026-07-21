@@ -116,7 +116,7 @@ workflows:
         BUNDLE_ID: com.idosocare24h.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         IC24_BUILD_NAME: "2.0.1"
-        IC24_BUILD_NUMBER: "59"
+        IC24_BUILD_NUMBER: "62"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -182,14 +182,15 @@ workflows:
         script: |
           set -e
           echo "Gerando Idoso Care ${IC24_BUILD_NAME} (${IC24_BUILD_NUMBER}) — train 2.0.0 fechado na Apple"
-          if [ "$IC24_BUILD_NUMBER" -le 53 ]; then
-            echo "ERRO: build deve ser > 53"
+          if [ "$IC24_BUILD_NUMBER" -le 59 ]; then
+            echo "ERRO: build deve ser > 59 (58/59 quebrados no TestFlight)"
             exit 1
           fi
           if [ "$IC24_BUILD_NAME" = "2.0.0" ]; then
             echo "ERRO: CFBundleShortVersionString 2.0.0 ja aprovado — use 2.0.1+"
             exit 1
           fi
+          grep -q 'allowingReadAccessTo' lib/screens/web_app_screen.dart || { echo "ERRO: WebView iOS deve usar file:// (build 53)"; exit 1; }
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${IC24_BUILD_NAME}" ios/Runner/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${IC24_BUILD_NUMBER}" ios/Runner/Info.plist
           rm -rf build/ios/ipa build/ios/archive
@@ -225,10 +226,10 @@ workflows:
           fi
           BUILD_NUM=$(bash tool/ipa_bundle_version.sh "$IPA")
           SHORT_VER=$(bash tool/ipa_bundle_version.sh "$IPA" --short)
-          echo "CFBundleVersion no IPA: ${BUILD_NUM} (obrigatorio ${IC24_BUILD_NUMBER}, > 53)"
+          echo "CFBundleVersion no IPA: ${BUILD_NUM} (obrigatorio ${IC24_BUILD_NUMBER}, > 59)"
           echo "CFBundleShortVersionString no IPA: ${SHORT_VER} (obrigatorio ${IC24_BUILD_NAME}, > 2.0.0)"
-          if [ -z "${BUILD_NUM:-}" ] || [ "$BUILD_NUM" -le 53 ]; then
-            echo "ERRO: IPA build ${BUILD_NUM:-vazio} — deve ser > 53"
+          if [ -z "${BUILD_NUM:-}" ] || [ "$BUILD_NUM" -le 59 ]; then
+            echo "ERRO: IPA build ${BUILD_NUM:-vazio} — deve ser > 59"
             exit 1
           fi
           if [ "${BUILD_NUM}" != "${IC24_BUILD_NUMBER}" ]; then

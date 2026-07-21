@@ -1,48 +1,23 @@
-RESPOSTA APPLE — Resolution Center (build 53, 14/jul/2026)
-Submission ID: c2dacf1e-609a-4a2f-8498-7b07d7cbeddb
-================================================================================
-
 Hello App Review Team,
 
-Thank you for your feedback on Submission ID c2dacf1e-609a-4a2f-8498-7b07d7cbeddb (Version 1.0, build 53, iPad Air 11-inch M3, iPadOS 26.5.2, review date July 14, 2026).
+Thank you for your message regarding Submission ID c2dacf1e-609a-4a2f-8498-7b07d7cbeddb.
 
-We have addressed both issues from this review. Version 1.0 (build 53) is resubmitted together with our first In-App Purchase ic24_taxa_manutencao, selected in the “In-App Purchases and Subscriptions” section on the version page.
+We have completed the required In-App Purchase setup:
 
-Guideline 2.3.2 — Promotional image (Issue 1)
+1. Product ID: ic24_taxa_manutencao (Consumable)
+2. Price: US$ 1.99 per unit (= one platform maintenance fee per agreed care day)
+3. App Review screenshot uploaded in App Store Connect for this IAP (Taxa do app screen)
+4. The IAP is now submitted for review together with the new binary (build 49)
 
-We removed the promotional image for ic24_taxa_manutencao entirely. We do not plan to promote this In-App Purchase on the App Store at this time.
+How to test IAP (Sandbox):
+- Log in as caregiver: cuidador.demo@ic24test.local / Demo123!
+- Close a job with a family account (or use existing demo match)
+- Open menu → Taxa do app (US$ 1,99)
+- Tap "Pagar taxa via App Store" — consumable ic24_taxa_manutencao
 
-The App Review screenshot (in-app purchase flow on Taxa do app) remains in the Review Screenshot field for this IAP.
-
-IAP metadata (no price in text):
-- Display name: Taxa de manutenção
-- Description: Taxa da plataforma por diária
-
-Guideline 2.1(b) — Consumable purchase error (Issue 2)
-
-During review, StoreKit could not load product ic24_taxa_manutencao (“product not found”). This was an App Store Connect configuration issue, not an app logic bug:
-
-1. ic24_taxa_manutencao is our first In-App Purchase and is now submitted together with version 1.0 (build 53), as required.
-2. The consumable IAP is selected on version 1.0 under In-App Purchases and Subscriptions.
-3. Product ID in App Store Connect matches the app exactly: ic24_taxa_manutencao (Consumable, US$ 1.99).
-4. Paid Apps Agreement is active.
-5. Demo caregiver cuidador.demo@ic24test.local is pre-seeded with one pending platform fee (US$ 1.99 / 1 care day).
-
-How to test IAP (Sandbox) — build 53:
-
-1. Install build 53 from TestFlight (review build).
-2. Log in: cuidador.demo@ic24test.local / Demo123!
-3. Menu → Taxa do app
-4. Confirm Taxa pendente: US$ 1.99 (must NOT be US$ 0.00)
-5. Tap Pagar taxa via App Store
-6. App Store purchase sheet opens for consumable ic24_taxa_manutencao — complete with Sandbox Apple ID
-7. Pending fee clears; payment appears in Histórico de taxas pagas
-
-Payment model (Guideline 3.1): Family→caregiver daily pay = external PIX (outside App Store). Platform fee only = Apple IAP ic24_taxa_manutencao.
+Note: Daily payment family→caregiver uses external PIX (Guideline 3.1). Only the platform fee uses Apple IAP.
 
 Support: https://idoso-care-24h.web.app/suporte.html
-
-Please review version 1.0 (build 53) with In-App Purchase ic24_taxa_manutencao attached. We are available for any follow-up.
 
 Best regards,
 Eder Lucas Santos

@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/user_profile.dart';
 import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
 import '../theme/app_theme.dart';
@@ -24,82 +26,92 @@ class ChatListScreen extends StatelessWidget {
 
     final fs = context.read<FirestoreService>();
     final demo = Firebase.apps.isEmpty;
+    final isCaregiver = auth.profile?.role == UserRole.caregiver;
 
     return AppScaffold(
       title: 'Conversas',
-      child: StreamBuilder(
-        stream: demo ? fs.userChatsDemo(uid) : fs.userChats(uid),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      child: demo
+          ? StreamBuilder<List<Map<String, dynamic>>>(
+              stream: fs.userChatsDemo(uid),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          if (demo) {
-            final chats = snapshot.data ?? [];
-            if (chats.isEmpty) {
-              return _empty();
-            }
-            return ListView.separated(
-              itemCount: chats.length,
-              separatorBuilder: (_, index) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final chat = chats[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                    child: const Icon(Icons.chat_bubble_outline, color: AppColors.primary),
-                  ),
-                  title: Text(
-                    chat['lastMessage'] as String? ?? 'Nova conversa',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => ChatScreen(chatId: chat['id'] as String)),
-                  ),
+                final chats = snapshot.data ?? [];
+                if (chats.isEmpty) {
+                  return _empty(isCaregiver);
+                }
+                return ListView.separated(
+                  itemCount: chats.length,
+                  separatorBuilder: (_, index) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final chat = chats[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                        child: const Icon(Icons.chat_bubble_outline, color: AppColors.primary),
+                      ),
+                      title: Text(
+                        chat['lastMessage'] as String? ?? 'Nova conversa',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => ChatScreen(chatId: chat['id'] as String)),
+                      ),
+                    );
+                  },
                 );
               },
-            );
-          }
+            )
+          : StreamBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
+              stream: fs.userChats(uid),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          final docs = snapshot.data ?? [];
-          if (docs.isEmpty) return _empty();
+                final docs = snapshot.data ?? [];
+                if (docs.isEmpty) return _empty(isCaregiver);
 
-          return ListView.separated(
-            itemCount: docs.length,
-            separatorBuilder: (_, index) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              final doc = docs[index];
-              final data = doc.data();
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                  child: const Icon(Icons.chat_bubble_outline, color: AppColors.primary),
-                ),
-                title: Text(
-                  data['lastMessage'] as String? ?? 'Nova conversa',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => ChatScreen(chatId: doc.id)),
-                ),
-              );
-            },
-          );
-        },
-      ),
+                return ListView.separated(
+                  itemCount: docs.length,
+                  separatorBuilder: (_, index) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final doc = docs[index];
+                    final data = doc.data();
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                        child: const Icon(Icons.chat_bubble_outline, color: AppColors.primary),
+                      ),
+                      title: Text(
+                        data['lastMessage'] as String? ?? 'Nova conversa',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => ChatScreen(chatId: doc.id)),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
     );
   }
 
-  Widget _empty() {
-    return const Center(
+  Widget _empty(bool isCaregiver) {
+    return Center(
       child: Text(
-        'Nenhuma conversa ainda.\nSolicite contato com um cuidador para iniciar.',
+        isCaregiver
+            ? 'Nenhuma solicitação ainda.\nQuando uma família pedir contato, aparece aqui.'
+            : 'Nenhuma conversa ainda.\nBusque um cuidador e toque em Solicitar contato.',
         textAlign: TextAlign.center,
-        style: TextStyle(color: AppColors.textSecondary),
+        style: const TextStyle(color: AppColors.textSecondary),
       ),
     );
   }

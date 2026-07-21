@@ -1,4 +1,2 @@
-// Versao iOS fixa no repo — Codemagic UI ignorava pubspec.yaml e gerava IPA build 53.
-// Ao subir TestFlight, incremente este numero (> ultimo upload Apple).
 FLUTTER_BUILD_NAME=2.0.1
-FLUTTER_BUILD_NUMBER=59
+FLUTTER_BUILD_NUMBER=62
