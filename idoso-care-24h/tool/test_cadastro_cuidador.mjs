@@ -1,5 +1,5 @@
-/** Testes locais — cadastro cuidador build 53 (sem Firebase). */
-const IC24_DOCS_OBRIGATORIOS = ['rg', 'cpf', 'comprovante', 'ctps', 'antecedentes', 'curso'];
+/** Testes locais — cadastro cuidador (sem Firebase). */
+const IC24_DOCS_OBRIGATORIOS = ['rg', 'comprovante', 'antecedentes'];
 
 function ic24AvaliarCadastroCuidador(d, docsMap) {
   d = d || {};
@@ -11,14 +11,14 @@ function ic24AvaliarCadastroCuidador(d, docsMap) {
   if (!(d.bio || '').trim()) {
     return { complete: false, screen: 'cuidador-etapa2', message: 'Conte sobre você e suas especialidades' };
   }
-  if (String(d.cpf || '').replace(/\D/g, '').length !== 11) {
-    return { complete: false, screen: 'cuidador-curriculo', message: 'Informe seu CPF no currículo' };
+  if (!d.photoUrl) {
+    return { complete: false, screen: 'cuidador-etapa2', message: 'Envie sua foto de perfil' };
   }
   const missingDocs = IC24_DOCS_OBRIGATORIOS.filter((k) => !docsMap[k]?.fileUrl);
   if (missingDocs.length) {
     return {
       complete: false,
-      screen: 'documentos',
+      screen: 'cuidador-etapa3',
       message: 'Envie os documentos pendentes (fotos)',
       missingDocs,
     };
@@ -61,7 +61,7 @@ ok(
   ).screen === 'cuidador-etapa2'
 );
 ok(
-  'bio ok sem cpf -> curriculo',
+  'bio ok sem foto -> etapa2',
   ic24AvaliarCadastroCuidador(
     {
       street: 'Rua A',
@@ -72,7 +72,7 @@ ok(
       bio: 'Cuidadora experiente',
     },
     {}
-  ).screen === 'cuidador-curriculo'
+  ).screen === 'cuidador-etapa2'
 );
 
 const base = {
@@ -82,23 +82,24 @@ const base = {
   city: 'SP',
   state: 'SP',
   bio: 'Cuidadora',
-  cpf: '52998224725',
+  photoUrl: 'https://example.com/foto.jpg',
 };
 const rDocs = ic24AvaliarCadastroCuidador(base, {});
-ok('cpf ok sem docs -> documentos', rDocs.screen === 'documentos' && rDocs.missingDocs?.length === 6);
+ok('foto ok sem docs -> etapa3', rDocs.screen === 'cuidador-etapa3' && rDocs.missingDocs?.length === 3);
 
-const allDocs = {
+const soObrigatorios = {
   rg: { fileUrl: 'x' },
-  cpf: { fileUrl: 'x' },
   comprovante: { fileUrl: 'x' },
-  ctps: { fileUrl: 'x' },
   antecedentes: { fileUrl: 'x' },
-  curso: { fileUrl: 'x' },
 };
 ok(
-  'completo -> painel',
-  ic24AvaliarCadastroCuidador(base, allDocs).complete === true &&
-    ic24AvaliarCadastroCuidador(base, allDocs).screen === 'cuidador-painel'
+  '3 docs obrigatorios -> painel',
+  ic24AvaliarCadastroCuidador(base, soObrigatorios).complete === true &&
+    ic24AvaliarCadastroCuidador(base, soObrigatorios).screen === 'cuidador-painel'
+);
+ok(
+  'sem curso/diploma/cpf -> painel ok',
+  ic24AvaliarCadastroCuidador(base, soObrigatorios).complete === true
 );
 
 ok('HEIC ext -> image/jpeg', ic24NormalizeUploadFile({ name: 'foto.HEIC', type: 'application/octet-stream' }).contentType === 'image/jpeg');

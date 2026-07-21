@@ -366,16 +366,38 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <h2>Cadastro Cuidador</h2>
     </div>
     <div class="pad">
-      <p class="step">Etapa 3 de 3 — Pronto</p>
+      <p class="step">Etapa 3 de 3 — Documentos</p>
       <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i></div>
-      <h1 class="h1">Quase lá!</h1>
-      <p class="hint">O valor da diária você define ao publicar <strong>agenda</strong> ou <strong>plantão</strong> no painel — pode alterar quando quiser.</p>
+      <h1 class="h1">Documentos do cadastro</h1>
+      <p class="hint">Toque em cada item para enviar foto legível (câmera ou galeria, JPG/PNG). Documento inteiro visível.</p>
 
       <div class="note" style="margin-top:12px">
-        <strong>Taxa do app:</strong> <strong>R$ 10,29</strong> (US$ 1,99) <strong>por diária</strong> — ao publicar disponibilidade mostramos automaticamente <strong>diária + taxa/dia</strong> como referência.
+        <strong>Obrigatórios:</strong> RG, comprovante de endereço e antecedentes criminais. Após aprovação, famílias consultam no currículo antes do match.
       </div>
 
-      <div class="note" style="margin-top:8px">Seu perfil será analisado pela equipe antes de aparecer para famílias.</div>
+      <div id="etapa3-documentos" style="margin-top:16px">
+        <div class="doc" data-doc="rg">
+          <div class="ic">🪪</div>
+          <div><b>RG — Registro Geral</b><small>Obrigatório · frente e verso (se aplicável)</small></div>
+          <span class="ok">✓</span>
+          <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
+        </div>
+        <div class="doc" data-doc="comprovante">
+          <div class="ic">🏠</div>
+          <div><b>Comprovante de endereço</b><small>Obrigatório · conta de luz, água ou telefone (até 90 dias)</small></div>
+          <span class="ok">✓</span>
+          <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
+        </div>
+        <div class="doc" data-doc="antecedentes">
+          <div class="ic">🛡️</div>
+          <div><b>Certidão de antecedentes criminais</b><small>Obrigatório · emitida nos últimos 90 dias</small></div>
+          <span class="ok">✓</span>
+          <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
+        </div>
+      </div>
+
+      <div class="note" style="margin-top:12px">Seu perfil será analisado pela equipe antes de aparecer para famílias.</div>
+      <p class="hint" style="margin-top:10px;font-size:12px">Valores de plantão e diária você define depois, em <strong>Disponibilizar agenda</strong> ou <strong>Plantão hoje</strong> no painel (com referência de taxa só nessa hora).</p>
 
       <button class="btn btn-p" type="button" style="margin-top:16px" onclick="finalizarCuidador()">Enviar cadastro — abrir meu painel</button>
     </div>
@@ -1082,7 +1104,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       </div>
       <div class="note">Escala de <strong>8 horas</strong> = horário comercial (seg–sex, 8h–18h).</div>
       <p class="step" style="margin-top:16px">Valor da diária por escala (R$)</p>
-      <p class="hint">Informe quanto cobra em cada duração. Ex.: 8h = R$ 200, 12h = R$ 260. A taxa do app é <strong>R$ 10,29 por diária</strong> (US$ 1,99).</p>
+      <p class="hint">Informe quanto cobra em cada duração. Ex.: 8h = R$ 200, 12h = R$ 260.</p>
       <div class="row2" style="margin-bottom:8px">
         <div><label class="lbl" style="font-size:11px">4 h</label><input class="inp" id="agenda-rate-4" type="number" min="0" step="1" placeholder="R$" style="margin:0" oninput="atualizarResumoTaxaAgenda()"/></div>
         <div><label class="lbl" style="font-size:11px">6 h</label><input class="inp" id="agenda-rate-6" type="number" min="0" step="1" placeholder="R$" style="margin:0" oninput="atualizarResumoTaxaAgenda()"/></div>
@@ -1095,7 +1117,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <div><label class="lbl" style="font-size:11px">24 h</label><input class="inp" id="agenda-rate-24" type="number" min="0" step="1" placeholder="R$" style="margin:0" oninput="atualizarResumoTaxaAgenda()"/></div>
         <div><label class="lbl" style="font-size:11px">48 h</label><input class="inp" id="agenda-rate-48" type="number" min="0" step="1" placeholder="R$" style="margin:0" oninput="atualizarResumoTaxaAgenda()"/></div>
       </div>
-      <div class="note" id="agenda-taxa-resumo">Informe ao menos um valor para ver diária + taxa.</div>
+      <div class="note" id="agenda-taxa-resumo">Informe ao menos um valor por escala — mostramos diária + taxa do app como referência.</div>
       <div class="toggle-row">
         <span><b>Disponível para viajar</b><br/><small style="color:var(--m)">Aceita plantões fora da cidade</small></span>
         <input type="checkbox" id="agenda-viagem"/>
@@ -1269,12 +1291,12 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <button type="button" class="chip" data-v="19:00" onclick="selChip(this,'plantao-hoje-inicio')">19:00</button>
       </div>
       <p class="step" style="margin-top:16px">Valor da diária (R$)</p>
-      <p class="hint">Informe quanto cobra em cada escala oferecida hoje. Referência: diária + taxa de <strong>R$ 10,29/dia</strong> (US$ 1,99/dia).</p>
+      <p class="hint">Informe quanto cobra em cada escala oferecida hoje (ex.: 12h = R$ 200, 24h = R$ 260).</p>
       <div class="row2">
         <div><label class="lbl" style="font-size:11px">Plantão 12 h</label><input class="inp" id="plantao-rate-12" type="number" min="0" step="1" placeholder="Ex.: 200" style="margin:0" oninput="atualizarResumoTaxaPlantao()"/></div>
         <div><label class="lbl" style="font-size:11px">Plantão 24 h</label><input class="inp" id="plantao-rate-24" type="number" min="0" step="1" placeholder="Ex.: 260" style="margin:0" oninput="atualizarResumoTaxaPlantao()"/></div>
       </div>
-      <div class="note" id="plantao-taxa-resumo" style="margin-top:8px">Informe o valor da escala selecionada.</div>
+      <div class="note" id="plantao-taxa-resumo" style="margin-top:8px">Informe o valor da escala — mostramos diária + taxa do app como referência.</div>
       <p class="step" style="margin-top:16px">Como você prefere receber</p>
       <p class="hint">Usado automaticamente ao aceitar ofertas de famílias.</p>
       <div class="chip-row" id="plantao-pag-freq">
@@ -1483,12 +1505,34 @@ async function syncDocumentosUI(){
     const uid=ic24Auth.currentUser?.uid;
     if(!uid) return;
     const docsMap=await ic24ListDocumentos(uid);
-    document.querySelectorAll('#documentos .doc[data-doc]').forEach(el=>{
+    document.querySelectorAll('#documentos .doc[data-doc], #etapa3-documentos .doc[data-doc]').forEach(el=>{
       const k=el.getAttribute('data-doc');
       if(docsMap[k]?.fileUrl) el.classList.add('done');
       else el.classList.remove('done');
     });
   }catch(e){ /* ignore */ }
+}
+function ic24DocsObrigatoriosOk(){
+  const obr=(typeof IC24_DOCS_OBRIGATORIOS!=='undefined'?IC24_DOCS_OBRIGATORIOS:['rg','comprovante','antecedentes']);
+  for(const k of obr){
+    const el=document.querySelector('#etapa3-documentos .doc[data-doc="'+k+'"]')
+      ||document.querySelector('#documentos .doc[data-doc="'+k+'"]');
+    if(!el||!el.classList.contains('done')) return false;
+  }
+  return true;
+}
+async function ic24DocsObrigatoriosFirebase(uid){
+  if(!uid) return false;
+  ic24InitFirebase();
+  const docsMap=await ic24ListDocumentos(uid);
+  const obr=(typeof IC24_DOCS_OBRIGATORIOS!=='undefined'?IC24_DOCS_OBRIGATORIOS:['rg','comprovante','antecedentes']);
+  return obr.every(k=>docsMap[k]?.fileUrl);
+}
+function ic24AplicarRotaCadastro(rota){
+  window._cadastroRetomada=!rota.complete;
+  window._cadastroEtapa=rota.screen||'cuidador-etapa1';
+  window._cadastroMsg=rota.message||'';
+  return rota;
 }
 function irPesquisaDe(deOnde){
   window._pesquisaVoltar=deOnde||'familia-painel';
@@ -1563,10 +1607,15 @@ function irCuidadorEtapa3(){
   if(!document.getElementById('cuid-bio').value.trim()){ toast('Escreva um pouco sobre você'); return; }
   if(!ic24FotoPerfilOk()){ toast('Envie sua foto de perfil — toque no círculo acima'); return; }
   show('cuidador-etapa3');
+  syncDocumentosUI();
 }
 async function finalizarCuidador(){
   if(!ic24FotoPerfilOk()){ toast('Foto de perfil obrigatória — volte à etapa 2'); show('cuidador-etapa2'); return; }
+  if(!ic24DocsObrigatoriosOk()){ toast('Envie RG, comprovante de endereço e antecedentes criminais'); show('cuidador-etapa3'); return; }
   try{
+    ic24InitFirebase();
+    const uid=ic24Auth?.currentUser?.uid;
+    if(!uid) throw new Error('Faça login para continuar');
     if(window._pendingProfilePhoto){
       await ic24UploadFotoPerfil(window._pendingProfilePhoto);
       window._pendingProfilePhoto=null;
@@ -1574,11 +1623,18 @@ async function finalizarCuidador(){
       window._photoUploaded=true;
     }
     await ic24SalvarCuidador();
-    const uid=ic24Auth?.currentUser?.uid;
-    if(uid) await ic24RecomputeCurriculo(uid);
+    if(!(await ic24DocsObrigatoriosFirebase(uid))){
+      await syncDocumentosUI();
+      toast('Envie RG, comprovante de endereço e antecedentes criminais');
+      ic24AplicarRotaCadastro({ complete:false, screen:'cuidador-etapa3', message:'Continue seu cadastro — envie os documentos (etapa 3)' });
+      show('cuidador-etapa3');
+      return;
+    }
+    await ic24RecomputeCurriculo(uid);
     await carregarPainelCuidador();
+    ic24AplicarRotaCadastro({ complete:true, screen:'cuidador-painel', message:'' });
     show('cuidador-painel');
-    toast('Cadastro salvo — área do cuidador aberta!');
+    toast('Cadastro concluído — área do cuidador aberta!');
   }catch(e){ toast(e.message||'Erro ao salvar no Firestore'); }
 }
 function maskCep(el){
@@ -1693,22 +1749,20 @@ async function ic24NavegarPosLogin(u){
   if(u.role==='caregiver'){
     const { data, docsMap }=await ic24CarregarDadosCuidador(u.uid);
     preencherCadastroCuidador(data);
-    const rota=ic24AvaliarCadastroCuidador(data, docsMap);
-    window._cadastroRetomada=!rota.complete;
+    const rota=ic24AplicarRotaCadastro(ic24AvaliarCadastroCuidador(data, docsMap));
     if(rota.complete){
       await carregarPainelCuidador();
-    } else if(rota.screen==='documentos'){
-      window._docVoltar='cuidador-curriculo';
+    } else if(rota.screen==='cuidador-etapa3'||rota.screen==='documentos'){
       await syncDocumentosUI();
-      await carregarPainelCuidador();
-    } else if(['cuidador-curriculo','cuidador-etapa1','cuidador-etapa2','cuidador-etapa3'].includes(rota.screen)){
-      await carregarPainelCuidador();
     }
     return rota;
   }
   const fam=await ic24CarregarDadosFamilia(u.uid);
   preencherCadastroFamilia(fam);
   const rota=ic24AvaliarCadastroFamilia(fam);
+  window._cadastroRetomada=!rota.complete;
+  window._cadastroEtapa=rota.screen||'cadastro-familia';
+  window._cadastroMsg=rota.message||'';
   if(rota.complete) await carregarPainelFamilia();
   return rota;
 }
@@ -1788,12 +1842,8 @@ function anexar(input){
   }).catch(e=>{ toast(e.message||'Erro no upload'); }).finally(()=>{ input.value=''; });
 }
 async function finalizar(){
-  const obr=(typeof IC24_DOCS_OBRIGATORIOS!=='undefined'?IC24_DOCS_OBRIGATORIOS:['rg','comprovante','antecedentes']);
-  for(const k of obr){
-    const el=document.querySelector('#documentos .doc[data-doc="'+k+'"]');
-    if(!el||!el.classList.contains('done')){
-      toast('Anexe RG, comprovante de endereço e antecedentes criminais'); return;
-    }
+  if(!ic24DocsObrigatoriosOk()){
+    toast('Anexe RG, comprovante de endereço e antecedentes criminais'); return;
   }
   try{
     ic24InitFirebase();
@@ -1867,6 +1917,8 @@ async function finalizarFamilia(){
   try{
     await ic24CriarConta({nome,email,senha,senha2,role:'family'});
     await ic24SalvarFamilia();
+    window._cadastroRetomada=false;
+    window._cadastroEtapa='familia-painel';
     toast('Cadastro família salvo no Firebase!');
     setTimeout(async ()=>{ await carregarPainelFamilia(); show('familia-painel'); }, 1200);
   }catch(e){ toast(ic24AuthError(e)||e.message||'Erro ao salvar'); }
@@ -3093,6 +3145,14 @@ async function esqueciSenha(){
 
 const _famShowOrig=show;
 show=function(id){
+  if(id==='cuidador-painel'&&window._cadastroRetomada){
+    toast(window._cadastroMsg||'Complete seu cadastro para acessar o menu');
+    id=window._cadastroEtapa||'cuidador-etapa1';
+  }
+  if(id==='familia-painel'&&window._cadastroRetomada&&window._cadastroEtapa==='cadastro-familia'){
+    toast(window._cadastroMsg||'Complete seu cadastro de família');
+    id='cadastro-familia';
+  }
   _famShowOrig(id);
   if(id==='familia-proximos') carregarProximosFamilia();
   if(id==='familia-curriculo') carregarCurriculoListaFamilia();
@@ -3104,7 +3164,7 @@ show=function(id){
   if(id==='cuidador-plantao-hoje') atualizarResumoTaxaPlantao();
   if(id==='cuidador-minhas-agendas') renderListasAgendaPlantao();
   if(id==='cuidador-meus-plantoes') renderListasAgendaPlantao();
-  if(id==='cuidador-etapa3'){ /* sem valores no cadastro */ }
+  if(id==='cuidador-etapa3') syncDocumentosUI();
   if(id==='cuidador-ofertas'){ renderOfertas(); renderOfertasTaxaBloqueio(window._cuidPainel||{}); }
   if(id==='cuidador-faturamento') carregarCobrancasHistorico();
   if(id==='cuidador-curriculo'&&!window._curriculoBaixadoOnce){
@@ -3123,14 +3183,15 @@ try{
   ic24Auth.onAuthStateChanged(async (user)=>{
     if(!user||window._ic24IgnorarAuthRedirect) return;
     const on=document.querySelector('.screen.on')?.id;
-    if(on!=='welcome'&&on!=='login') return;
+    const retomavel=['welcome','login','criar-conta','cuidador-etapa1','cuidador-etapa2','cuidador-etapa3','cadastro-familia','cadastro','documentos'];
+    if(!retomavel.includes(on)) return;
     try{
       const snap=await ic24Db.collection('users').doc(user.uid).get();
       const data=snap.data()||{};
       const u={ uid:user.uid, role:data.role||'family', fullName:data.fullName||user.email };
       const rota=await ic24NavegarPosLogin(u);
       show(rota.screen);
-      if(!rota.complete) toast(rota.message||'Complete seu cadastro');
+      toast(rota.complete?('Bem-vindo de volta, '+u.fullName):(rota.message||'Continue de onde parou'));
     }catch(_){ /* sessão inválida — permanece no login */ }
   });
 }catch(_){ /* Firebase offline */ }

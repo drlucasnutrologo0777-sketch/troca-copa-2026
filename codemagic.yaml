@@ -116,7 +116,7 @@ workflows:
         BUNDLE_ID: com.idosocare24h.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         IC24_BUILD_NAME: "2.0.2"
-        IC24_BUILD_NUMBER: "66"
+        IC24_BUILD_NUMBER: "68"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -182,8 +182,8 @@ workflows:
         script: |
           set -e
           echo "Gerando Idoso Care ${IC24_BUILD_NAME} (${IC24_BUILD_NUMBER}) — trains 2.0.0/2.0.1 fechados na Apple"
-          if [ "$IC24_BUILD_NUMBER" -le 65 ]; then
-            echo "ERRO: build deve ser > 65 (curriculo família + anti-tela-branca)"
+          if [ "$IC24_BUILD_NUMBER" -le 67 ]; then
+            echo "ERRO: build deve ser > 67 (66 ja enviado ao TestFlight)"
             exit 1
           fi
           if [ "$IC24_BUILD_NAME" = "2.0.0" ] || [ "$IC24_BUILD_NAME" = "2.0.1" ]; then
@@ -228,8 +228,8 @@ workflows:
           SHORT_VER=$(bash tool/ipa_bundle_version.sh "$IPA" --short)
           echo "CFBundleVersion no IPA: ${BUILD_NUM} (obrigatorio ${IC24_BUILD_NUMBER}, > 59)"
           echo "CFBundleShortVersionString no IPA: ${SHORT_VER} (obrigatorio ${IC24_BUILD_NAME}, > 2.0.1)"
-          if [ -z "${BUILD_NUM:-}" ] || [ "$BUILD_NUM" -le 65 ]; then
-            echo "ERRO: IPA build ${BUILD_NUM:-vazio} — deve ser > 65"
+          if [ -z "${BUILD_NUM:-}" ] || [ "$BUILD_NUM" -le 67 ]; then
+            echo "ERRO: IPA build ${BUILD_NUM:-vazio} — deve ser > 67 (66 ja no TestFlight)"
             exit 1
           fi
           if [ "${BUILD_NUM}" != "${IC24_BUILD_NUMBER}" ]; then

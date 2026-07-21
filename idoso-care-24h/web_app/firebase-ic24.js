@@ -297,20 +297,20 @@ function ic24AvaliarCadastroCuidador(d, docsMap) {
   docsMap = docsMap || {};
   const cep = String(d.cep || '').replace(/\D/g, '');
   if (!d.street || !d.number || cep.length !== 8 || !d.city || !d.state) {
-    return { complete: false, screen: 'cuidador-etapa1', message: 'Complete seu endereço para continuar o cadastro' };
+    return { complete: false, screen: 'cuidador-etapa1', message: 'Continue seu cadastro — complete o endereço (etapa 1)' };
   }
   if (!(d.bio || '').trim()) {
-    return { complete: false, screen: 'cuidador-etapa2', message: 'Conte sobre você e suas especialidades' };
+    return { complete: false, screen: 'cuidador-etapa2', message: 'Continue seu cadastro — conte sobre você (etapa 2)' };
   }
-  if (String(d.cpf || '').replace(/\D/g, '').length !== 11) {
-    return { complete: false, screen: 'cuidador-curriculo', message: 'Informe seu CPF no currículo' };
+  if (!d.photoUrl) {
+    return { complete: false, screen: 'cuidador-etapa2', message: 'Continue seu cadastro — envie sua foto de perfil (etapa 2)' };
   }
   const missingDocs = IC24_DOCS_OBRIGATORIOS.filter((k) => !docsMap[k]?.fileUrl);
   if (missingDocs.length) {
     return {
       complete: false,
-      screen: 'documentos',
-      message: 'Envie os documentos pendentes (fotos)',
+      screen: 'cuidador-etapa3',
+      message: 'Continue seu cadastro — envie RG, comprovante e antecedentes (etapa 3)',
       missingDocs,
     };
   }
