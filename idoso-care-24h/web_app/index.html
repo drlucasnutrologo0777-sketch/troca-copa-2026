@@ -549,77 +549,49 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <div class="ic">🪪</div>
         <div><b>RG — Registro Geral</b><small>Frente e verso (se aplicável)</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="cpf">
         <div class="ic">📋</div>
-        <div><b>CPF</b><small>Documento ou cartão do CPF</small></div>
+        <div><b>CPF</b><small>Opcional — documento ou cartão do CPF</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="comprovante">
         <div class="ic">🏠</div>
         <div><b>Comprovante de endereço</b><small>Conta de luz, água ou telefone (até 90 dias)</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
-      <div class="doc" data-doc="ctps">
-        <div class="ic">💼</div>
-        <div><b>Carteira de Trabalho</b><small>Página de identificação e contrato atual</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
-      <div class="doc" data-doc="diploma">
-        <div class="ic">🎓</div>
-        <div><b>Diploma / Certificado de formação</b><small>Curso de cuidador, técnico ou graduação</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="antecedentes">
         <div class="ic">🛡️</div>
         <div><b>Certidão de antecedentes criminais</b><small>Emitida nos últimos 90 dias</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="curso">
         <div class="ic">📜</div>
-        <div><b>Certificado — Curso de Cuidador de Idosos</b><small>Primeiros socorros, medicação, etc.</small></div>
+        <div><b>Certificado — Curso de Cuidador de Idosos</b><small>Opcional — primeiros socorros, medicação, etc.</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
-      <div class="doc" data-doc="inss">
-        <div class="ic">🔢</div>
-        <div><b>Número do INSS / PIS</b><small>Cartão ou extrato</small></div>
+      <div class="doc" data-doc="diploma">
+        <div class="ic">🎓</div>
+        <div><b>Diploma / Certificado de formação</b><small>Opcional — curso de cuidador, técnico ou graduação</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
-      <div class="doc" data-doc="titulo">
-        <div class="ic">🗳️</div>
-        <div><b>Título de eleitor</b><small>Opcional, se disponível</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
-      <div class="doc" data-doc="reservista">
-        <div class="ic">⚔️</div>
-        <div><b>Certificado de reservista</b><small>Quando aplicável</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="referencia">
         <div class="ic">📞</div>
-        <div><b>Comprovante de experiência / referência</b><small>Declaração ou contracheque anterior</small></div>
+        <div><b>Comprovante de experiência</b><small>Opcional — declaração ou contracheque anterior</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
       <button class="btn btn-p" type="button" style="margin-top:16px" onclick="finalizar()">Enviar cadastro para análise</button>
@@ -1041,8 +1013,8 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <div class="cv" id="cuid-curriculo-dados"></div>
       <div class="note" style="margin-top:12px">
         <strong>Certificados verificados pelo app</strong><br/>
-        ✓ Antecedentes criminais &nbsp; ✓ Curso cuidador de idosos<br/>
-        ✓ Primeiros socorros &nbsp; ✓ CTPS / documentos
+        ✓ Antecedentes criminais &nbsp; ✓ RG / CPF / comprovante<br/>
+        ✓ Curso cuidador de idosos (opcional)
       </div>
       <p class="lbl" style="margin-top:14px">Classificação automática</p>
       <div class="cv" id="cuid-classificacao-box">—</div>
@@ -1801,30 +1773,47 @@ function anexarDocCurriculo(docKey){
   inp.click();
 }
 function anexar(input){
-  if(!input.files[0])return;
+  if(!input.files||!input.files[0]){ toast('Não foi possível ler a foto do documento'); return; }
   ic24InitFirebase();
   if(!ic24Auth.currentUser){ toast('Faça login como cuidador'); return; }
   const docKey=input.closest('.doc')?.getAttribute('data-doc');
   const nome=input.closest('.doc')?.querySelector('b')?.textContent||docKey;
   if(!docKey){ toast('Tipo de documento inválido'); return; }
+  const row=input.closest('.doc');
   ic24UploadDocumento(docKey,input.files[0]).then(()=>{
-    input.closest('.doc').classList.add('done');
+    if(row) row.classList.add('done');
     toast('Enviado: '+nome.split('—')[0].trim()+' — salvo no Firebase');
+    if(typeof syncDocumentosUI==='function') syncDocumentosUI();
     if(typeof carregarPainelCuidador==='function') carregarPainelCuidador();
-  }).catch(e=>toast(e.message||'Erro no upload'));
+  }).catch(e=>{ toast(e.message||'Erro no upload'); }).finally(()=>{ input.value=''; });
 }
 async function finalizar(){
-  const obr=['rg','cpf','comprovante','ctps','antecedentes'];
+  const obr=(typeof IC24_DOCS_OBRIGATORIOS!=='undefined'?IC24_DOCS_OBRIGATORIOS:['rg','comprovante','antecedentes']);
   for(const k of obr){
-    const el=document.querySelector('.doc[data-doc="'+k+'"]');
+    const el=document.querySelector('#documentos .doc[data-doc="'+k+'"]');
     if(!el||!el.classList.contains('done')){
-      toast('Anexe RG, CPF, comprovante, CTPS e antecedentes (foto enviada ao Firebase)'); return;
+      toast('Anexe RG, comprovante de endereço e antecedentes criminais'); return;
     }
   }
   try{
-    await ic24SalvarCuidador();
+    ic24InitFirebase();
     const uid=ic24Auth?.currentUser?.uid;
-    if(uid) await ic24RecomputeCurriculo(uid);
+    if(!uid) throw new Error('Faça login como cuidador');
+    await ic24SalvarCuidador();
+    await ic24RecomputeCurriculo(uid);
+    const pack=await ic24CarregarDadosCuidador(uid);
+    const rota=ic24AvaliarCadastroCuidador(pack.data, pack.docsMap);
+    if(!rota.complete){
+      if(rota.screen==='documentos'){
+        toast('Ainda faltam documentos no Firebase — envie: '+(rota.missingDocs||[]).join(', '));
+        await syncDocumentosUI();
+        show('documentos');
+        return;
+      }
+      toast(rota.message||'Complete seu cadastro');
+      show(rota.screen);
+      return;
+    }
     await carregarPainelCuidador();
     show('cuidador-painel');
     toast('Cadastro e currículo salvos no Firebase');
@@ -1860,7 +1849,7 @@ async function salvarCpfEClassificar(){
 function renderDocsUploadShort(docsMap){
   const box=document.getElementById('cuid-docs-upload');
   if(!box) return;
-  const keys=['cpf','rg','antecedentes','curso','ctps'];
+  const keys=['cpf','rg','comprovante','antecedentes','curso','referencia'];
   box.innerHTML=keys.map(k=>{
     const done=docsMap&&docsMap[k];
     const meta=IC24_DOC_META[k];

@@ -58,8 +58,8 @@ workflows:
           UUID=$(security cms -D -i "$PROFILE" | plutil -extract UUID raw -)
           /usr/libexec/PlistBuddy -c "Set :provisioningProfiles:com.idosocare24h.app $UUID" ios/codemagic_signing/ExportOptions.plist
           flutter build ipa --release \
-            --build-name=2.0.0 \
-            --build-number=21 \
+            --build-name=2.0.2 \
+            --build-number=66 \
             --export-options-plist=ios/codemagic_signing/ExportOptions.plist
           ls -la build/ios/ipa/
       - name: Upload TestFlight

@@ -2,15 +2,11 @@
 
 const IC24_DOC_META = {
   rg: { type: 'RG', label: 'RG — Registro Geral', weight: 10, tier: 'identity' },
-  cpf: { type: 'CPF', label: 'CPF', weight: 10, tier: 'identity', required: true },
+  cpf: { type: 'CPF', label: 'CPF', weight: 10, tier: 'identity' },
   comprovante: { type: 'Comprovante', label: 'Comprovante de endereço', weight: 8, tier: 'identity' },
-  ctps: { type: 'CarteiraTrabalho', label: 'Carteira de Trabalho', weight: 12, tier: 'work' },
   antecedentes: { type: 'AntecedentesCriminais', label: 'Antecedentes criminais', weight: 30, tier: 'compliance', required: true },
   diploma: { type: 'Diploma', label: 'Diploma / Certificado de formação', weight: 18, tier: 'education' },
-  curso: { type: 'CursoCuidador', label: 'Curso de Cuidador de Idosos', weight: 25, tier: 'education', required: true },
-  inss: { type: 'INSS', label: 'INSS / PIS', weight: 5, tier: 'work' },
-  titulo: { type: 'TituloEleitor', label: 'Título de eleitor', weight: 3, tier: 'identity' },
-  reservista: { type: 'Reservista', label: 'Certificado de reservista', weight: 3, tier: 'identity' },
+  curso: { type: 'CursoCuidador', label: 'Curso de Cuidador de Idosos', weight: 25, tier: 'education' },
   referencia: { type: 'Referencia', label: 'Comprovante de experiência', weight: 12, tier: 'experience' },
 };
 

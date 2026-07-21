@@ -41,15 +41,36 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--t
 <script src="firebase-ic24.js"></script>
 <script src="ic24-curriculo.js"></script>
 <script>
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function fmt(v){return v!=null&&v!==''?'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}
+function ic24MostrarErroCurriculo(msg){
+  const app=document.getElementById('app');
+  if(!app) return;
+  app.innerHTML='<div class="err">'+esc(msg||'Erro ao carregar currículo')+'</div>';
+}
+window.addEventListener('error',function(e){
+  ic24MostrarErroCurriculo(e.message||'Erro inesperado — feche e abra o app de novo');
+});
+window.addEventListener('unhandledrejection',function(e){
+  const msg=(e.reason&&e.reason.message)||String(e.reason||'Erro ao carregar currículo');
+  ic24MostrarErroCurriculo(msg);
+});
 (async function(){
   const app=document.getElementById('app');
+  const loadTimer=setTimeout(function(){
+    if(/Carregando currículo/i.test(app?.textContent||'')){
+      ic24MostrarErroCurriculo('Demorou demais — verifique internet e solicite o currículo de novo');
+    }
+  },25000);
   const token=new URLSearchParams(location.search).get('t');
   if(!token){
+    clearTimeout(loadTimer);
     app.innerHTML='<div class="err">Link inválido. O contratante deve solicitar o currículo pelo app.</div>';
     return;
   }
   try{
     const { request, curriculum: c }=await ic24CarregarCurriculoPorToken(token);
+    clearTimeout(loadTimer);
     const cls=c.classification||{};
     const docs=(c.documents||[]).filter(d=>d.url);
     document.title='Currículo — '+(c.fullName||'Cuidador');
@@ -86,11 +107,10 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--t
       '</div>'+
       '<p class="brand"><b>Idoso Care 24H</b> — Cuidadores de idosos com segurança e confiança</p>';
   }catch(e){
-    app.innerHTML='<div class="err">'+esc(e.message||'Erro ao carregar currículo')+'</div>';
+    clearTimeout(loadTimer);
+    ic24MostrarErroCurriculo(e.message||'Erro ao carregar currículo');
   }
 })();
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
-function fmt(v){return v!=null&&v!==''?'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}
 </script>
 </body>
 </html>

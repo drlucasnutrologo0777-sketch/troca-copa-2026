@@ -24,7 +24,13 @@ function ic24InitFirebase(opts) {
     if (typeof firebase.auth !== 'function') {
       throw new Error('Firebase Auth não carregou. Feche e abra o app de novo.');
     }
-    ic24Auth = firebase.auth();
+    try {
+      ic24Auth = firebase.auth();
+    } catch (_) {
+      throw new Error('Firebase Auth não carregou. Feche e abra o app de novo.');
+    }
+  } else {
+    ic24Auth = null;
   }
   return { auth: ic24Auth, db: ic24Db };
 }
@@ -273,7 +279,7 @@ async function ic24MatchChatUnlocked(chatId) {
   return snap.exists && snap.data().chatUnlocked === true;
 }
 
-const IC24_DOCS_OBRIGATORIOS = ['rg', 'cpf', 'comprovante', 'ctps', 'antecedentes', 'curso'];
+const IC24_DOCS_OBRIGATORIOS = ['rg', 'comprovante', 'antecedentes'];
 
 async function ic24CarregarDadosCuidador(uid) {
   ic24InitFirebase();
