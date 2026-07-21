@@ -116,7 +116,7 @@ workflows:
         BUNDLE_ID: com.idosocare24h.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         IC24_BUILD_NAME: "2.0.2"
-        IC24_BUILD_NUMBER: "64"
+        IC24_BUILD_NUMBER: "65"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -182,8 +182,8 @@ workflows:
         script: |
           set -e
           echo "Gerando Idoso Care ${IC24_BUILD_NAME} (${IC24_BUILD_NUMBER}) — trains 2.0.0/2.0.1 fechados na Apple"
-          if [ "$IC24_BUILD_NUMBER" -le 63 ]; then
-            echo "ERRO: build deve ser > 63 (63 curriculo firebase.auth quebrado)"
+          if [ "$IC24_BUILD_NUMBER" -le 64 ]; then
+            echo "ERRO: build deve ser > 64 (foto cadastro + curriculo)"
             exit 1
           fi
           if [ "$IC24_BUILD_NAME" = "2.0.0" ] || [ "$IC24_BUILD_NAME" = "2.0.1" ]; then
