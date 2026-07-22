@@ -1,7 +1,9 @@
 /* Idoso Care 24H — documentos (Storage), classificação e currículo público */
 
 const IC24_DOC_META = {
-  rg: { type: 'RG', label: 'RG — Registro Geral', weight: 10, tier: 'identity' },
+  rg_frente: { type: 'RG_Frente', label: 'RG — Frente', weight: 5, tier: 'identity' },
+  rg_verso: { type: 'RG_Verso', label: 'RG — Verso', weight: 5, tier: 'identity' },
+  rg: { type: 'RG', label: 'RG — Registro Geral (legado)', weight: 10, tier: 'identity' },
   cpf: { type: 'CPF', label: 'CPF', weight: 10, tier: 'identity' },
   comprovante: { type: 'Comprovante', label: 'Comprovante de endereço', weight: 8, tier: 'identity' },
   antecedentes: { type: 'AntecedentesCriminais', label: 'Antecedentes criminais', weight: 30, tier: 'compliance', required: true },
@@ -182,8 +184,13 @@ async function ic24MontarCurriculoSnapshot(uid, opts = {}) {
   const cgSnap = await ic24Db.collection('caregivers').doc(uid).get();
   if (!cgSnap.exists) throw new Error('Cuidador não encontrado');
   const cg = cgSnap.data() || {};
-  if (!cg.fullName && !String(cg.cpf || '').replace(/\D/g, '')) {
-    throw new Error('Currículo ainda não disponível — cuidador precisa completar o cadastro');
+  let fullName = String(cg.fullName || '').trim();
+  if (!fullName) {
+    const userSnap = await ic24Db.collection('users').doc(uid).get();
+    fullName = String(userSnap.data()?.fullName || ic24Auth.currentUser?.displayName || '').trim();
+  }
+  if (!fullName && !String(cg.cpf || '').replace(/\D/g, '')) {
+    throw new Error('Complete seu nome no cadastro antes de gerar o currículo');
   }
   const classification = ic24ClassificarDocumentos(
     Object.fromEntries(Object.entries(docsMap).map(([k, v]) => [k, { url: v.fileUrl }])),
@@ -198,7 +205,7 @@ async function ic24MontarCurriculoSnapshot(uid, opts = {}) {
   }));
   const curriculum = {
     caregiverId: uid,
-    fullName: cg.fullName || '',
+    fullName: fullName || cg.fullName || '',
     cpfMasked: ic24MaskCpf(cg.cpf),
     bio: cg.bio || '',
     specialties: cg.specialties || [],
@@ -249,21 +256,50 @@ async function ic24SolicitarCurriculo(caregiverId) {
   const userSnap = await ic24Db.collection('users').doc(familyId).get();
   if ((userSnap.data()?.role || '') !== 'family') throw new Error('Apenas contratantes podem solicitar currículo');
   const token = ic24Token();
-  const curSnap = await ic24Db.collection('curriculum_public').doc(caregiverId).get();
-  const curriculum = curSnap.exists ? curSnap.data() : await ic24MontarCurriculoSnapshot(caregiverId);
   await ic24Db.collection('cv_requests').doc(token).set({
     token,
     familyId,
     caregiverId,
-    status: 'shared',
+    status: 'pending',
     familyName: userSnap.data()?.fullName || 'Contratante',
-    curriculum,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    sharedAt: firebase.firestore.FieldValue.serverTimestamp(),
     expiresAt: firebase.firestore.Timestamp.fromDate(new Date(Date.now() + 7 * 24 * 3600 * 1000)),
   });
   const link = 'curriculo.html?t=' + encodeURIComponent(token);
-  return { token, link, caregiverId };
+  return { token, link, caregiverId, status: 'pending' };
+}
+
+async function ic24EnviarCurriculoSolicitacao(token) {
+  ic24InitFirebase();
+  const uid = ic24Auth.currentUser?.uid;
+  if (!uid) throw new Error('Faça login como cuidador');
+  const ref = ic24Db.collection('cv_requests').doc(token);
+  const snap = await ref.get();
+  if (!snap.exists) throw new Error('Solicitação não encontrada');
+  const req = snap.data();
+  if (req.caregiverId !== uid) throw new Error('Esta solicitação não é para você');
+  if (req.status === 'shared') throw new Error('Currículo já enviado');
+  const curriculum = await ic24MontarCurriculoSnapshot(uid);
+  await ref.update({
+    status: 'shared',
+    curriculum,
+    sharedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+  return { token, link: 'curriculo.html?t=' + encodeURIComponent(token) };
+}
+
+function ic24ListenSolicitacoesCurriculoCuidador(uid, cb) {
+  ic24InitFirebase();
+  return ic24Db
+    .collection('cv_requests')
+    .where('caregiverId', '==', uid)
+    .where('status', '==', 'pending')
+    .orderBy('createdAt', 'desc')
+    .limit(10)
+    .onSnapshot(
+      (snap) => cb(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      () => cb([]),
+    );
 }
 
 async function ic24CarregarCurriculoPorToken(token) {
@@ -272,6 +308,7 @@ async function ic24CarregarCurriculoPorToken(token) {
   if (!reqSnap.exists) throw new Error('Solicitação não encontrada ou link inválido');
   const req = reqSnap.data();
   if (req.expiresAt && req.expiresAt.toDate() < new Date()) throw new Error('Link expirado — solicite novamente');
+  if (req.status !== 'shared') throw new Error('O cuidador ainda não liberou este currículo');
   let curriculum = req.curriculum;
   if (!curriculum) {
     const curSnap = await ic24Db.collection('curriculum_public').doc(req.caregiverId).get();

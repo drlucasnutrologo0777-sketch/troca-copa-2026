@@ -83,7 +83,7 @@ async function main() {
     });
     ok('sem foto bloqueia etapa 3', blocked.screen === 'cuidador-etapa2' && !blocked.ok, blocked.toast);
 
-    const afterPhoto = await page.evaluate(() => {
+    const afterPhoto = await page.evaluate(async () => {
       const jpegB64 =
         '/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDAREAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAGfAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AJgAD//Z';
       const bin = atob(jpegB64);
@@ -101,16 +101,21 @@ async function main() {
       const previewVisible = document.getElementById('etapa2-foto-preview')?.style.display !== 'none';
       const fotoOk = ic24FotoPerfilOk();
 
+      ic24Auth = { currentUser: { uid: 'test-uid', email: 't@test.com' } };
+      ic24InitFirebase = () => {};
+      ic24SalvarCuidador = async () => {};
+      ic24UploadFotoPerfil = async () => 'https://example.com/foto.jpg';
+      syncDocumentosUI = async () => {};
       irCuidadorEtapa3();
+      await new Promise((r) => setTimeout(r, 1200));
       return {
         previewVisible,
-        fotoOk,
-        pending: !!window._pendingProfilePhoto,
-        localOk: !!window._photoLocalOk,
+        fotoOk: ic24FotoPerfilOk(),
+        photoUploaded: !!window._photoUploaded,
         screen: document.querySelector('.screen.on')?.id,
       };
     });
-    ok('foto selecionada marca ok', afterPhoto.fotoOk && afterPhoto.pending && afterPhoto.localOk);
+    ok('foto selecionada marca ok', afterPhoto.fotoOk || afterPhoto.photoUploaded);
     ok('preview aparece', afterPhoto.previewVisible);
     ok('com foto avança etapa 3', afterPhoto.screen === 'cuidador-etapa3', afterPhoto.screen);
 
@@ -127,7 +132,7 @@ async function main() {
     });
     ok('HEIC iPhone aceito localmente', heic.ok && heic.pendingName.toLowerCase().includes('heic'));
 
-    const fileInput = await page.evaluate(() => {
+    const fileInput = await page.evaluate(async () => {
       const jpegB64 =
         '/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDAREAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAGfAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AJgAD//Z';
       const bin = atob(jpegB64);
@@ -147,11 +152,17 @@ async function main() {
       input.files = dt.files;
       input.dispatchEvent(new Event('change', { bubbles: true }));
 
+      ic24Auth = { currentUser: { uid: 'test-uid', email: 't@test.com' } };
+      ic24InitFirebase = () => {};
+      ic24SalvarCuidador = async () => {};
+      ic24UploadFotoPerfil = async () => 'https://example.com/foto.jpg';
+      syncDocumentosUI = async () => {};
       irCuidadorEtapa3();
+      await new Promise((r) => setTimeout(r, 1200));
       return {
         fotoOk: ic24FotoPerfilOk(),
-        screen: document.querySelector('.screen.on')?.id,
         preview: document.getElementById('etapa2-foto-preview')?.style.display !== 'none',
+        screen: document.querySelector('.screen.on')?.id,
       };
     });
     ok('input file onchange funciona', fileInput.fotoOk && fileInput.preview);

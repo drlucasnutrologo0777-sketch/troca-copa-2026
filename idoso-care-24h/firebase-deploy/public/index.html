@@ -341,12 +341,12 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <label class="lbl">Sobre mim</label>
       <textarea class="inp" id="cuid-bio" rows="4" style="height:auto;padding:12px 14px" placeholder="Ex.: 8 anos de experiência, plantões diurnos e 12x36…"></textarea>
 
-      <label class="lbl">Foto de perfil (obrigatória)</label>
-      <div class="photo-pick" id="etapa2-foto-box" style="width:100px;height:100px;margin:0 0 16px;position:relative" onclick="document.getElementById('etapa2-foto-inp').click()">
-        <img id="etapa2-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
-        <span id="etapa2-foto-txt">📷 Toque para enviar foto</span>
-        <input type="file" id="etapa2-foto-inp" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilEtapa2(this)"/>
-      </div>
+      <p class="lbl">Foto de perfil (obrigatória)</p>
+      <label class="photo-pick" id="etapa2-foto-box" style="width:100px;height:100px;margin:0 0 16px;position:relative;display:flex;cursor:pointer;overflow:hidden;border-radius:50%">
+        <img id="etapa2-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;position:relative;z-index:1"/>
+        <span id="etapa2-foto-txt" style="position:relative;z-index:1">📷 Toque para enviar foto</span>
+        <input type="file" id="etapa2-foto-inp" accept="image/*,.heic,.heif" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;z-index:2" onchange="fotoPerfilEtapa2(this)"/>
+      </label>
 
       <label class="lbl">Especialidades</label>
       <div class="row2" style="margin-bottom:8px">
@@ -366,16 +366,64 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <h2>Cadastro Cuidador</h2>
     </div>
     <div class="pad">
-      <p class="step">Etapa 3 de 3 — Pronto</p>
+      <p class="step">Etapa 3 de 3 — Documentos</p>
       <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i></div>
-      <h1 class="h1">Quase lá!</h1>
-      <p class="hint">O valor da diária você define ao publicar <strong>agenda</strong> ou <strong>plantão</strong> no painel — pode alterar quando quiser.</p>
+      <h1 class="h1">Documentos do cadastro</h1>
+      <p class="hint">Toque em cada item para enviar foto legível (câmera ou galeria, JPG/PNG). Documento inteiro visível.</p>
 
       <div class="note" style="margin-top:12px">
-        <strong>Taxa do app:</strong> <strong>R$ 10,29</strong> (US$ 1,99) <strong>por diária</strong> — ao publicar disponibilidade mostramos automaticamente <strong>diária + taxa/dia</strong> como referência.
+        <strong>Obrigatórios:</strong> RG (frente e verso), comprovante de endereço e antecedentes criminais.<br>
+        <strong>Opcionais:</strong> curso, diploma e comprovante de experiência — pode anexar depois; o cadastro finaliza sem eles.<br>
+        Após aprovação, famílias consultam no currículo antes do match.
       </div>
 
-      <div class="note" style="margin-top:8px">Seu perfil será analisado pela equipe antes de aparecer para famílias.</div>
+      <div id="etapa3-documentos" style="margin-top:16px">
+        <div class="doc" data-doc="rg_frente">
+          <div class="ic">🪪</div>
+          <div><b>RG — Frente</b><small>Obrigatório · foto legível da frente do documento</small></div>
+          <span class="ok">✓</span>
+          <input type="file" accept="image/*,.heic,.heif" capture="environment" onchange="anexar(this)"/>
+        </div>
+        <div class="doc" data-doc="rg_verso">
+          <div class="ic">🪪</div>
+          <div><b>RG — Verso</b><small>Obrigatório · foto legível do verso do documento</small></div>
+          <span class="ok">✓</span>
+          <input type="file" accept="image/*,.heic,.heif" capture="environment" onchange="anexar(this)"/>
+        </div>
+        <div class="doc" data-doc="comprovante">
+          <div class="ic">🏠</div>
+          <div><b>Comprovante de endereço</b><small>Obrigatório · conta de luz, água ou telefone (até 90 dias)</small></div>
+          <span class="ok">✓</span>
+          <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
+        </div>
+        <div class="doc" data-doc="antecedentes">
+          <div class="ic">🛡️</div>
+          <div><b>Certidão de antecedentes criminais</b><small>Obrigatório · emitida nos últimos 90 dias</small></div>
+          <span class="ok">✓</span>
+          <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
+        </div>
+        <div class="doc" data-doc="curso">
+          <div class="ic">📜</div>
+          <div><b>Certificado — Curso de Cuidador de Idosos</b><small>Opcional — primeiros socorros, medicação, etc.</small></div>
+          <span class="ok">✓</span>
+          <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
+        </div>
+        <div class="doc" data-doc="diploma">
+          <div class="ic">🎓</div>
+          <div><b>Diploma / Certificado de formação</b><small>Opcional — curso de cuidador, técnico ou graduação</small></div>
+          <span class="ok">✓</span>
+          <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
+        </div>
+        <div class="doc" data-doc="referencia">
+          <div class="ic">📞</div>
+          <div><b>Comprovante de experiência</b><small>Opcional — declaração ou contracheque anterior</small></div>
+          <span class="ok">✓</span>
+          <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
+        </div>
+      </div>
+
+      <div class="note" style="margin-top:12px">Seu perfil será analisado pela equipe antes de aparecer para famílias.</div>
+      <p class="hint" style="margin-top:10px;font-size:12px">Valores de plantão e diária você define depois, em <strong>Disponibilizar agenda</strong> ou <strong>Plantão hoje</strong> no painel (com referência de taxa só nessa hora).</p>
 
       <button class="btn btn-p" type="button" style="margin-top:16px" onclick="finalizarCuidador()">Enviar cadastro — abrir meu painel</button>
     </div>
@@ -545,81 +593,60 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <strong>Importante:</strong> após aprovação, famílias poderão ver todas estas fotos e seu currículo <em>antes</em> de dar match — para pesquisar com segurança.
       </div>
 
-      <div class="doc" data-doc="rg">
+      <div class="doc" data-doc="rg_frente">
         <div class="ic">🪪</div>
-        <div><b>RG — Registro Geral</b><small>Frente e verso (se aplicável)</small></div>
+        <div><b>RG — Frente</b><small>Foto legível da frente</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
+      </div>
+
+      <div class="doc" data-doc="rg_verso">
+        <div class="ic">🪪</div>
+        <div><b>RG — Verso</b><small>Foto legível do verso</small></div>
+        <span class="ok">✓</span>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="cpf">
         <div class="ic">📋</div>
-        <div><b>CPF</b><small>Documento ou cartão do CPF</small></div>
+        <div><b>CPF</b><small>Opcional — documento ou cartão do CPF</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="comprovante">
         <div class="ic">🏠</div>
         <div><b>Comprovante de endereço</b><small>Conta de luz, água ou telefone (até 90 dias)</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
-      <div class="doc" data-doc="ctps">
-        <div class="ic">💼</div>
-        <div><b>Carteira de Trabalho</b><small>Página de identificação e contrato atual</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
-      <div class="doc" data-doc="diploma">
-        <div class="ic">🎓</div>
-        <div><b>Diploma / Certificado de formação</b><small>Curso de cuidador, técnico ou graduação</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="antecedentes">
         <div class="ic">🛡️</div>
         <div><b>Certidão de antecedentes criminais</b><small>Emitida nos últimos 90 dias</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="curso">
         <div class="ic">📜</div>
-        <div><b>Certificado — Curso de Cuidador de Idosos</b><small>Primeiros socorros, medicação, etc.</small></div>
+        <div><b>Certificado — Curso de Cuidador de Idosos</b><small>Opcional — primeiros socorros, medicação, etc.</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
-      <div class="doc" data-doc="inss">
-        <div class="ic">🔢</div>
-        <div><b>Número do INSS / PIS</b><small>Cartão ou extrato</small></div>
+      <div class="doc" data-doc="diploma">
+        <div class="ic">🎓</div>
+        <div><b>Diploma / Certificado de formação</b><small>Opcional — curso de cuidador, técnico ou graduação</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
-      <div class="doc" data-doc="titulo">
-        <div class="ic">🗳️</div>
-        <div><b>Título de eleitor</b><small>Opcional, se disponível</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
-      </div>
-
-      <div class="doc" data-doc="reservista">
-        <div class="ic">⚔️</div>
-        <div><b>Certificado de reservista</b><small>Quando aplicável</small></div>
-        <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
       <div class="doc" data-doc="referencia">
         <div class="ic">📞</div>
-        <div><b>Comprovante de experiência / referência</b><small>Declaração ou contracheque anterior</small></div>
+        <div><b>Comprovante de experiência</b><small>Opcional — declaração ou contracheque anterior</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
       </div>
 
       <button class="btn btn-p" type="button" style="margin-top:16px" onclick="finalizar()">Enviar cadastro para análise</button>
@@ -705,7 +732,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       </button>
       <button type="button" class="menu-topic" onclick="show('familia-curriculo')">
         <span class="menu-ic">📄</span>
-        <div><b>Solicitar currículo Lates</b><small>Documentos verificados + classificação</small></div>
+        <div><b>Solicitar currículo</b><small>Pedir dados e documentos do cuidador</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('familia-irregularidade')">
@@ -949,7 +976,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <div class="menu-grid">
       <button type="button" class="menu-topic" onclick="show('cuidador-curriculo')">
         <span class="menu-ic">📋</span>
-        <div><b>Currículo Lates</b><small>Dados, certificados e formação — enviar ao contratante</small></div>
+        <div><b>Currículo</b><small>Resumo do cadastro — enviar ao familiar que solicitar</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('cuidador-recomendacoes')">
@@ -1022,38 +1049,18 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
     </div>
   </section>
 
-  <!-- ========== CURRÍCULO LATES ========== -->
+  <!-- ========== CURRÍCULO — resumo do cadastro para enviar ========== -->
   <section class="screen" id="cuidador-curriculo">
     <div class="topbar">
       <button type="button" onclick="show('cuidador-painel')">←</button>
-      <h2>Currículo Lates</h2>
+      <h2>Currículo</h2>
     </div>
     <div class="pad">
-      <p class="hint">Currículo validado pelo app: formação, antecedentes e cursos geram a classificação automática.</p>
-      <label class="lbl">Foto de perfil</label>
-      <div class="photo-pick" id="cuid-foto-box" style="width:100px;height:100px;margin:0 0 16px;position:relative" onclick="document.getElementById('cuid-foto-inp').click()">
-        <img id="cuid-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
-        <span id="cuid-foto-txt">📷 Toque para enviar foto</span>
-        <input type="file" id="cuid-foto-inp" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilPainel(this)"/>
-      </div>
-      <label class="lbl">CPF</label>
-      <input class="inp" id="cuid-cpf" placeholder="000.000.000-00" maxlength="14" oninput="maskCpf(this)"/>
+      <p class="hint">Gerado automaticamente do seu <strong>cadastro</strong> (texto + fotos dos documentos). Aqui você só <strong>visualiza e envia</strong> — para alterar dados ou documentos, use o cadastro.</p>
       <div class="cv" id="cuid-curriculo-dados"></div>
-      <div class="note" style="margin-top:12px">
-        <strong>Certificados verificados pelo app</strong><br/>
-        ✓ Antecedentes criminais &nbsp; ✓ Curso cuidador de idosos<br/>
-        ✓ Primeiros socorros &nbsp; ✓ CTPS / documentos
-      </div>
-      <p class="lbl" style="margin-top:14px">Classificação automática</p>
-      <div class="cv" id="cuid-classificacao-box">—</div>
-      <p class="step" style="margin-top:16px">Enviar fotos dos documentos</p>
-      <p class="hint">Cada foto vai para o Firebase Storage e atualiza sua classificação.</p>
-      <div id="cuid-docs-upload"></div>
-      <p class="hint" style="margin-top:8px">Toque em um documento pendente para enviar foto (JPG/PNG).</p>
-      <button class="btn btn-o" type="button" style="margin-top:12px" onclick="abrirDocumentosCompleto('cuidador-curriculo')">Abrir tela completa de documentos</button>
-      <button class="btn btn-s" type="button" style="margin-top:12px" onclick="baixarCurriculoCadastro()">⬇ Baixar meu cadastro (currículo)</button>
-      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="salvarCpfEClassificar()">Salvar CPF e atualizar classificação</button>
-      <div class="note" style="margin-top:12px;font-size:12px" id="cuid-curriculo-link"></div>
+      <div id="cuid-cv-docs-list" style="margin-top:12px"></div>
+      <p class="lbl" style="margin-top:18px">Enviar ao familiar</p>
+      <div id="cuid-cv-solicitacoes"></div>
     </div>
   </section>
 
@@ -1110,7 +1117,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       </div>
       <div class="note">Escala de <strong>8 horas</strong> = horário comercial (seg–sex, 8h–18h).</div>
       <p class="step" style="margin-top:16px">Valor da diária por escala (R$)</p>
-      <p class="hint">Informe quanto cobra em cada duração. Ex.: 8h = R$ 200, 12h = R$ 260. A taxa do app é <strong>R$ 10,29 por diária</strong> (US$ 1,99).</p>
+      <p class="hint">Informe quanto cobra em cada duração. Ex.: 8h = R$ 200, 12h = R$ 260.</p>
       <div class="row2" style="margin-bottom:8px">
         <div><label class="lbl" style="font-size:11px">4 h</label><input class="inp" id="agenda-rate-4" type="number" min="0" step="1" placeholder="R$" style="margin:0" oninput="atualizarResumoTaxaAgenda()"/></div>
         <div><label class="lbl" style="font-size:11px">6 h</label><input class="inp" id="agenda-rate-6" type="number" min="0" step="1" placeholder="R$" style="margin:0" oninput="atualizarResumoTaxaAgenda()"/></div>
@@ -1123,7 +1130,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <div><label class="lbl" style="font-size:11px">24 h</label><input class="inp" id="agenda-rate-24" type="number" min="0" step="1" placeholder="R$" style="margin:0" oninput="atualizarResumoTaxaAgenda()"/></div>
         <div><label class="lbl" style="font-size:11px">48 h</label><input class="inp" id="agenda-rate-48" type="number" min="0" step="1" placeholder="R$" style="margin:0" oninput="atualizarResumoTaxaAgenda()"/></div>
       </div>
-      <div class="note" id="agenda-taxa-resumo">Informe ao menos um valor para ver diária + taxa.</div>
+      <div class="note" id="agenda-taxa-resumo">Informe ao menos um valor por escala — mostramos diária + taxa do app como referência.</div>
       <div class="toggle-row">
         <span><b>Disponível para viajar</b><br/><small style="color:var(--m)">Aceita plantões fora da cidade</small></span>
         <input type="checkbox" id="agenda-viagem"/>
@@ -1297,12 +1304,12 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <button type="button" class="chip" data-v="19:00" onclick="selChip(this,'plantao-hoje-inicio')">19:00</button>
       </div>
       <p class="step" style="margin-top:16px">Valor da diária (R$)</p>
-      <p class="hint">Informe quanto cobra em cada escala oferecida hoje. Referência: diária + taxa de <strong>R$ 10,29/dia</strong> (US$ 1,99/dia).</p>
+      <p class="hint">Informe quanto cobra em cada escala oferecida hoje (ex.: 12h = R$ 200, 24h = R$ 260).</p>
       <div class="row2">
         <div><label class="lbl" style="font-size:11px">Plantão 12 h</label><input class="inp" id="plantao-rate-12" type="number" min="0" step="1" placeholder="Ex.: 200" style="margin:0" oninput="atualizarResumoTaxaPlantao()"/></div>
         <div><label class="lbl" style="font-size:11px">Plantão 24 h</label><input class="inp" id="plantao-rate-24" type="number" min="0" step="1" placeholder="Ex.: 260" style="margin:0" oninput="atualizarResumoTaxaPlantao()"/></div>
       </div>
-      <div class="note" id="plantao-taxa-resumo" style="margin-top:8px">Informe o valor da escala selecionada.</div>
+      <div class="note" id="plantao-taxa-resumo" style="margin-top:8px">Informe o valor da escala — mostramos diária + taxa do app como referência.</div>
       <p class="step" style="margin-top:16px">Como você prefere receber</p>
       <p class="hint">Usado automaticamente ao aceitar ofertas de famílias.</p>
       <div class="chip-row" id="plantao-pag-freq">
@@ -1511,12 +1518,40 @@ async function syncDocumentosUI(){
     const uid=ic24Auth.currentUser?.uid;
     if(!uid) return;
     const docsMap=await ic24ListDocumentos(uid);
-    document.querySelectorAll('#documentos .doc[data-doc]').forEach(el=>{
+    window._cuidDocs=docsMap;
+    document.querySelectorAll('#documentos .doc[data-doc], #etapa3-documentos .doc[data-doc]').forEach(el=>{
       const k=el.getAttribute('data-doc');
-      if(docsMap[k]?.fileUrl) el.classList.add('done');
+      const ok=(typeof ic24DocUploaded==='function'?ic24DocUploaded(k,docsMap):!!docsMap[k]?.fileUrl);
+      if(ok) el.classList.add('done');
       else el.classList.remove('done');
     });
   }catch(e){ /* ignore */ }
+}
+function ic24DocsObrigatoriosOk(){
+  const obr=(typeof IC24_DOCS_OBRIGATORIOS!=='undefined'?IC24_DOCS_OBRIGATORIOS:['rg_frente','rg_verso','comprovante','antecedentes']);
+  const docs=window._cuidDocs||{};
+  for(const k of obr){
+    if(typeof ic24DocUploaded==='function'&&ic24DocUploaded(k,docs)) continue;
+    const el=document.querySelector('#etapa3-documentos .doc[data-doc="'+k+'"]')
+      ||document.querySelector('#documentos .doc[data-doc="'+k+'"]');
+    if(!el||!el.classList.contains('done')) return false;
+  }
+  return true;
+}
+async function ic24DocsObrigatoriosFirebase(uid){
+  if(!uid) return false;
+  ic24InitFirebase();
+  const docsMap=await ic24ListDocumentos(uid);
+  window._cuidDocs=docsMap;
+  if(typeof ic24DocsCadastroCompletos==='function') return ic24DocsCadastroCompletos(docsMap);
+  const obr=(typeof IC24_DOCS_OBRIGATORIOS!=='undefined'?IC24_DOCS_OBRIGATORIOS:['rg_frente','rg_verso','comprovante','antecedentes']);
+  return obr.every(k=>(typeof ic24DocUploaded==='function'?ic24DocUploaded(k,docsMap):!!docsMap[k]?.fileUrl));
+}
+function ic24AplicarRotaCadastro(rota){
+  window._cadastroRetomada=!rota.complete;
+  window._cadastroEtapa=rota.screen||'cuidador-etapa1';
+  window._cadastroMsg=rota.message||'';
+  return rota;
 }
 function irPesquisaDe(deOnde){
   window._pesquisaVoltar=deOnde||'familia-painel';
@@ -1568,7 +1603,15 @@ function validarEnderecoCad(){
 }
 function irCuidadorEtapa2(){
   if(!validarEnderecoCad()) return;
-  show('cuidador-etapa2');
+  (async ()=>{
+    try{
+      ic24InitFirebase();
+      if(!ic24Auth?.currentUser){ toast('Faça login para continuar'); return; }
+      await ic24SalvarCuidador();
+      ic24AplicarRotaCadastro({ complete:false, screen:'cuidador-etapa2', message:'Continue seu cadastro — perfil (etapa 2)' });
+      show('cuidador-etapa2');
+    }catch(e){ toast(e.message||'Erro ao salvar endereço'); }
+  })();
 }
 function addEspecialidade(){
   const inp=document.getElementById('cuid-spec');
@@ -1589,27 +1632,50 @@ function removeEspecialidade(i){
 }
 function irCuidadorEtapa3(){
   if(!document.getElementById('cuid-bio').value.trim()){ toast('Escreva um pouco sobre você'); return; }
-  if(!window._photoUploaded && !window._pendingProfilePhoto && !(window._cuidPainel?.photoUrl)){
-    toast('Envie sua foto de perfil — toque no círculo acima'); return;
-  }
-  show('cuidador-etapa3');
+  if(!ic24FotoPerfilOk()){ toast('Envie sua foto de perfil — toque no círculo acima'); return; }
+  (async ()=>{
+    try{
+      ic24InitFirebase();
+      if(!ic24Auth?.currentUser){ toast('Faça login para continuar'); return; }
+      await ic24SalvarCuidador();
+      if(window._pendingProfilePhoto){
+        await ic24UploadFotoPerfil(window._pendingProfilePhoto);
+        window._pendingProfilePhoto=null;
+        window._photoLocalOk=false;
+        window._photoUploaded=true;
+      }
+      ic24AplicarRotaCadastro({ complete:false, screen:'cuidador-etapa3', message:'Continue seu cadastro — documentos (etapa 3)' });
+      show('cuidador-etapa3');
+      await syncDocumentosUI();
+    }catch(e){ toast(e.message||'Erro ao salvar perfil'); }
+  })();
 }
 async function finalizarCuidador(){
-  if(!window._photoUploaded && !window._pendingProfilePhoto && !(window._cuidPainel?.photoUrl)){
-    toast('Foto de perfil obrigatória — volte à etapa 2'); show('cuidador-etapa2'); return;
-  }
+  if(!ic24FotoPerfilOk()){ toast('Foto de perfil obrigatória — volte à etapa 2'); show('cuidador-etapa2'); return; }
+  if(!ic24DocsObrigatoriosOk()){ toast('Envie os obrigatórios: RG frente, RG verso, comprovante e antecedentes'); show('cuidador-etapa3'); return; }
   try{
+    ic24InitFirebase();
+    const uid=ic24Auth?.currentUser?.uid;
+    if(!uid) throw new Error('Faça login para continuar');
     if(window._pendingProfilePhoto){
       await ic24UploadFotoPerfil(window._pendingProfilePhoto);
       window._pendingProfilePhoto=null;
+      window._photoLocalOk=false;
       window._photoUploaded=true;
     }
     await ic24SalvarCuidador();
-    const uid=ic24Auth?.currentUser?.uid;
-    if(uid) await ic24RecomputeCurriculo(uid);
+    if(!(await ic24DocsObrigatoriosFirebase(uid))){
+      await syncDocumentosUI();
+      toast('Envie RG frente, RG verso, comprovante e antecedentes');
+      ic24AplicarRotaCadastro({ complete:false, screen:'cuidador-etapa3', message:'Continue seu cadastro — envie os documentos (etapa 3)' });
+      show('cuidador-etapa3');
+      return;
+    }
+    await ic24RecomputeCurriculo(uid);
     await carregarPainelCuidador();
+    ic24AplicarRotaCadastro({ complete:true, screen:'cuidador-painel', message:'' });
     show('cuidador-painel');
-    toast('Cadastro salvo — área do cuidador aberta!');
+    toast('Cadastro concluído — área do cuidador aberta!');
   }catch(e){ toast(e.message||'Erro ao salvar no Firestore'); }
 }
 function maskCep(el){
@@ -1724,22 +1790,20 @@ async function ic24NavegarPosLogin(u){
   if(u.role==='caregiver'){
     const { data, docsMap }=await ic24CarregarDadosCuidador(u.uid);
     preencherCadastroCuidador(data);
-    const rota=ic24AvaliarCadastroCuidador(data, docsMap);
-    window._cadastroRetomada=!rota.complete;
+    const rota=ic24AplicarRotaCadastro(ic24AvaliarCadastroCuidador(data, docsMap));
     if(rota.complete){
       await carregarPainelCuidador();
-    } else if(rota.screen==='documentos'){
-      window._docVoltar='cuidador-curriculo';
+    } else if(rota.screen==='cuidador-etapa3'||rota.screen==='documentos'){
       await syncDocumentosUI();
-      await carregarPainelCuidador();
-    } else if(['cuidador-curriculo','cuidador-etapa1','cuidador-etapa2','cuidador-etapa3'].includes(rota.screen)){
-      await carregarPainelCuidador();
     }
     return rota;
   }
   const fam=await ic24CarregarDadosFamilia(u.uid);
   preencherCadastroFamilia(fam);
   const rota=ic24AvaliarCadastroFamilia(fam);
+  window._cadastroRetomada=!rota.complete;
+  window._cadastroEtapa=rota.screen||'cadastro-familia';
+  window._cadastroMsg=rota.message||'';
   if(rota.complete) await carregarPainelFamilia();
   return rota;
 }
@@ -1770,43 +1834,25 @@ function fotoPerfil(input){
   toast('Foto selecionada — será enviada ao Firebase ao continuar');
 }
 function fotoPerfilEtapa2(input){
-  const f=input.files[0];
-  if(!f)return;
-  const r=new FileReader();
-  r.onload=()=>{
-    const img=document.getElementById('etapa2-foto-preview');
-    if(img){ img.src=r.result; img.style.display='block'; }
-    const txt=document.getElementById('etapa2-foto-txt');
-    if(txt) txt.style.display='none';
-  };
-  r.readAsDataURL(f);
-  window._pendingProfilePhoto=f;
-  ic24InitFirebase();
-  if(!ic24Auth.currentUser){
-    toast('Foto selecionada — será enviada ao finalizar o cadastro');
-    return;
-  }
-  ic24UploadFotoPerfil(f).then(()=>{
-    window._pendingProfilePhoto=null;
-    window._photoUploaded=true;
-    toast('Foto salva no Firebase');
-  }).catch(e=>{ toast(e.message||'Erro ao enviar foto — tente outra imagem'); input.value=''; window._pendingProfilePhoto=null; });
+  const f=input.files&&input.files[0];
+  if(!f){ toast('Não foi possível ler a foto — tente outra imagem'); return; }
+  ic24PreviewFotoPerfil(f,'etapa2-foto-preview','etapa2-foto-txt','etapa2-foto-box');
+  input.value='';
 }
 async function fotoPerfilPainel(input){
-  const f=input.files[0];
-  if(!f)return;
-  const prev=document.getElementById('cuid-foto-preview');
-  const txt=document.getElementById('cuid-foto-txt');
-  const r=new FileReader();
-  r.onload=()=>{ if(prev){ prev.src=r.result; prev.style.display='block'; } if(txt) txt.style.display='none'; };
-  r.readAsDataURL(f);
+  const f=input.files&&input.files[0];
+  if(!f){ toast('Não foi possível ler a foto'); return; }
+  ic24PreviewFotoPerfil(f,'cuid-foto-preview','cuid-foto-txt','cuid-foto-box');
   try{
     ic24InitFirebase();
     if(!ic24Auth.currentUser){ toast('Faça login como cuidador'); return; }
     await ic24UploadFotoPerfil(f);
+    window._pendingProfilePhoto=null;
+    window._photoLocalOk=false;
+    window._photoUploaded=true;
     toast('Foto de perfil salva no Firebase Storage');
     await carregarPainelCuidador();
-  }catch(e){ toast(e.message||'Erro ao salvar foto'); }
+  }catch(e){ toast(e.message||'Erro ao salvar foto — tente outra imagem'); }
 }
 function anexarDocCurriculo(docKey){
   const inp=document.createElement('input');
@@ -1822,30 +1868,43 @@ function anexarDocCurriculo(docKey){
   inp.click();
 }
 function anexar(input){
-  if(!input.files[0])return;
+  if(!input.files||!input.files[0]){ toast('Não foi possível ler a foto do documento'); return; }
   ic24InitFirebase();
   if(!ic24Auth.currentUser){ toast('Faça login como cuidador'); return; }
   const docKey=input.closest('.doc')?.getAttribute('data-doc');
   const nome=input.closest('.doc')?.querySelector('b')?.textContent||docKey;
   if(!docKey){ toast('Tipo de documento inválido'); return; }
+  const row=input.closest('.doc');
   ic24UploadDocumento(docKey,input.files[0]).then(()=>{
-    input.closest('.doc').classList.add('done');
+    if(row) row.classList.add('done');
     toast('Enviado: '+nome.split('—')[0].trim()+' — salvo no Firebase');
+    if(typeof syncDocumentosUI==='function') syncDocumentosUI();
     if(typeof carregarPainelCuidador==='function') carregarPainelCuidador();
-  }).catch(e=>toast(e.message||'Erro no upload'));
+  }).catch(e=>{ toast(e.message||'Erro no upload'); }).finally(()=>{ input.value=''; });
 }
 async function finalizar(){
-  const obr=['rg','cpf','comprovante','ctps','antecedentes'];
-  for(const k of obr){
-    const el=document.querySelector('.doc[data-doc="'+k+'"]');
-    if(!el||!el.classList.contains('done')){
-      toast('Anexe RG, CPF, comprovante, CTPS e antecedentes (foto enviada ao Firebase)'); return;
-    }
+  if(!ic24DocsObrigatoriosOk()){
+    toast('Anexe RG frente, RG verso, comprovante e antecedentes'); return;
   }
   try{
-    await ic24SalvarCuidador();
+    ic24InitFirebase();
     const uid=ic24Auth?.currentUser?.uid;
-    if(uid) await ic24RecomputeCurriculo(uid);
+    if(!uid) throw new Error('Faça login como cuidador');
+    await ic24SalvarCuidador();
+    await ic24RecomputeCurriculo(uid);
+    const pack=await ic24CarregarDadosCuidador(uid);
+    const rota=ic24AvaliarCadastroCuidador(pack.data, pack.docsMap);
+    if(!rota.complete){
+      if(rota.screen==='documentos'){
+        toast('Ainda faltam documentos no Firebase — envie: '+(rota.missingDocs||[]).join(', '));
+        await syncDocumentosUI();
+        show('documentos');
+        return;
+      }
+      toast(rota.message||'Complete seu cadastro');
+      show(rota.screen);
+      return;
+    }
     await carregarPainelCuidador();
     show('cuidador-painel');
     toast('Cadastro e currículo salvos no Firebase');
@@ -1858,14 +1917,12 @@ async function solicitarCurriculoContratante(){
     ic24InitFirebase();
     if(!ic24Auth.currentUser){ toast('Faça login como família'); irLogin(); return; }
     const r=await ic24SolicitarCurriculo(caregiverId);
-    const fullLink=location.origin+location.pathname.replace(/index\.html?$/,'')+r.link;
     const box=document.getElementById('pesquisa-curriculo-link');
     if(box){
       box.style.display='block';
-      box.innerHTML='<strong>Currículo liberado:</strong><br/><a href="'+fullLink+'" target="_blank" rel="noopener">'+fullLink+'</a>';
+      box.innerHTML='<strong>Solicitação enviada.</strong> Aguarde o cuidador liberar o currículo (dados + documentos do cadastro).';
     }
-    window.open(fullLink,'_blank');
-    toast('Currículo Lates gerado — link válido por 7 dias');
+    toast('Pedido enviado ao cuidador — aguarde liberação');
   }catch(e){ toast(e.message||'Erro ao solicitar currículo'); }
 }
 async function salvarCpfEClassificar(){
@@ -1881,9 +1938,9 @@ async function salvarCpfEClassificar(){
 function renderDocsUploadShort(docsMap){
   const box=document.getElementById('cuid-docs-upload');
   if(!box) return;
-  const keys=['cpf','rg','antecedentes','curso','ctps'];
+  const keys=['cpf','rg_frente','rg_verso','comprovante','antecedentes','curso','diploma','referencia'];
   box.innerHTML=keys.map(k=>{
-    const done=docsMap&&docsMap[k];
+    const done=docsMap&&(typeof ic24DocUploaded==='function'?ic24DocUploaded(k,docsMap):!!docsMap[k]?.fileUrl);
     const meta=IC24_DOC_META[k];
     return '<div class="list-item" style="cursor:pointer" onclick="anexarDocCurriculo(\''+k+'\')"><b>'+(meta?.label||k)+'</b><small>'+(done?'✓ Enviado — toque para substituir':'Pendente — toque para enviar foto')+'</small></div>';
   }).join('');
@@ -1899,6 +1956,8 @@ async function finalizarFamilia(){
   try{
     await ic24CriarConta({nome,email,senha,senha2,role:'family'});
     await ic24SalvarFamilia();
+    window._cadastroRetomada=false;
+    window._cadastroEtapa='familia-painel';
     toast('Cadastro família salvo no Firebase!');
     setTimeout(async ()=>{ await carregarPainelFamilia(); show('familia-painel'); }, 1200);
   }catch(e){ toast(ic24AuthError(e)||e.message||'Erro ao salvar'); }
@@ -2037,7 +2096,7 @@ async function carregarPainelCuidador(){
   const cpf=d.cpf||'';
   const cls=ic24Classificacao(d);
   document.getElementById('cuid-nome-display').textContent=nome;
-  document.getElementById('cuid-cpf-display').textContent=cpf||'Informe no currículo';
+  document.getElementById('cuid-cpf-display').textContent=cpf||'—';
   document.getElementById('cuid-stars-display').textContent=cls.stars||'★★★☆☆';
   document.getElementById('cuid-class-display').textContent='Classificação: '+(cls.label||'—');
   const av=document.getElementById('cuid-avatar');
@@ -2045,16 +2104,9 @@ async function carregarPainelCuidador(){
     if(d.photoUrl) av.innerHTML='<img src="'+escapeHtml(d.photoUrl)+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>';
     else av.textContent='👤';
   }
-  const fotoPrev=document.getElementById('cuid-foto-preview');
-  const fotoTxt=document.getElementById('cuid-foto-txt');
-  if(d.photoUrl&&fotoPrev){
-    fotoPrev.src=d.photoUrl; fotoPrev.style.display='block';
-    if(fotoTxt) fotoTxt.style.display='none';
-  }
-  const cpfInp=document.getElementById('cuid-cpf');
-  if(cpfInp&&cpf) cpfInp.value=cpf;
   renderCurriculo(d, cls, docsMap);
-  renderDocsUploadShort(docsMap);
+  renderCurriculoDocsLista(docsMap);
+  if(uid) iniciarListenCurriculoCuidador(uid);
   renderRecomendacoes(d);
   renderOfertas();
   renderFaturamento(d);
@@ -2105,25 +2157,67 @@ function injetarAvisoMultaCancelamento(elId){
   if(el&&typeof ic24HtmlAvisoMultaCancelamento==='function') el.innerHTML=ic24HtmlAvisoMultaCancelamento();
 }
 
+function renderSolicitacoesCurriculoCuidador(list){
+  window._cvSolicitacoes=list||[];
+  const notif=document.getElementById('cuid-notificacoes');
+  const box=document.getElementById('cuid-cv-solicitacoes');
+  const pending=(list||[]).filter(r=>r.status==='pending');
+  if(notif){
+    if(pending.length){
+      notif.style.display='block';
+      notif.className='note';
+      notif.innerHTML='<strong>'+pending.length+' familiar(es) pediram currículo.</strong> Abra <b>Currículo</b> e toque em Enviar.';
+    }else{
+      notif.style.display='none';
+      notif.innerHTML='';
+    }
+  }
+  if(!box) return;
+  if(!pending.length){
+    box.innerHTML='<p class="hint">Nenhum familiar pediu ainda. Quando solicitar, aparece aqui para você enviar o resumo compacto.</p>';
+    return;
+  }
+  box.innerHTML=pending.map(r=>{
+    const tok=String(r.token||r.id||'').replace(/\\/g,'').replace(/'/g,'');
+    return '<div class="list-item" style="margin-bottom:10px"><b>'+escapeHtml(r.familyName||'Família')+'</b><small>Pediu seu currículo</small><button class="btn btn-p" type="button" style="margin-top:10px;height:44px;width:100%" onclick="enviarCurriculoAoFamilia(\''+tok+'\')">Enviar currículo compacto</button></div>';
+  }).join('');
+}
+async function enviarCurriculoAoFamilia(token){
+  try{
+    ic24InitFirebase();
+    const r=await ic24EnviarCurriculoSolicitacao(token);
+    toast('Currículo enviado ao familiar!');
+    await carregarPainelCuidador();
+    renderSolicitacoesCurriculoCuidador(window._cvSolicitacoes.filter(x=>(x.token||x.id)!==token));
+  }catch(e){ toast(e.message||'Erro ao enviar currículo'); }
+}
+function renderCurriculoDocsLista(docsMap){
+  const box=document.getElementById('cuid-cv-docs-list');
+  if(!box) return;
+  const entries=Object.entries(docsMap||{}).filter(([,d])=>d&&d.fileUrl);
+  if(!entries.length){ box.innerHTML='<p class="hint" style="font-size:13px">Documentos: nenhum anexo no cadastro ainda.</p>'; return; }
+  box.innerHTML='<p class="lbl" style="margin:0 0 8px">Documentos (cadastro)</p>'+entries.map(([k,d])=>{
+    const meta=typeof IC24_DOC_META!=='undefined'?IC24_DOC_META[k]:null;
+    return '<div class="list-item" style="padding:10px 12px"><b style="font-size:14px">'+escapeHtml(meta?.label||d.label||k)+'</b><small>✓ Anexado</small></div>';
+  }).join('');
+}
+let _cvListenUnsub=null;
+function iniciarListenCurriculoCuidador(uid){
+  if(_cvListenUnsub){ _cvListenUnsub(); _cvListenUnsub=null; }
+  if(!uid||typeof ic24ListenSolicitacoesCurriculoCuidador!=='function') return;
+  _cvListenUnsub=ic24ListenSolicitacoesCurriculoCuidador(uid,renderSolicitacoesCurriculoCuidador);
+}
 function renderCurriculo(d, cls, docsMap){
   const box=document.getElementById('cuid-curriculo-dados');
-  const classBox=document.getElementById('cuid-classificacao-box');
   if(!box) return;
   const regiao=[d.city,d.state].filter(Boolean).join(' — ')||'—';
   const specs=(d.specialties||window._cuidSpecs||[]).join(', ')||'—';
-  const docCount=docsMap?Object.keys(docsMap).length:(d.documentsCount||0);
+  const nDocs=docsMap?Object.keys(docsMap).filter(k=>docsMap[k]?.fileUrl).length:0;
   box.innerHTML=
-    '<p><strong>Nome:</strong> '+escapeHtml(d.fullName||'—')+'</p>'+
-    '<p><strong>Região:</strong> '+escapeHtml(regiao)+'</p>'+
-    '<p class="hint" style="font-size:12px">Telefone, e-mail e endereço completo não aparecem no currículo enviado ao contratante.</p>'+
-    '<p><strong>Sobre:</strong> '+escapeHtml(d.bio||document.getElementById('cuid-bio')?.value||'—')+'</p>'+
-    '<p><strong>Especialidades:</strong> '+escapeHtml(specs)+'</p>'+
-    '<p><strong>Valores:</strong> '+escapeHtml(typeof ic24ExibirRateCaregiver==='function'?ic24ExibirRateCaregiver(d):'Publique agenda ou plantão com diária')+'</p>'+
-    '<p><strong>Documentos no Firebase:</strong> '+docCount+' foto(s)</p>';
-  if(classBox) classBox.innerHTML=
-    '<p><strong>'+escapeHtml(cls.label||'—')+'</strong></p>'+
-    '<p style="font-size:13px;color:var(--m);margin-top:6px">Score: '+(cls.score||0)+'/100 · Classificação automática pelos documentos enviados.</p>'+
-    (cls.missingRequired&&cls.missingRequired.length?'<p style="font-size:12px;color:var(--err);margin-top:6px">Falta: '+escapeHtml(cls.missingRequired.join(', '))+'</p>':'');
+    '<p><strong>'+escapeHtml(d.fullName||'—')+'</strong> · '+escapeHtml(regiao)+'</p>'+
+    '<p style="margin-top:8px;font-size:14px">'+escapeHtml(d.bio||'—')+'</p>'+
+    '<p style="margin-top:8px;font-size:13px;color:var(--m)"><strong>Especialidades:</strong> '+escapeHtml(specs)+'</p>'+
+    '<p style="margin-top:6px;font-size:13px;color:var(--m)">'+escapeHtml(cls.stars||'')+' · '+escapeHtml(cls.label||'—')+' · '+nDocs+' doc(s)</p>';
 }
 
 function renderRecomendacoes(d){
@@ -2872,11 +2966,12 @@ async function abrirCurriculoCuidador(id){
     ic24InitFirebase();
     if(!ic24Auth.currentUser){ toast('Faça login como família'); irLogin(); return; }
     const r=await ic24SolicitarCurriculo(id);
-    const fullLink=location.origin+location.pathname.replace(/index\.html?$/,'')+r.link;
     const box=document.getElementById('fam-curriculo-link');
-    if(box){ box.style.display='block'; box.innerHTML='<strong>Currículo:</strong><br/><a href="'+fullLink+'" target="_blank" rel="noopener">'+fullLink+'</a>'; }
-    toast('Currículo liberado');
-    window.open(fullLink,'_blank');
+    if(box){
+      box.style.display='block';
+      box.innerHTML='<strong>Solicitação enviada.</strong> O cuidador verá seu pedido e poderá enviar o currículo (cadastro + documentos).';
+    }
+    toast('Pedido enviado — aguarde o cuidador');
   }catch(e){ toast(e.message||'Erro ao solicitar currículo'); }
 }
 
@@ -3125,6 +3220,22 @@ async function esqueciSenha(){
 
 const _famShowOrig=show;
 show=function(id){
+  if(id==='cuidador-painel'){
+    const d=window._cuidPainel||{};
+    const docs=window._cuidDocs||{};
+    const rota=ic24AvaliarCadastroCuidador(d,docs);
+    if(!rota.complete){
+      ic24AplicarRotaCadastro(rota);
+      toast(rota.message||'Complete seu cadastro para acessar o menu');
+      id=rota.screen||'cuidador-etapa1';
+    }else{
+      window._cadastroRetomada=false;
+    }
+  }
+  if(id==='familia-painel'&&window._cadastroRetomada&&window._cadastroEtapa==='cadastro-familia'){
+    toast(window._cadastroMsg||'Complete seu cadastro de família');
+    id='cadastro-familia';
+  }
   _famShowOrig(id);
   if(id==='familia-proximos') carregarProximosFamilia();
   if(id==='familia-curriculo') carregarCurriculoListaFamilia();
@@ -3136,12 +3247,14 @@ show=function(id){
   if(id==='cuidador-plantao-hoje') atualizarResumoTaxaPlantao();
   if(id==='cuidador-minhas-agendas') renderListasAgendaPlantao();
   if(id==='cuidador-meus-plantoes') renderListasAgendaPlantao();
-  if(id==='cuidador-etapa3'){ /* sem valores no cadastro */ }
+  if(id==='cuidador-etapa3') syncDocumentosUI();
   if(id==='cuidador-ofertas'){ renderOfertas(); renderOfertasTaxaBloqueio(window._cuidPainel||{}); }
   if(id==='cuidador-faturamento') carregarCobrancasHistorico();
-  if(id==='cuidador-curriculo'&&!window._curriculoBaixadoOnce){
-    window._curriculoBaixadoOnce=true;
-    setTimeout(()=>{ toast('Toque em Baixar meu cadastro para salvar o currículo'); },400);
+  if(id==='cuidador-curriculo'){
+    const d=window._cuidPainel||{};
+    renderCurriculo(d, ic24Classificacao(d), window._cuidDocs||{});
+    renderCurriculoDocsLista(window._cuidDocs||{});
+    renderSolicitacoesCurriculoCuidador(window._cvSolicitacoes||[]);
   }
   if(id==='cuidador-taxa'){ renderTaxa(window._cuidPainel||{}); carregarHistoricoTaxa(); }
 };
@@ -3155,14 +3268,15 @@ try{
   ic24Auth.onAuthStateChanged(async (user)=>{
     if(!user||window._ic24IgnorarAuthRedirect) return;
     const on=document.querySelector('.screen.on')?.id;
-    if(on!=='welcome'&&on!=='login') return;
+    const retomavel=['welcome','login','criar-conta','cuidador-etapa1','cuidador-etapa2','cuidador-etapa3','cadastro-familia','cadastro','documentos'];
+    if(!retomavel.includes(on)) return;
     try{
       const snap=await ic24Db.collection('users').doc(user.uid).get();
       const data=snap.data()||{};
       const u={ uid:user.uid, role:data.role||'family', fullName:data.fullName||user.email };
       const rota=await ic24NavegarPosLogin(u);
       show(rota.screen);
-      if(!rota.complete) toast(rota.message||'Complete seu cadastro');
+      toast(rota.complete?('Bem-vindo de volta, '+u.fullName):(rota.message||'Continue de onde parou'));
     }catch(_){ /* sessão inválida — permanece no login */ }
   });
 }catch(_){ /* Firebase offline */ }

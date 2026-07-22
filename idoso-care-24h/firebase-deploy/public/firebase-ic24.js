@@ -124,6 +124,7 @@ async function ic24SalvarCuidador() {
   const nome =
     document.getElementById('acc-nome')?.value?.trim() ||
     userData.fullName ||
+    ic24Auth.currentUser.displayName ||
     ic24Auth.currentUser.email;
   const addr = ic24EnderecoMap('cad');
   const bio = document.getElementById('cuid-bio')?.value?.trim() || '';
@@ -279,7 +280,20 @@ async function ic24MatchChatUnlocked(chatId) {
   return snap.exists && snap.data().chatUnlocked === true;
 }
 
-const IC24_DOCS_OBRIGATORIOS = ['rg', 'comprovante', 'antecedentes'];
+const IC24_DOCS_OBRIGATORIOS = ['rg_frente', 'rg_verso', 'comprovante', 'antecedentes'];
+
+const IC24_DOCS_OPCIONAIS = ['curso', 'diploma', 'referencia'];
+
+function ic24DocUploaded(docKey, docsMap) {
+  docsMap = docsMap || {};
+  if (docsMap[docKey]?.fileUrl) return true;
+  if (docKey === 'rg_frente' && docsMap.rg?.fileUrl) return true;
+  return false;
+}
+
+function ic24DocsCadastroCompletos(docsMap) {
+  return IC24_DOCS_OBRIGATORIOS.every((k) => ic24DocUploaded(k, docsMap));
+}
 
 async function ic24CarregarDadosCuidador(uid) {
   ic24InitFirebase();
@@ -305,12 +319,12 @@ function ic24AvaliarCadastroCuidador(d, docsMap) {
   if (!d.photoUrl) {
     return { complete: false, screen: 'cuidador-etapa2', message: 'Continue seu cadastro — envie sua foto de perfil (etapa 2)' };
   }
-  const missingDocs = IC24_DOCS_OBRIGATORIOS.filter((k) => !docsMap[k]?.fileUrl);
+  const missingDocs = IC24_DOCS_OBRIGATORIOS.filter((k) => !ic24DocUploaded(k, docsMap));
   if (missingDocs.length) {
     return {
       complete: false,
       screen: 'cuidador-etapa3',
-      message: 'Continue seu cadastro — envie RG, comprovante e antecedentes (etapa 3)',
+      message: 'Continue seu cadastro — envie todos os documentos (etapa 3)',
       missingDocs,
     };
   }

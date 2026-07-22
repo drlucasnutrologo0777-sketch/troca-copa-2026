@@ -58,8 +58,8 @@ async function main() {
   try {
     const indexHtml = readFileSync(join(WEB_ROOT, 'index.html'), 'utf8');
     const curriculoHtml = readFileSync(join(WEB_ROOT, 'curriculo.html'), 'utf8');
-    ok('abrirCurriculoCuidador navega com location.href', /location\.href\s*=\s*fullLink/.test(indexHtml));
-    ok('solicitarCurriculoContratante navega com location.href', indexHtml.includes('location.href=fullLink'));
+    ok('abrirCurriculoCuidador aguarda cuidador', /Pedido enviado|Aguarde o cuidador/i.test(indexHtml));
+    ok('solicitarCurriculoContratante aguarda cuidador', /Pedido enviado|Aguarde o cuidador/i.test(indexHtml));
     ok('curriculo.html tem firebase-auth', /firebase-auth-compat\.js/.test(curriculoHtml));
 
     await page.goto(`http://127.0.0.1:${PORT}/curriculo.html`, { waitUntil: 'networkidle', timeout: 30000 });
@@ -88,7 +88,7 @@ async function main() {
     }));
     ok(
       'token invalido resolve (nao fica em loading)',
-      badToken.hasErr && /não encontrada|inválido|permission|PERMISSION|Missing/i.test(badToken.text),
+      badToken.hasErr && /não encontrada|inválido|permission|PERMISSION|Missing|liberou|liberado/i.test(badToken.text),
       badToken.text.slice(0, 100),
     );
 
