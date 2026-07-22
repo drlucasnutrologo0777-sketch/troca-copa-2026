@@ -25,6 +25,10 @@ if [ "$TXT_NUM" != "$PUBSPEC_NUM" ]; then
   echo "ERRO: BO_IOS_BUILD.txt (${TXT_NUM}) != pubspec (+${PUBSPEC_NUM})"
   exit 1
 fi
+if [ -n "${BO_BUILD_NUMBER:-}" ] && [ "$BO_BUILD_NUMBER" != "$PUBSPEC_NUM" ]; then
+  echo "ERRO: BO_BUILD_NUMBER (${BO_BUILD_NUMBER}) != pubspec (+${PUBSPEC_NUM})"
+  exit 1
+fi
 if [ "$PUBSPEC_NUM" -le 6 ]; then
   echo "ERRO: build ${PUBSPEC_NUM} <= 6 — TestFlight DUPLICATE (build 6 ja enviado)"
   exit 1

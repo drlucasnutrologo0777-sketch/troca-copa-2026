@@ -297,7 +297,7 @@ workflows:
         BUNDLE_ID: com.babaon.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         BO_BUILD_NAME: "1.0.0"
-        BO_BUILD_NUMBER: "8"
+        BO_BUILD_NUMBER: "9"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -311,11 +311,16 @@ workflows:
           test -f web_app/index.html || { echo "ERRO: pasta baba-on nao encontrada"; exit 1; }
           bash tool/verify_web_build.sh
           bash tool/verify_build_number.sh
+          PUBSPEC_NUM=$(grep '^version:' pubspec.yaml | sed -E 's/version: .*\+([0-9]+)/\1/')
+          if [ "$PUBSPEC_NUM" != "$BO_BUILD_NUMBER" ]; then
+            echo "ERRO: pubspec +${PUBSPEC_NUM} != BO_BUILD_NUMBER ${BO_BUILD_NUMBER}"
+            exit 1
+          fi
           grep -q "rg_frente" web_app/index.html || { echo "ERRO: etapa3 sem rg_frente"; exit 1; }
           grep -q "curriculo-viewer" web_app/index.html || { echo "ERRO: visualizador curriculo ausente"; exit 1; }
           grep -q "IC24_DOCS_OBRIGATORIOS" web_app/firebase-ic24.js || { echo "ERRO: firebase-ic24.js"; exit 1; }
           if [ "${BO_BUILD_NUMBER}" -le 6 ]; then
-            echo "ERRO: build deve ser > 6 (TestFlight DUPLICATE)"
+            echo "ERRO: build ${BO_BUILD_NUMBER} deve ser > 6 (TestFlight DUPLICATE — build 6 ja na Apple)"
             exit 1
           fi
           echo "Commit: $(git rev-parse --short HEAD 2>/dev/null || echo local)"
@@ -379,6 +384,16 @@ workflows:
             --export-options-plist="$EXPORT_PLIST"
           ls -la build/ios/ipa/
           IPA_CHECK=$(find build/ios/ipa -name "*.ipa" | head -1)
+          IPA_BUILT=$(bash tool/ipa_bundle_version.sh "$IPA_CHECK" 2>/dev/null || echo "")
+          echo "CFBundleVersion no IPA gerado: ${IPA_BUILT} (obrigatorio ${BO_BUILD_NUMBER})"
+          if [ -z "${IPA_BUILT:-}" ] || [ "$IPA_BUILT" -le 6 ]; then
+            echo "ERRO: IPA build ${IPA_BUILT:-vazio} — DUPLICATE na Apple (ultimo aceito: 6)"
+            exit 1
+          fi
+          if [ "${IPA_BUILT}" != "${BO_BUILD_NUMBER}" ]; then
+            echo "ERRO: IPA ${IPA_BUILT} != BO_BUILD_NUMBER ${BO_BUILD_NUMBER}"
+            exit 1
+          fi
           bash tool/verify_web_build.sh --ipa "$IPA_CHECK"
           bash tool/verify_build_number.sh
       - name: Upload TestFlight
