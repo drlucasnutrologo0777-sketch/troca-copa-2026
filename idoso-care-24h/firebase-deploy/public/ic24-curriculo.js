@@ -163,6 +163,24 @@ async function ic24UploadDocumento(docKey, file) {
   return { url, docKey, label: meta.label };
 }
 
+async function ic24MigrarRgLegado(uid, map) {
+  if (!map.rg?.fileUrl || map.rg_frente?.fileUrl) return map;
+  const leg = map.rg;
+  const migrated = {
+    documentType: 'RG_Frente',
+    docKey: 'rg_frente',
+    label: 'RG — Frente',
+    fileUrl: leg.fileUrl,
+    storagePath: leg.storagePath || '',
+    status: leg.status || 'pending_review',
+    migratedFrom: 'rg',
+    uploadedAt: leg.uploadedAt || firebase.firestore.FieldValue.serverTimestamp(),
+  };
+  await ic24Db.collection('caregivers').doc(uid).collection('documents').doc('rg_frente').set(migrated, { merge: true });
+  map.rg_frente = { id: 'rg_frente', ...migrated };
+  return map;
+}
+
 async function ic24ListDocumentos(uid) {
   ic24InitFirebase();
   const snap = await ic24Db.collection('caregivers').doc(uid).collection('documents').get();
@@ -170,6 +188,15 @@ async function ic24ListDocumentos(uid) {
   snap.docs.forEach((d) => {
     map[d.id] = { id: d.id, ...d.data() };
   });
+  if (uid && map.rg?.fileUrl && !map.rg_frente?.fileUrl) {
+    try {
+      if (ic24Auth.currentUser?.uid === uid) await ic24MigrarRgLegado(uid, map);
+      else map.rg_frente = { id: 'rg_frente', fileUrl: map.rg.fileUrl, docKey: 'rg_frente' };
+    } catch (e) {
+      console.warn('ic24MigrarRgLegado', e);
+      map.rg_frente = { id: 'rg_frente', fileUrl: map.rg.fileUrl, docKey: 'rg_frente' };
+    }
+  }
   return map;
 }
 

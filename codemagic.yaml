@@ -106,6 +106,13 @@ workflows:
     max_build_duration: 90
     instance_type: mac_mini_m2
     working_directory: idoso-care-24h
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+      cancel_previous_builds: true
 
     environment:
       vars:
@@ -116,7 +123,7 @@ workflows:
         BUNDLE_ID: com.idosocare24h.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         IC24_BUILD_NAME: "2.0.2"
-        IC24_BUILD_NUMBER: "70"
+        IC24_BUILD_NUMBER: "71"
       flutter: stable
       xcode: latest
       cocoapods: default

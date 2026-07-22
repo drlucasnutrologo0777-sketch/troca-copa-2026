@@ -94,6 +94,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
 }
 .doc:hover{border-color:var(--p)}
 .doc.done{border-color:var(--p);background:var(--pl)}
+.doc.uploading{opacity:.65;pointer-events:none}
 .doc .ic{
   width:44px;height:44px;border-radius:10px;background:var(--soft);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;
@@ -367,7 +368,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
     </div>
     <div class="pad">
       <p class="step">Etapa 3 de 3 — Documentos</p>
-      <div class="progress"><i class="done"></i><i class="done"></i><i class="done"></i></div>
+      <div class="progress" id="cadastro-progress-etapa3"><i class="done"></i><i class="done"></i><i id="prog-etapa3"></i></div>
       <h1 class="h1">Documentos do cadastro</h1>
       <p class="hint">Toque em cada item para enviar foto legível (câmera ou galeria, JPG/PNG). Documento inteiro visível.</p>
 
@@ -382,13 +383,13 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
           <div class="ic">🪪</div>
           <div><b>RG — Frente</b><small>Obrigatório · foto legível da frente do documento</small></div>
           <span class="ok">✓</span>
-          <input type="file" accept="image/*,.heic,.heif" capture="environment" onchange="anexar(this)"/>
+          <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
         </div>
         <div class="doc" data-doc="rg_verso">
           <div class="ic">🪪</div>
           <div><b>RG — Verso</b><small>Obrigatório · foto legível do verso do documento</small></div>
           <span class="ok">✓</span>
-          <input type="file" accept="image/*,.heic,.heif" capture="environment" onchange="anexar(this)"/>
+          <input type="file" accept="image/*,.heic,.heif" onchange="anexar(this)"/>
         </div>
         <div class="doc" data-doc="comprovante">
           <div class="ic">🏠</div>
@@ -1512,6 +1513,12 @@ function abrirDocumentosCompleto(deOnde){
   syncDocumentosUI();
   show('documentos');
 }
+function atualizarProgressoEtapa3(docsMap){
+  const seg=document.getElementById('prog-etapa3');
+  if(!seg) return;
+  const ok=typeof ic24DocsCadastroCompletos==='function'&&ic24DocsCadastroCompletos(docsMap||{});
+  seg.classList.toggle('done',!!ok);
+}
 async function syncDocumentosUI(){
   try{
     ic24InitFirebase();
@@ -1522,21 +1529,22 @@ async function syncDocumentosUI(){
     document.querySelectorAll('#documentos .doc[data-doc], #etapa3-documentos .doc[data-doc]').forEach(el=>{
       const k=el.getAttribute('data-doc');
       const ok=(typeof ic24DocUploaded==='function'?ic24DocUploaded(k,docsMap):!!docsMap[k]?.fileUrl);
+      el.classList.remove('uploading');
       if(ok) el.classList.add('done');
       else el.classList.remove('done');
     });
-  }catch(e){ /* ignore */ }
+    atualizarProgressoEtapa3(docsMap);
+  }catch(e){ console.warn('syncDocumentosUI',e); }
 }
 function ic24DocsObrigatoriosOk(){
-  const obr=(typeof IC24_DOCS_OBRIGATORIOS!=='undefined'?IC24_DOCS_OBRIGATORIOS:['rg_frente','rg_verso','comprovante','antecedentes']);
   const docs=window._cuidDocs||{};
-  for(const k of obr){
-    if(typeof ic24DocUploaded==='function'&&ic24DocUploaded(k,docs)) continue;
-    const el=document.querySelector('#etapa3-documentos .doc[data-doc="'+k+'"]')
-      ||document.querySelector('#documentos .doc[data-doc="'+k+'"]');
-    if(!el||!el.classList.contains('done')) return false;
-  }
-  return true;
+  if(typeof ic24DocsCadastroCompletos==='function') return ic24DocsCadastroCompletos(docs);
+  const obr=(typeof IC24_DOCS_OBRIGATORIOS!=='undefined'?IC24_DOCS_OBRIGATORIOS:['rg_frente','rg_verso','comprovante','antecedentes']);
+  return obr.every(k=>(typeof ic24DocUploaded==='function'?ic24DocUploaded(k,docs):!!docs[k]?.fileUrl));
+}
+function ic24ToastDocsFaltando(docsMap){
+  const msg=typeof ic24DocsFaltandoMsg==='function'?ic24DocsFaltandoMsg(docsMap):'RG frente, RG verso, comprovante e antecedentes';
+  toast('Faltam: '+msg);
 }
 async function ic24DocsObrigatoriosFirebase(uid){
   if(!uid) return false;
@@ -1563,7 +1571,8 @@ function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
   const btn=document.getElementById('btnIrLogin');
-  if(btn) btn.style.display=(id==='login'||id==='welcome')?'none':'block';
+  const semIrLogin=['login','welcome','criar-conta','cadastro-familia','cuidador-etapa1','cuidador-etapa2','cuidador-etapa3'];
+  if(btn) btn.style.display=semIrLogin.includes(id)?'none':'block';
   window.scrollTo(0,0);
 }
 function irWelcome(){ show('welcome'); }
@@ -1652,11 +1661,16 @@ function irCuidadorEtapa3(){
 }
 async function finalizarCuidador(){
   if(!ic24FotoPerfilOk()){ toast('Foto de perfil obrigatória — volte à etapa 2'); show('cuidador-etapa2'); return; }
-  if(!ic24DocsObrigatoriosOk()){ toast('Envie os obrigatórios: RG frente, RG verso, comprovante e antecedentes'); show('cuidador-etapa3'); return; }
   try{
     ic24InitFirebase();
     const uid=ic24Auth?.currentUser?.uid;
     if(!uid) throw new Error('Faça login para continuar');
+    await syncDocumentosUI();
+    if(!ic24DocsObrigatoriosOk()){
+      ic24ToastDocsFaltando(window._cuidDocs||{});
+      show('cuidador-etapa3');
+      return;
+    }
     if(window._pendingProfilePhoto){
       await ic24UploadFotoPerfil(window._pendingProfilePhoto);
       window._pendingProfilePhoto=null;
@@ -1666,13 +1680,24 @@ async function finalizarCuidador(){
     await ic24SalvarCuidador();
     if(!(await ic24DocsObrigatoriosFirebase(uid))){
       await syncDocumentosUI();
-      toast('Envie RG frente, RG verso, comprovante e antecedentes');
+      ic24ToastDocsFaltando(window._cuidDocs||{});
       ic24AplicarRotaCadastro({ complete:false, screen:'cuidador-etapa3', message:'Continue seu cadastro — envie os documentos (etapa 3)' });
       show('cuidador-etapa3');
       return;
     }
     await ic24RecomputeCurriculo(uid);
     await carregarPainelCuidador();
+    const rotaPos=ic24AvaliarCadastroCuidador(window._cuidPainel||{}, window._cuidDocs||{});
+    if(!rotaPos.complete){
+      ic24AplicarRotaCadastro(rotaPos);
+      if(rotaPos.screen==='cuidador-etapa3'&&typeof ic24ToastDocsFaltando==='function'){
+        ic24ToastDocsFaltando(window._cuidDocs||{});
+      }else{
+        toast(rotaPos.message||'Complete seu cadastro');
+      }
+      show(rotaPos.screen||'cuidador-etapa3');
+      return;
+    }
     ic24AplicarRotaCadastro({ complete:true, screen:'cuidador-painel', message:'' });
     show('cuidador-painel');
     toast('Cadastro concluído — área do cuidador aberta!');
@@ -1868,23 +1893,30 @@ function anexarDocCurriculo(docKey){
   inp.click();
 }
 function anexar(input){
-  if(!input.files||!input.files[0]){ toast('Não foi possível ler a foto do documento'); return; }
+  if(!input.files||!input.files[0]){ toast('Não foi possível ler a foto — tente galeria ou JPG'); return; }
   ic24InitFirebase();
   if(!ic24Auth.currentUser){ toast('Faça login como cuidador'); return; }
   const docKey=input.closest('.doc')?.getAttribute('data-doc');
   const nome=input.closest('.doc')?.querySelector('b')?.textContent||docKey;
   if(!docKey){ toast('Tipo de documento inválido'); return; }
   const row=input.closest('.doc');
-  ic24UploadDocumento(docKey,input.files[0]).then(()=>{
-    if(row) row.classList.add('done');
-    toast('Enviado: '+nome.split('—')[0].trim()+' — salvo no Firebase');
-    if(typeof syncDocumentosUI==='function') syncDocumentosUI();
+  const file=input.files[0];
+  if(row){ row.classList.remove('done'); row.classList.add('uploading'); }
+  toast('Enviando '+nome.split('—')[0].trim()+'…');
+  ic24UploadDocumento(docKey,file).then(async ()=>{
+    await syncDocumentosUI();
+    toast('Salvo: '+nome.split('—')[0].trim());
     if(typeof carregarPainelCuidador==='function') carregarPainelCuidador();
-  }).catch(e=>{ toast(e.message||'Erro no upload'); }).finally(()=>{ input.value=''; });
+  }).catch(e=>{
+    if(row){ row.classList.remove('done','uploading'); }
+    toast('Erro ao enviar '+nome.split('—')[0].trim()+': '+(e.message||'tente outra foto JPG/PNG'));
+  }).finally(()=>{ input.value=''; if(row) row.classList.remove('uploading'); });
 }
 async function finalizar(){
+  await syncDocumentosUI();
   if(!ic24DocsObrigatoriosOk()){
-    toast('Anexe RG frente, RG verso, comprovante e antecedentes'); return;
+    ic24ToastDocsFaltando(window._cuidDocs||{});
+    return;
   }
   try{
     ic24InitFirebase();

@@ -284,11 +284,28 @@ const IC24_DOCS_OBRIGATORIOS = ['rg_frente', 'rg_verso', 'comprovante', 'anteced
 
 const IC24_DOCS_OPCIONAIS = ['curso', 'diploma', 'referencia'];
 
+const IC24_DOC_LABELS = {
+  rg_frente: 'RG frente',
+  rg_verso: 'RG verso',
+  comprovante: 'comprovante de endereço',
+  antecedentes: 'antecedentes criminais',
+};
+
 function ic24DocUploaded(docKey, docsMap) {
   docsMap = docsMap || {};
   if (docsMap[docKey]?.fileUrl) return true;
   if (docKey === 'rg_frente' && docsMap.rg?.fileUrl) return true;
   return false;
+}
+
+function ic24DocsFaltando(docsMap) {
+  return IC24_DOCS_OBRIGATORIOS.filter((k) => !ic24DocUploaded(k, docsMap || {}));
+}
+
+function ic24DocsFaltandoMsg(docsMap) {
+  return ic24DocsFaltando(docsMap)
+    .map((k) => IC24_DOC_LABELS[k] || k)
+    .join(', ');
 }
 
 function ic24DocsCadastroCompletos(docsMap) {
