@@ -263,7 +263,37 @@ async function ic24MatchChatUnlocked(chatId) {
   return snap.exists && snap.data().chatUnlocked === true;
 }
 
-const IC24_DOCS_OBRIGATORIOS = ['rg', 'cpf', 'comprovante', 'ctps', 'antecedentes', 'curso'];
+const IC24_DOCS_OBRIGATORIOS = ['rg_frente', 'rg_verso', 'comprovante', 'antecedentes'];
+
+const IC24_DOCS_OPCIONAIS = ['curso', 'diploma', 'referencia'];
+
+const IC24_DOC_LABELS = {
+  rg_frente: 'RG frente',
+  rg_verso: 'RG verso',
+  comprovante: 'comprovante de endereço',
+  antecedentes: 'antecedentes criminais',
+};
+
+function ic24DocUploaded(docKey, docsMap) {
+  docsMap = docsMap || {};
+  if (docsMap[docKey]?.fileUrl) return true;
+  if (docKey === 'rg_frente' && docsMap.rg?.fileUrl) return true;
+  return false;
+}
+
+function ic24DocsFaltando(docsMap) {
+  return IC24_DOCS_OBRIGATORIOS.filter((k) => !ic24DocUploaded(k, docsMap || {}));
+}
+
+function ic24DocsFaltandoMsg(docsMap) {
+  return ic24DocsFaltando(docsMap)
+    .map((k) => IC24_DOC_LABELS[k] || k)
+    .join(', ');
+}
+
+function ic24DocsCadastroCompletos(docsMap) {
+  return IC24_DOCS_OBRIGATORIOS.every((k) => ic24DocUploaded(k, docsMap));
+}
 
 async function ic24CarregarDadosBaba(uid) {
   ic24InitFirebase();
@@ -286,15 +316,15 @@ function ic24AvaliarCadastroBaba(d, docsMap) {
   if (!(d.bio || '').trim()) {
     return { complete: false, screen: 'baba-etapa2', message: 'Conte sobre você e suas especialidades' };
   }
-  if (String(d.cpf || '').replace(/\D/g, '').length !== 11) {
-    return { complete: false, screen: 'baba-curriculo', message: 'Informe seu CPF no currículo' };
+  if (!d.photoUrl) {
+    return { complete: false, screen: 'baba-etapa2', message: 'Envie sua foto de perfil (etapa 2)' };
   }
-  const missingDocs = IC24_DOCS_OBRIGATORIOS.filter((k) => !docsMap[k]?.fileUrl);
+  const missingDocs = IC24_DOCS_OBRIGATORIOS.filter((k) => !ic24DocUploaded(k, docsMap));
   if (missingDocs.length) {
     return {
       complete: false,
-      screen: 'documentos',
-      message: 'Envie os documentos pendentes (fotos)',
+      screen: 'baba-etapa3',
+      message: 'Continue seu cadastro — envie os documentos (etapa 3)',
       missingDocs,
     };
   }

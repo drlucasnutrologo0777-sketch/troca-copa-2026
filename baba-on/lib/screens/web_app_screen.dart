@@ -176,11 +176,20 @@ class _WebAppScreenState extends State<WebAppScreen> {
               allowFileAccessFromFileURLs: true,
               allowUniversalAccessFromFileURLs: true,
               allowingReadAccessTo: readAccess,
+              javaScriptCanOpenWindowsAutomatically: true,
+              supportMultipleWindows: true,
               supportZoom: false,
               transparentBackground: false,
               underPageBackgroundColor: const Color(0xFFF5F7FA),
               isInspectable: true,
             ),
+            onCreateWindow: (controller, createWindowAction) async {
+              final url = createWindowAction.request.url;
+              if (url != null) {
+                await controller.loadUrl(urlRequest: URLRequest(url: url));
+              }
+              return true;
+            },
             onLoadStop: (controller, url) async {
               if (mounted) setState(() => _pageLoaded = true);
               await _verifyContent(controller);

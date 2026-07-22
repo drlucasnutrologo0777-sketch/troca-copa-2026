@@ -1,5 +1,5 @@
 App Store Connect — Review Notes (English — paste in Version → App Review Information)
-Build: 1.0 (4) · Bundle: com.babaon.app · IAP: bo_taxa_manutencao
+Build: 1.0 (8) · Bundle: com.babaon.app · IAP: bo_taxa_manutencao
 First IAP submitted WITH this version (selected under In-App Purchases and Subscriptions).
 ================================================================================
 

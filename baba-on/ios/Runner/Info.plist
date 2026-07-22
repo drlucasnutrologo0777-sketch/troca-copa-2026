@@ -11,7 +11,7 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSCameraUsageDescription</key>
-	<string>Usamos a câmera para fotografar documentos de cadastro e foto de perfil do cuidador.</string>
+	<string>Usamos a câmera para fotografar documentos de cadastro e foto de perfil da babá.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Usamos suas fotos para enviar documentos e definir a foto de perfil.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

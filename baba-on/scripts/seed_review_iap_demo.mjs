@@ -102,7 +102,33 @@ await patchDoc(fam.idToken, `caregivers/${caregiverUid}`, {
   platformFeePendingOfferId: fv('string', OFFER_ID),
   activeFamilyId: fv('string', fam.localId),
   approved: fv('bool', true),
+  photoUrl: fv('string', 'https://baba-on-3634a.web.app/logo.png'),
+  bio: fv('string', 'Babá demo para revisão Apple — cadastro completo'),
+  street: fv('string', 'Rua Demo'),
+  number: fv('string', '100'),
+  cep: fv('string', '39400000'),
+  city: fv('string', 'Montes Claros'),
+  state: fv('string', 'MG'),
 });
 
-console.log('OK — babá demo com taxa pendente US$ 1,99 (1 diária).');
+const PHOTO = 'https://baba-on-3634a.web.app/logo.png';
+for (const docKey of ['rg_frente', 'rg_verso', 'comprovante', 'antecedentes']) {
+  await setDoc(cg.idToken, `caregivers/${caregiverUid}/documents/${docKey}`, {
+    docKey: fv('string', docKey),
+    label: fv('string', docKey),
+    fileUrl: fv('string', PHOTO),
+    status: fv('string', 'approved'),
+  });
+}
+
+await setDoc(cg.idToken, `curriculum_public/${caregiverUid}`, {
+  caregiverId: fv('string', caregiverUid),
+  fullName: fv('string', 'Ana Demo Babá'),
+  city: fv('string', 'Montes Claros'),
+  state: fv('string', 'MG'),
+  photoUrl: fv('string', PHOTO),
+  bio: fv('string', 'Babá demo — revisão App Store'),
+});
+
+console.log('OK — babá demo com taxa pendente US$ 1,99 (1 diária) + docs RG.');
 console.log('UID babá:', caregiverUid);

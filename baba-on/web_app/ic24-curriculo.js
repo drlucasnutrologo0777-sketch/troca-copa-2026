@@ -3,29 +3,14 @@
 
 
 const IC24_DOC_META = {
-
-  rg: { type: 'RG', label: 'RG — Registro Geral', weight: 10, tier: 'identity' },
-
-  cpf: { type: 'CPF', label: 'CPF', weight: 10, tier: 'identity', required: true },
-
+  rg_frente: { type: 'RG_Frente', label: 'RG — Frente', weight: 5, tier: 'identity' },
+  rg_verso: { type: 'RG_Verso', label: 'RG — Verso', weight: 5, tier: 'identity' },
+  rg: { type: 'RG', label: 'RG — Registro Geral (legado)', weight: 10, tier: 'identity' },
   comprovante: { type: 'Comprovante', label: 'Comprovante de endereço', weight: 8, tier: 'identity' },
-
-  ctps: { type: 'CarteiraTrabalho', label: 'Carteira de Trabalho', weight: 12, tier: 'work' },
-
   antecedentes: { type: 'AntecedentesCriminais', label: 'Antecedentes criminais', weight: 30, tier: 'compliance', required: true },
-
   diploma: { type: 'Diploma', label: 'Diploma / Certificado de formação', weight: 18, tier: 'education' },
-
-  curso: { type: 'CursoBabá', label: 'Curso de Babá / Primeiros Socorros Infantil', weight: 25, tier: 'education', required: true },
-
-  inss: { type: 'INSS', label: 'INSS / PIS', weight: 5, tier: 'work' },
-
-  titulo: { type: 'TituloEleitor', label: 'Título de eleitor', weight: 3, tier: 'identity' },
-
-  reservista: { type: 'Reservista', label: 'Certificado de reservista', weight: 3, tier: 'identity' },
-
+  curso: { type: 'CursoBabá', label: 'Curso de Babá / Primeiros Socorros Infantil', weight: 25, tier: 'education' },
   referencia: { type: 'Referencia', label: 'Comprovante de experiência', weight: 12, tier: 'experience' },
-
 };
 
 
@@ -100,7 +85,7 @@ function ic24ClassificarDocumentos(docsMap) {
 
   Object.entries(IC24_DOC_META).forEach(([key, meta]) => {
 
-    if (uploaded.includes(key) && docsMap[key]?.url) {
+    if (uploaded.includes(key) && (docsMap[key]?.fileUrl || docsMap[key]?.url)) {
 
       score += meta.weight;
 
@@ -284,6 +269,24 @@ async function ic24UploadDocumento(docKey, file) {
 
 
 
+async function ic24MigrarRgLegado(uid, map) {
+  if (!map.rg?.fileUrl || map.rg_frente?.fileUrl) return map;
+  const leg = map.rg;
+  const migrated = {
+    documentType: 'RG_Frente',
+    docKey: 'rg_frente',
+    label: 'RG — Frente',
+    fileUrl: leg.fileUrl,
+    storagePath: leg.storagePath || '',
+    status: leg.status || 'pending_review',
+    migratedFrom: 'rg',
+    uploadedAt: leg.uploadedAt || firebase.firestore.FieldValue.serverTimestamp(),
+  };
+  await ic24Db.collection('caregivers').doc(uid).collection('documents').doc('rg_frente').set(migrated, { merge: true });
+  map.rg_frente = { id: 'rg_frente', ...migrated };
+  return map;
+}
+
 async function ic24ListDocumentos(uid) {
 
   ic24InitFirebase();
@@ -297,6 +300,16 @@ async function ic24ListDocumentos(uid) {
     map[d.id] = { id: d.id, ...d.data() };
 
   });
+
+  if (uid && map.rg?.fileUrl && !map.rg_frente?.fileUrl) {
+    try {
+      if (ic24Auth.currentUser?.uid === uid) await ic24MigrarRgLegado(uid, map);
+      else map.rg_frente = { id: 'rg_frente', fileUrl: map.rg.fileUrl, docKey: 'rg_frente' };
+    } catch (e) {
+      console.warn('ic24MigrarRgLegado', e);
+      map.rg_frente = { id: 'rg_frente', fileUrl: map.rg.fileUrl, docKey: 'rg_frente' };
+    }
+  }
 
   return map;
 
@@ -464,26 +477,19 @@ function ic24ResolveCurriculoUrl(relativeLink) {
 
 
 
-/** Abre currículo na mesma WebView no app iOS (window.open falha em file://). */
-
+/** Abre currículo sem sair do app (iframe no iOS / WebView). */
 function ic24AbrirCurriculoLink(relativeLink) {
-
   const url = ic24ResolveCurriculoUrl(relativeLink);
-
-  if (location.protocol === 'file:' || window._ic24NativeIap) {
-
-    location.assign(url);
-
+  const iframe = document.getElementById('curriculo-iframe');
+  if (iframe && (location.protocol === 'file:' || window._ic24NativeIap)) {
+    window._curriculoVoltar = document.querySelector('.screen.on')?.id || 'mae-curriculo';
+    iframe.src = url;
+    if (typeof show === 'function') show('curriculo-viewer');
     return url;
-
   }
-
   const popup = window.open(url, '_blank', 'noopener');
-
   if (!popup) location.assign(url);
-
   return url;
-
 }
 
 

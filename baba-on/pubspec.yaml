@@ -1,7 +1,7 @@
 name: baba_on_app
 description: Babá ON — marketplace mães e babás
 publish_to: 'none'
-version: 1.0.0+6
+version: 1.0.0+8
 
 environment:
   sdk: ^3.11.5

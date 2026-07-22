@@ -679,22 +679,16 @@ function ic24BaixarCurriculoCadastro(d, cls, docsMap) {
           .replace(/\D/g, '')
           .replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '***.$2.$3-**');
   const regiao = [d.city, d.state].filter(Boolean).join(' — ') || '—';
-  const endereco =
-    typeof ic24FormatAddressPublic === 'function'
-      ? ic24FormatAddressPublic(d)
-      : d.address || regiao;
   const html =
     '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Currículo ' +
     nome +
     '</title><style>body{font-family:Arial,sans-serif;max-width:720px;margin:24px auto;padding:20px;color:#222}h1{color:#134175}section{margin:16px 0;padding:12px;border:1px solid #e0e0e0;border-radius:8px}small{color:#666}</style></head><body>' +
     '<h1>Currículo Lates — Babá ON</h1>' +
-    '<p><small>Sem telefone nem e-mail — contato pelo chat após fechar negócio.</small></p>' +
+    '<p><small>Sem telefone, e-mail ou endereço — dados de contato protegidos pela plataforma.</small></p>' +
     '<section><h2>Dados públicos</h2><p><b>Nome:</b> ' +
     (d.fullName || '—') +
     '</p><p><b>CPF:</b> ' +
     cpfMask +
-    '</p><p><b>Endereço:</b> ' +
-    (endereco || '—') +
     '</p><p><b>Região:</b> ' +
     regiao +
     '</p></section>' +
