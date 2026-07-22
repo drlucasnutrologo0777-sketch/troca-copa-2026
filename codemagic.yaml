@@ -116,7 +116,7 @@ workflows:
         BUNDLE_ID: com.idosocare24h.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         IC24_BUILD_NAME: "2.0.2"
-        IC24_BUILD_NUMBER: "69"
+        IC24_BUILD_NUMBER: "70"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -129,6 +129,7 @@ workflows:
           echo "Diretorio: $(pwd)"
           test -f web_app/index.html || { echo "ERRO: pasta idoso-care-24h nao encontrada"; exit 1; }
           bash tool/verify_web_build.sh
+          bash tool/verify_build_number.sh
           echo "Commit: $(git rev-parse --short HEAD)"
       - name: Verificar credenciais Apple
         script: |
@@ -168,12 +169,7 @@ workflows:
           flutter clean
           flutter pub get
           grep '^version:' pubspec.yaml
-          PUBSPEC_NUM=$(grep '^version:' pubspec.yaml | sed -E 's/version: .*\+([0-9]+)/\1/')
-          if [ "$PUBSPEC_NUM" != "$IC24_BUILD_NUMBER" ]; then
-            echo "ERRO: pubspec +${PUBSPEC_NUM} != IC24_BUILD_NUMBER=${IC24_BUILD_NUMBER}"
-            exit 1
-          fi
-          test -f ios/IC24_IOS_BUILD.txt && cat ios/IC24_IOS_BUILD.txt
+          bash tool/verify_build_number.sh
       - name: CocoaPods
         script: |
           cd ios
@@ -182,8 +178,8 @@ workflows:
         script: |
           set -e
           echo "Gerando Idoso Care ${IC24_BUILD_NAME} (${IC24_BUILD_NUMBER}) — trains 2.0.0/2.0.1 fechados na Apple"
-          if [ "$IC24_BUILD_NUMBER" -le 67 ]; then
-            echo "ERRO: build deve ser > 67 (66 ja enviado ao TestFlight)"
+          if [ "$IC24_BUILD_NUMBER" -le 66 ]; then
+            echo "ERRO: build deve ser > 66 (66 ja enviado ao TestFlight — DUPLICATE)"
             exit 1
           fi
           if [ "$IC24_BUILD_NAME" = "2.0.0" ] || [ "$IC24_BUILD_NAME" = "2.0.1" ]; then
@@ -204,6 +200,8 @@ workflows:
             exit 1
           fi
           echo "Export options: $EXPORT_PLIST"
+          sed -i.bak "s/FLUTTER_BUILD_NAME=.*/FLUTTER_BUILD_NAME=${IC24_BUILD_NAME}/" ios/Flutter/Version.xcconfig
+          sed -i.bak "s/FLUTTER_BUILD_NUMBER=.*/FLUTTER_BUILD_NUMBER=${IC24_BUILD_NUMBER}/" ios/Flutter/Version.xcconfig
           if [ -f ios/Flutter/Generated.xcconfig ]; then
             sed -i.bak "s/FLUTTER_BUILD_NAME=.*/FLUTTER_BUILD_NAME=${IC24_BUILD_NAME}/" ios/Flutter/Generated.xcconfig
             sed -i.bak "s/FLUTTER_BUILD_NUMBER=.*/FLUTTER_BUILD_NUMBER=${IC24_BUILD_NUMBER}/" ios/Flutter/Generated.xcconfig
@@ -228,8 +226,8 @@ workflows:
           SHORT_VER=$(bash tool/ipa_bundle_version.sh "$IPA" --short)
           echo "CFBundleVersion no IPA: ${BUILD_NUM} (obrigatorio ${IC24_BUILD_NUMBER}, > 59)"
           echo "CFBundleShortVersionString no IPA: ${SHORT_VER} (obrigatorio ${IC24_BUILD_NAME}, > 2.0.1)"
-          if [ -z "${BUILD_NUM:-}" ] || [ "$BUILD_NUM" -le 67 ]; then
-            echo "ERRO: IPA build ${BUILD_NUM:-vazio} — deve ser > 67 (66 ja no TestFlight)"
+          if [ -z "${BUILD_NUM:-}" ] || [ "$BUILD_NUM" -le 66 ]; then
+            echo "ERRO: IPA build ${BUILD_NUM:-vazio} — deve ser > 66 (DUPLICATE na Apple)"
             exit 1
           fi
           if [ "${BUILD_NUM}" != "${IC24_BUILD_NUMBER}" ]; then
