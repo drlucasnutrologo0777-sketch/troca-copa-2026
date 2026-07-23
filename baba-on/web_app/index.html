@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#134175"/>
 <title>Babá ON</title>
-<!-- Babá ON iOS build 1.0.0+9 -->
+<!-- Babá ON iOS build 1.0.0+10 -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" href="favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
@@ -372,11 +372,11 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <textarea class="inp" id="cuid-bio" rows="4" style="height:auto;padding:12px 14px" placeholder="Ex.: 8 anos de experiência, plantões diurnos e 12x36…"></textarea>
 
       <label class="lbl">Foto de perfil (obrigatória)</label>
-      <div class="photo-pick" id="etapa2-foto-box" style="width:100px;height:100px;margin:0 0 16px;position:relative" onclick="document.getElementById('etapa2-foto-inp').click()">
-        <img id="etapa2-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
-        <span id="etapa2-foto-txt">📷 Toque para enviar foto</span>
-        <input type="file" id="etapa2-foto-inp" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilEtapa2(this)"/>
-      </div>
+      <label class="photo-pick" id="etapa2-foto-box" style="width:100px;height:100px;margin:0 0 16px;position:relative;display:flex;cursor:pointer;overflow:hidden;border-radius:50%">
+        <img id="etapa2-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;position:relative;z-index:1"/>
+        <span id="etapa2-foto-txt" style="position:relative;z-index:1">📷 Toque para enviar foto</span>
+        <input type="file" id="etapa2-foto-inp" accept="image/*,.heic,.heif" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;z-index:2" onchange="fotoPerfilEtapa2(this)"/>
+      </label>
 
       <label class="lbl">Especialidades</label>
       <div class="row2" style="margin-bottom:8px">
@@ -1614,9 +1614,6 @@ function ic24ToastDocsFaltando(docsMap){
   const msg=typeof ic24DocsFaltandoMsg==='function'?ic24DocsFaltandoMsg(docsMap):'RG frente, RG verso, comprovante e antecedentes';
   toast('Faltam: '+msg);
 }
-function ic24FotoPerfilOk(){
-  return !!(window._photoUploaded||window._pendingProfilePhoto||window._babaPainel?.photoUrl);
-}
 function irPesquisaDe(deOnde){
   window._pesquisaVoltar=deOnde||'mae-painel';
   show('pesquisa');
@@ -1695,10 +1692,13 @@ function irBabaEtapa3(){
   if(!ic24FotoPerfilOk()){ toast('Envie sua foto de perfil — toque no círculo acima'); return; }
   (async ()=>{
     try{
+      ic24InitFirebase();
+      if(!ic24Auth?.currentUser){ toast('Faça login para continuar'); return; }
       await ic24SalvarBaba();
       if(window._pendingProfilePhoto){
         await ic24UploadFotoPerfil(window._pendingProfilePhoto);
         window._pendingProfilePhoto=null;
+        window._photoLocalOk=false;
         window._photoUploaded=true;
       }
       ic24AplicarRotaCadastro({ complete:false, screen:'baba-etapa3', message:'Continue seu cadastro — documentos (etapa 3)' });
@@ -1722,6 +1722,7 @@ async function finalizarBaba(){
     if(window._pendingProfilePhoto){
       await ic24UploadFotoPerfil(window._pendingProfilePhoto);
       window._pendingProfilePhoto=null;
+      window._photoLocalOk=false;
       window._photoUploaded=true;
     }
     await ic24SalvarBaba();
@@ -1905,46 +1906,25 @@ function fotoPerfil(input){
   toast('Foto selecionada — será enviada ao Firebase ao continuar');
 }
 function fotoPerfilEtapa2(input){
-  const f=input.files[0];
-  if(!f)return;
-  const r=new FileReader();
-  r.onload=()=>{
-    const img=document.getElementById('etapa2-foto-preview');
-    if(img){ img.src=r.result; img.style.display='block'; }
-    const txt=document.getElementById('etapa2-foto-txt');
-    if(txt) txt.style.display='none';
-  };
-  r.readAsDataURL(f);
-  window._pendingProfilePhoto=f;
-  ic24InitFirebase();
-  if(!ic24Auth.currentUser){
-    toast('Foto selecionada — será enviada ao finalizar o cadastro');
-    return;
-  }
-  ic24UploadFotoPerfil(f).then((url)=>{
-    window._pendingProfilePhoto=null;
-    window._photoUploaded=true;
-    if(window._babaPainel) window._babaPainel.photoUrl=url;
-    toast('Foto salva no Firebase');
-  }).catch(e=>{ toast(e.message||'Erro ao enviar foto — tente JPG ou PNG'); input.value=''; window._pendingProfilePhoto=null; });
+  const f=input.files&&input.files[0];
+  if(!f){ toast('Não foi possível ler a foto — tente outra imagem'); return; }
+  ic24PreviewFotoPerfil(f,'etapa2-foto-preview','etapa2-foto-txt','etapa2-foto-box');
+  input.value='';
 }
 async function fotoPerfilPainel(input){
-  const f=input.files[0];
-  if(!f)return;
-  const prev=document.getElementById('cuid-foto-preview');
-  const txt=document.getElementById('cuid-foto-txt');
-  const r=new FileReader();
-  r.onload=()=>{ if(prev){ prev.src=r.result; prev.style.display='block'; } if(txt) txt.style.display='none'; };
-  r.readAsDataURL(f);
+  const f=input.files&&input.files[0];
+  if(!f){ toast('Não foi possível ler a foto'); return; }
+  ic24PreviewFotoPerfil(f,'cuid-foto-preview','cuid-foto-txt','cuid-foto-box');
   try{
     ic24InitFirebase();
     if(!ic24Auth.currentUser){ toast('Faça login como babá'); return; }
     await ic24UploadFotoPerfil(f);
+    window._pendingProfilePhoto=null;
+    window._photoLocalOk=false;
     window._photoUploaded=true;
-    if(window._babaPainel) window._babaPainel.photoUrl=(await ic24Db.collection('caregivers').doc(ic24Auth.currentUser.uid).get()).data()?.photoUrl;
     toast('Foto de perfil salva no Firebase Storage');
     await carregarPainelBaba();
-  }catch(e){ toast(e.message||'Erro ao salvar foto'); }
+  }catch(e){ toast(e.message||'Erro ao salvar foto — tente outra imagem'); }
 }
 function anexarDocCurriculo(docKey){
   const inp=document.createElement('input');

@@ -297,7 +297,7 @@ workflows:
         BUNDLE_ID: com.babaon.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         BO_BUILD_NAME: "1.0.0"
-        BO_BUILD_NUMBER: "9"
+        BO_BUILD_NUMBER: "10"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -317,6 +317,7 @@ workflows:
             exit 1
           fi
           grep -q "rg_frente" web_app/index.html || { echo "ERRO: etapa3 sem rg_frente"; exit 1; }
+          grep -q "ic24PreviewFotoPerfil" web_app/ic24-curriculo.js || { echo "ERRO: preview foto perfil ausente"; exit 1; }
           grep -q "curriculo-viewer" web_app/index.html || { echo "ERRO: visualizador curriculo ausente"; exit 1; }
           grep -q "IC24_DOCS_OBRIGATORIOS" web_app/firebase-ic24.js || { echo "ERRO: firebase-ic24.js"; exit 1; }
           if [ "${BO_BUILD_NUMBER}" -le 6 ]; then

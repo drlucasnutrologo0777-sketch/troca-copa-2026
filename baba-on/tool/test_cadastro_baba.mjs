@@ -57,5 +57,15 @@ ok('sem rg verso bloqueia', ic24AvaliarCadastroBaba(base, { ...obr, rg_verso: nu
 ok('curso opcional nao bloqueia', ic24AvaliarCadastroBaba(base, obr).complete);
 ok('msg so rg verso', ic24DocsFaltandoMsg({ rg_frente: { fileUrl: 'x' }, comprovante: { fileUrl: 'x' }, antecedentes: { fileUrl: 'x' } }) === 'RG verso');
 
+function ic24FotoPerfilOk() {
+  return !!(global._photoUploaded || global._pendingProfilePhoto || global._photoLocalOk);
+}
+global._photoLocalOk = true;
+ok('foto local ok permite continuar', ic24FotoPerfilOk());
+global._photoLocalOk = false;
+global._pendingProfilePhoto = null;
+global._photoUploaded = false;
+ok('sem foto bloqueia', !ic24FotoPerfilOk());
+
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

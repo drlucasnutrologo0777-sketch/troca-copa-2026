@@ -173,7 +173,41 @@ function ic24NormalizeUploadFile(file) {
 
 }
 
+/** Prévia local — NÃO faz upload (iOS HEIC + falha Firebase apagava a foto). */
+function ic24PreviewFotoPerfil(file, previewId, txtId, boxId) {
+  if (!file) return;
+  window._pendingProfilePhoto = file;
+  window._photoLocalOk = true;
+  const img = document.getElementById(previewId);
+  const txt = document.getElementById(txtId);
+  const box = boxId ? document.getElementById(boxId) : null;
+  const showPreview = (url) => {
+    if (img) {
+      img.src = url;
+      img.style.display = 'block';
+    }
+    if (txt) txt.style.display = 'none';
+    if (box) box.classList.add('has');
+  };
+  try {
+    showPreview(URL.createObjectURL(file));
+  } catch (_) {
+    const r = new FileReader();
+    r.onload = () => showPreview(r.result);
+    r.onerror = () => toast('Prévia indisponível — foto será enviada ao continuar');
+    r.readAsDataURL(file);
+  }
+  toast('Foto selecionada');
+}
 
+function ic24FotoPerfilOk() {
+  return !!(
+    window._photoUploaded ||
+    window._pendingProfilePhoto ||
+    window._photoLocalOk ||
+    (window._babaPainel && window._babaPainel.photoUrl)
+  );
+}
 
 async function ic24UploadFotoPerfil(file) {
 
