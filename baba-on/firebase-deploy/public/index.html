@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#134175"/>
 <title>Babá ON</title>
-<!-- Babá ON iOS build 1.0.0+10 -->
+<!-- Babá ON iOS build 1.0.0+11 — fix cadastro mãe/pai -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" href="favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
@@ -2020,20 +2020,54 @@ function renderDocsUploadShort(docsMap){
     return '<div class="list-item" style="cursor:pointer" onclick="anexarDocCurriculo(\''+k+'\')"><b>'+(meta?.label||k)+'</b><small>'+(done?'✓ Enviado — toque para substituir':'Pendente — toque para enviar foto')+'</small></div>';
   }).join('');
 }
+function validarEnderecoFam(){
+  const num=document.getElementById('fam-num').value.trim();
+  const cep=(document.getElementById('fam-cep').value||'').replace(/\D/g,'');
+  if(cep.length!==8){ toast('Informe um CEP válido (8 dígitos)'); return false; }
+  if(!document.getElementById('fam-rua').value.trim()){ toast('Toque em Buscar CEP ou preencha a rua'); return false; }
+  if(!num){ toast('Informe o número do endereço'); return false; }
+  if(!document.getElementById('fam-cidade').value.trim()){ toast('Cidade obrigatória — busque o CEP ou digite'); return false; }
+  return true;
+}
 async function finalizarFamilia(){
   const nome=document.getElementById('fam-nome').value.trim();
   const email=document.getElementById('fam-email').value.trim();
   const senha=document.getElementById('fam-senha').value;
   const senha2=document.getElementById('fam-senha2').value;
-  const num=document.getElementById('fam-num').value.trim();
-  if(!num){ toast('Informe o número do endereço'); return; }
-  if((document.getElementById('fam-cep').value||'').replace(/\D/g,'').length!==8){ toast('Informe um CEP válido'); return; }
-  try{
-    await ic24CriarConta({nome,email,senha,senha2,role:'family'});
+  if(!nome){ toast('Informe seu nome completo'); return; }
+  if(!email){ toast('Informe o e-mail'); return; }
+  if(!validarEnderecoFam()) return;
+  async function concluirFamilia(){
     await ic24SalvarFamilia();
-    toast('Cadastro família salvo no Firebase!');
-    setTimeout(async ()=>{ await carregarPainelFamilia(); show('mae-painel'); }, 1200);
-  }catch(e){ toast(ic24AuthError(e)||e.message||'Erro ao salvar'); }
+    window._cadastroRetomada=false;
+    toast('Cadastro concluído!');
+    await carregarPainelFamilia();
+    show('mae-painel');
+  }
+  try{
+    ic24InitFirebase();
+    if(ic24Auth.currentUser){
+      await ic24Db.collection('users').doc(ic24Auth.currentUser.uid).set({
+        fullName: nome,
+        email: email.trim().toLowerCase(),
+        role: 'family',
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      }, { merge: true });
+      await concluirFamilia();
+      return;
+    }
+    await ic24CriarConta({nome,email,senha,senha2,role:'family'});
+    await concluirFamilia();
+  }catch(e){
+    if(e&&e.code==='auth/email-already-in-use'){
+      try{
+        await ic24Entrar(email,senha);
+        await concluirFamilia();
+        return;
+      }catch(e2){ toast(ic24AuthError(e2)||e2.message||'E-mail já existe — confira a senha e use Entrar'); return; }
+    }
+    toast(ic24AuthError(e)||e.message||'Erro ao salvar');
+  }
 }
 function toast(msg){
   const t=document.getElementById('toast');

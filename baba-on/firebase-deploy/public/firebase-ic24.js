@@ -32,6 +32,8 @@ function ic24AuthError(err) {
     case 'auth/wrong-password':
     case 'auth/invalid-credential':
       return 'E-mail ou senha inválidos';
+    case 'permission-denied':
+      return 'Permissão negada — saia e entre de novo, ou atualize o app';
     default:
       return (err && err.message) || 'Erro de autenticação';
   }
@@ -162,12 +164,16 @@ async function ic24SalvarFamilia() {
   const crianca = document.getElementById('fam-crianca').value.trim();
   const necessidades = document.getElementById('fam-necessidades').value.trim();
   if (crianca || necessidades) {
-    await ic24Db.collection('patients').add({
-      name: crianca || 'Criança',
-      careNeeds: necessidades,
-      clientRef: ic24Db.collection('clients').doc(uid),
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+    try {
+      await ic24Db.collection('patients').add({
+        name: crianca || 'Criança',
+        careNeeds: necessidades,
+        clientRef: ic24Db.collection('clients').doc(uid),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    } catch (_) {
+      /* criança é opcional — não bloqueia cadastro do responsável */
+    }
   }
 }
 
