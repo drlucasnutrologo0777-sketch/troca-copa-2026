@@ -461,6 +461,8 @@ workflows:
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         MH_BUILD_NAME: "1.0.0"
         MH_BUILD_NUMBER: "1"
+        # Preencha apos criar o app no App Store Connect (Apps -> Medico de Casa -> ID numerico)
+        APP_STORE_APPLE_ID: ""
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -572,15 +574,36 @@ workflows:
           API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
           export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
           pip3 install --quiet PyJWT requests
-          APP_STORE_APPLE_ID=$(python3 tool/resolve_asc_apple_id.py)
-          echo "Bundle $BUNDLE_ID -> Apple ID $APP_STORE_APPLE_ID"
-          app-store-connect publish \
-            --path "$IPA" \
-            --private-key "@file:$API_KEY" \
-            --altool-additional-arguments "--apple-id $APP_STORE_APPLE_ID" \
-            --max-find-build-wait 900 \
-            --max-build-processing-wait 3600 \
-            --verbose
+          if [ -n "${APP_STORE_APPLE_ID:-}" ]; then
+            echo "Usando APP_STORE_APPLE_ID=${APP_STORE_APPLE_ID} (codemagic.yaml)"
+          else
+            APP_STORE_APPLE_ID=$(python3 tool/resolve_asc_apple_id.py 2>/dev/null || echo "")
+          fi
+          if [ -n "${APP_STORE_APPLE_ID:-}" ]; then
+            echo "Bundle $BUNDLE_ID -> Apple ID $APP_STORE_APPLE_ID"
+            app-store-connect publish \
+              --path "$IPA" \
+              --private-key "@file:$API_KEY" \
+              --altool-additional-arguments "--apple-id $APP_STORE_APPLE_ID" \
+              --max-find-build-wait 900 \
+              --max-build-processing-wait 3600 \
+              --verbose
+          else
+            echo "AVISO: app com.medicodecasa.app ainda nao no ASC — tentando upload direto (bundle do IPA)"
+            echo "Se falhar: rode medico-de-casa/CRIAR-APP-APPLE.bat e crie o app manualmente"
+            app-store-connect publish \
+              --path "$IPA" \
+              --private-key "@file:$API_KEY" \
+              --max-find-build-wait 900 \
+              --max-build-processing-wait 3600 \
+              --verbose || {
+                echo ""
+                echo "========== CRIE O APP NA APPLE (2 min) =========="
+                echo "https://appstoreconnect.apple.com/apps -> + -> Medico de Casa"
+                echo "Bundle: com.medicodecasa.app | SKU: medicodecasa001"
+                exit 1
+              }
+          fi
           echo "Upload concluido (build ${BUILD_NUM}). TestFlight no App Store Connect."
 
     artifacts:
