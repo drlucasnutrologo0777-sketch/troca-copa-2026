@@ -22,6 +22,7 @@ workflows:
         APP_STORE_CONNECT_API_KEY_PATH: ios/codemagic_signing/AuthKey_VHR75L74MJ.p8
         CERTIFICATE_PRIVATE_KEY_PATH: ios/codemagic_signing/ios_distribution_private_key.pem
         BUNDLE_ID: com.medicodecasa.app
+        APP_STORE_APPLE_ID: "6796102702"
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         MH_BUILD_NAME: "1.0.0"
         MH_BUILD_NUMBER: "1"
