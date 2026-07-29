@@ -1,0 +1,161 @@
+# MEDICO DE CASA — iOS TestFlight (mesma conta Apple do Troca Copa / Babá ON)
+# Repo root: MedicoHome/medico_home_app
+# Nao use Rebuild — sempre Start new build.
+
+workflows:
+  medico-casa-ios:
+    name: Medico de Casa — iOS TestFlight
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+      cancel_previous_builds: true
+
+    environment:
+      vars:
+        APP_STORE_CONNECT_ISSUER_ID: b681d77e-4c5b-4154-b3e4-962dab155c2d
+        APP_STORE_CONNECT_KEY_IDENTIFIER: VHR75L74MJ
+        APP_STORE_CONNECT_API_KEY_PATH: ios/codemagic_signing/AuthKey_VHR75L74MJ.p8
+        CERTIFICATE_PRIVATE_KEY_PATH: ios/codemagic_signing/ios_distribution_private_key.pem
+        BUNDLE_ID: com.medicodecasa.app
+        CM_CERTIFICATE_PASSWORD: TrocaCopa2026
+        MH_BUILD_NAME: "1.0.0"
+        MH_BUILD_NUMBER: "1"
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+
+    scripts:
+      - name: CONFIRMAR MEDICO DE CASA (nao Troca Copa / Idoso)
+        script: |
+          set -e
+          echo "========== MEDICO DE CASA — BUILD (pubspec) =========="
+          echo "Diretorio: $(pwd)"
+          test -f web_app/index.html || { echo "ERRO: web_app/index.html ausente"; exit 1; }
+          bash tool/verify_web_build.sh
+          bash tool/verify_build_number.sh
+          PUBSPEC_NUM=$(grep '^version:' pubspec.yaml | sed -E 's/version: .*\+([0-9]+)/\1/')
+          if [ "$PUBSPEC_NUM" != "$MH_BUILD_NUMBER" ]; then
+            echo "ERRO: pubspec +${PUBSPEC_NUM} != MH_BUILD_NUMBER ${MH_BUILD_NUMBER}"
+            exit 1
+          fi
+          grep -q 'documentos' web_app/index.html || { echo "ERRO: etapa documentos ausente"; exit 1; }
+          grep -q 'ic24AvaliarDocumentacaoCuidador' web_app/firebase-mh.js || { echo "ERRO: firebase-mh.js"; exit 1; }
+          grep -q 'in_app_purchase' pubspec.yaml || { echo "ERRO: in_app_purchase ausente"; exit 1; }
+          echo "Commit: $(git rev-parse --short HEAD 2>/dev/null || echo local)"
+      - name: Verificar credenciais Apple
+        script: |
+          set -e
+          API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
+          test -f "$API_KEY"
+          export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
+          openssl pkey -in "$API_KEY" -noout
+      - name: Perfil App Store
+        script: |
+          set -e
+          API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
+          CERT_KEY="$CERTIFICATE_PRIVATE_KEY_PATH"
+          if [ ! -f "$CERT_KEY" ]; then
+            echo "ERRO: chave privada nao encontrada em $CERT_KEY"
+            exit 1
+          fi
+          export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
+          export CERTIFICATE_PRIVATE_KEY="$(cat "$CERT_KEY")"
+          keychain initialize
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --create \
+            --certificate-key=@file:"$CERT_KEY" \
+            --verbose
+          keychain add-certificates
+          xcode-project use-profiles --project ios/Runner.xcodeproj
+      - name: Flutter pub get
+        script: |
+          set -e
+          rm -rf build/ios build/ios/ipa build/ios/archive .dart_tool
+          flutter clean
+          flutter pub get
+          flutter analyze
+          grep '^version:' pubspec.yaml
+          bash tool/verify_build_number.sh
+      - name: CocoaPods
+        script: cd ios && pod install
+      - name: Build IPA
+        script: |
+          set -e
+          echo "Gerando Medico de Casa ${MH_BUILD_NAME} (${MH_BUILD_NUMBER})"
+          grep -q 'allowingReadAccessTo' lib/screens/web_app_screen.dart || { echo "ERRO: WebView iOS file://"; exit 1; }
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${MH_BUILD_NAME}" ios/Runner/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${MH_BUILD_NUMBER}" ios/Runner/Info.plist
+          sed -i.bak "s/FLUTTER_BUILD_NAME=.*/FLUTTER_BUILD_NAME=${MH_BUILD_NAME}/" ios/Flutter/Version.xcconfig
+          sed -i.bak "s/FLUTTER_BUILD_NUMBER=.*/FLUTTER_BUILD_NUMBER=${MH_BUILD_NUMBER}/" ios/Flutter/Version.xcconfig
+          if [ -f ios/Flutter/Generated.xcconfig ]; then
+            sed -i.bak "s/FLUTTER_BUILD_NAME=.*/FLUTTER_BUILD_NAME=${MH_BUILD_NAME}/" ios/Flutter/Generated.xcconfig
+            sed -i.bak "s/FLUTTER_BUILD_NUMBER=.*/FLUTTER_BUILD_NUMBER=${MH_BUILD_NUMBER}/" ios/Flutter/Generated.xcconfig
+          fi
+          echo "${MH_BUILD_NUMBER}" > ios/MH_IOS_BUILD.txt
+          xcode-project use-profiles --project ios/Runner.xcodeproj
+          EXPORT_PLIST="$HOME/export_options.plist"
+          test -f "$EXPORT_PLIST"
+          rm -rf build/ios/ipa build/ios/archive
+          flutter build ipa --release \
+            --build-name="$MH_BUILD_NAME" \
+            --build-number="$MH_BUILD_NUMBER" \
+            --export-options-plist="$EXPORT_PLIST"
+          ls -la build/ios/ipa/
+          IPA_CHECK=$(find build/ios/ipa -name "*.ipa" | head -1)
+          IPA_BUILT=$(bash tool/ipa_bundle_version.sh "$IPA_CHECK" 2>/dev/null || echo "")
+          echo "CFBundleVersion no IPA gerado: ${IPA_BUILT} (obrigatorio ${MH_BUILD_NUMBER})"
+          if [ "${IPA_BUILT}" != "${MH_BUILD_NUMBER}" ]; then
+            echo "ERRO: IPA ${IPA_BUILT} != MH_BUILD_NUMBER ${MH_BUILD_NUMBER}"
+            exit 1
+          fi
+          bash tool/verify_web_build.sh --ipa "$IPA_CHECK"
+          bash tool/verify_build_number.sh
+      - name: Upload TestFlight
+        script: |
+          set -e
+          IPA=$(find build/ios/ipa -name "*.ipa" | head -1)
+          test -n "$IPA"
+          BUILD_NUM="${MH_BUILD_NUMBER}"
+          IPA_VER=$(bash tool/ipa_bundle_version.sh "$IPA" 2>/dev/null || echo "")
+          IPA_SHORT=$(bash tool/ipa_bundle_version.sh "$IPA" --short 2>/dev/null || echo "")
+          echo "IPA CFBundleVersion: ${IPA_VER} (obrigatorio ${BUILD_NUM})"
+          echo "IPA CFBundleShortVersionString: ${IPA_SHORT} (obrigatorio ${MH_BUILD_NAME})"
+          if [ "${IPA_VER}" != "${BUILD_NUM}" ]; then
+            echo "ERRO: IPA ${IPA_VER} != MH_BUILD_NUMBER ${BUILD_NUM}"
+            exit 1
+          fi
+          if [ "${IPA_SHORT}" != "${MH_BUILD_NAME}" ]; then
+            echo "ERRO: IPA marketing ${IPA_SHORT} != ${MH_BUILD_NAME}"
+            exit 1
+          fi
+          API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
+          export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
+          pip3 install --quiet PyJWT requests
+          APP_STORE_APPLE_ID=$(python3 tool/resolve_asc_apple_id.py)
+          echo "Bundle $BUNDLE_ID -> Apple ID $APP_STORE_APPLE_ID"
+          app-store-connect publish \
+            --path "$IPA" \
+            --private-key "@file:$API_KEY" \
+            --altool-additional-arguments "--apple-id $APP_STORE_APPLE_ID" \
+            --max-find-build-wait 900 \
+            --max-build-processing-wait 3600 \
+            --verbose
+          echo "Upload concluido (build ${BUILD_NUM}). TestFlight no App Store Connect."
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      email:
+        recipients:
+          - drlucasnutrologo0777@gmail.com
+        notify:
+          success: true
+          failure: true

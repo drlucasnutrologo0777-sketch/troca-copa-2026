@@ -1,0 +1,91 @@
+{
+  "project_info": {
+    "project_number": "361055634294",
+    "firebase_url": "https://idoso-care-24h-default-rtdb.firebaseio.com",
+    "project_id": "idoso-care-24h",
+    "storage_bucket": "idoso-care-24h.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361055634294:android:0b4bef85b8cfd6250ef057",
+        "android_client_info": {
+          "package_name": "com.idosocare24h.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "361055634294-fh9gj1u1niglu1qdq4n6nm4e6gvig3p2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZLyZWYPkXOK4TbvN1ZVEOwHjr2MxPa7E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "361055634294-fh9gj1u1niglu1qdq4n6nm4e6gvig3p2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "361055634294-34nidhb85ikkdv39tog8qnd11foiq1at.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycompany.idosocare24h"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361055634294:android:bade1426e8ea58cc0ef057",
+        "android_client_info": {
+          "package_name": "com.mycompany.idosocare24h"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "361055634294-t98pnb0pgcllecfe9h37rqg6kiop1a1l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mycompany.idosocare24h",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "361055634294-fh9gj1u1niglu1qdq4n6nm4e6gvig3p2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZLyZWYPkXOK4TbvN1ZVEOwHjr2MxPa7E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "361055634294-fh9gj1u1niglu1qdq4n6nm4e6gvig3p2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "361055634294-34nidhb85ikkdv39tog8qnd11foiq1at.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mycompany.idosocare24h"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

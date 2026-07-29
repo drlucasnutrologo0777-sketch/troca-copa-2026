@@ -1,0 +1,9 @@
+# Assinatura iOS — Medico de Casa
+
+| Arquivo | Origem |
+|---------|--------|
+| `AuthKey_VHR75L74MJ.p8` | App Store Connect → Users and Access → Keys |
+| `ios_distribution_private_key.pem` | Mesma chave da conta Troca Copa / Babá ON |
+| `ExportOptions.plist` | teamID G279FN9YW7 — bundle `com.medicodecasa.app` |
+
+No App Store Connect crie app com Bundle ID **com.medicodecasa.app** antes do primeiro build.

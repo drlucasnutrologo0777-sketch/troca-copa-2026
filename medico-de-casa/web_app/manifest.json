@@ -1,0 +1,14 @@
+{
+  "name": "Medico de Casa",
+  "short_name": "Medico de Casa",
+  "description": "Médicos visitadores em domicílio — credenciados e verificados",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#502D96",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "logo.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "logo.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

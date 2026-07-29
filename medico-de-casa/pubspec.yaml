@@ -1,0 +1,37 @@
+name: medico_home_app
+description: Medico de Casa — médicos visitadores em domicílio
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_inappwebview: ^6.1.5
+  firebase_core: ^3.14.0
+  firebase_auth: ^5.6.0
+  cloud_firestore: ^5.6.9
+  firebase_storage: ^12.4.7
+  google_fonts: ^6.3.3
+  provider: ^6.1.5
+  uuid: ^4.5.3
+  image_picker: ^1.1.2
+  intl: ^0.20.2
+  http: ^1.4.0
+  shared_preferences: ^2.5.3
+  path_provider: ^2.1.5
+  path: ^1.9.1
+  in_app_purchase: ^3.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - web_app/
