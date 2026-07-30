@@ -29,11 +29,16 @@ Assinatura em `ios/codemagic_signing/` (AuthKey + `ios_distribution_private_key.
 
 ## Atualizar versão (próximo build)
 
-1. `pubspec.yaml`: `version: 1.0.1+2`
+**Leia primeiro:** `ios/ASC_LAST_UPLOADED_BUILD.txt` = último build que a Apple já aceitou.  
+Novo build **obrigatoriamente maior** (ex.: Apple tem `2` → use `3`, `4`, …).
+
+1. `pubspec.yaml`: `version: 1.0.0+N`
 2. `ios/Flutter/Version.xcconfig`: name/number iguais
 3. `ios/MH_IOS_BUILD.txt`: só o build number
-4. `codemagic.yaml`: `MH_BUILD_NAME` / `MH_BUILD_NUMBER`
-5. Comentário em `web_app/index.html`: `<!-- Medico de Casa iOS build 1.0.1+2 — ... -->`
+4. `codemagic.yaml` (pasta do app **e** `troca_copa_app/codemagic.yaml`): `MH_BUILD_NAME` / `MH_BUILD_NUMBER`
+5. Comentário em `web_app/index.html`: `<!-- Medico de Casa iOS build 1.0.0+N -->`
+6. **Git push na main** → só depois **Start new build** no Codemagic
+7. Após upload OK: `ios/ASC_LAST_UPLOADED_BUILD.txt` = N enviado
 
 ## Links
 

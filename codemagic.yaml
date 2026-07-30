@@ -460,7 +460,7 @@ workflows:
         BUNDLE_ID: com.medicodecasa.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         MH_BUILD_NAME: "1.0.0"
-        MH_BUILD_NUMBER: "2"
+        MH_BUILD_NUMBER: "4"
         APP_STORE_APPLE_ID: "6796102702"
       flutter: stable
       xcode: latest
@@ -585,11 +585,95 @@ workflows:
             --max-build-processing-wait 3600 \
             --verbose
           echo "Upload concluido (build ${BUILD_NUM}). TestFlight no App Store Connect."
+          echo ""
+          echo "========== TESTFLIGHT INTERNO (NAO USE LINK PUBLICO) =========="
+          echo "1. ASC -> Medico de Casa -> TestFlight -> build ${BUILD_NUM}"
+          echo "2. Manage Compliance -> criptografia NAO"
+          echo "3. Groups: SO Internal (drlucas). NAO External."
+          echo "4. NAO Submit for Beta Review. NAO link testflight.apple.com/join/"
+          echo "5. iPhone icloud -> TestFlight -> puxar p/ atualizar"
+          echo "Plano B: workflow Medico de Casa — iOS Ad Hoc"
+          echo "==============================================================="
 
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
 
+    publishing:
+      email:
+        recipients:
+          - drlucasnutrologo0777@gmail.com
+        notify:
+          success: true
+          failure: true
+
+  medico-casa-adhoc-ios:
+    name: Medico de Casa — iOS Ad Hoc
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    working_directory: medico-de-casa
+    environment:
+      vars:
+        APP_STORE_CONNECT_ISSUER_ID: b681d77e-4c5b-4154-b3e4-962dab155c2d
+        APP_STORE_CONNECT_KEY_IDENTIFIER: VHR75L74MJ
+        APP_STORE_CONNECT_API_KEY_PATH: ../ios/codemagic_signing/AuthKey_VHR75L74MJ.p8
+        CERTIFICATE_PRIVATE_KEY_PATH: ../ios/codemagic_signing/ios_distribution_private_key.pem
+        BUNDLE_ID: com.medicodecasa.app
+        CM_CERTIFICATE_PASSWORD: TrocaCopa2026
+        MH_BUILD_NAME: "1.0.0"
+        MH_BUILD_NUMBER: "4"
+        # Cole o UDID do iPhone (40 caracteres) nas variaveis de ambiente do Codemagic
+        IPHONE_UDID: ""
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Validar UDID
+        script: |
+          set -e
+          if [ -z "${IPHONE_UDID:-}" ]; then
+            echo "ERRO: defina IPHONE_UDID nas variaveis do Codemagic (UDID do iPhone)"
+            echo "Ajustes > Geral > Informacoes > toque em Numero do modelo ate ver UDID"
+            exit 1
+          fi
+          echo "UDID: $IPHONE_UDID"
+      - name: Registrar iPhone + perfil Ad Hoc
+        script: |
+          set -e
+          API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
+          CERT_KEY="$CERTIFICATE_PRIVATE_KEY_PATH"
+          export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
+          export CERTIFICATE_PRIVATE_KEY="$(cat "$CERT_KEY")"
+          app-store-connect devices create \
+            --name "Medico Casa iPhone" \
+            --device-id "$IPHONE_UDID" \
+            --platform IOS || true
+          keychain initialize
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_AD_HOC \
+            --create \
+            --certificate-key=@file:"$CERT_KEY" \
+            --verbose
+          keychain add-certificates
+          xcode-project use-profiles --project ios/Runner.xcodeproj
+      - name: Flutter pub get
+        script: flutter pub get
+      - name: CocoaPods
+        script: cd ios && pod install
+      - name: Build IPA Ad Hoc
+        script: |
+          set -e
+          xcode-project use-profiles --project ios/Runner.xcodeproj
+          EXPORT_PLIST="$HOME/export_options.plist"
+          test -f "$EXPORT_PLIST"
+          flutter build ipa --release \
+            --build-name="$MH_BUILD_NAME" \
+            --build-number="$MH_BUILD_NUMBER" \
+            --export-options-plist="$EXPORT_PLIST"
+          ls -la build/ios/ipa/
+          echo "Baixe o .ipa em Artifacts e instale com Sideloadly (Windows) + cabo USB"
+    artifacts:
+      - build/ios/ipa/*.ipa
     publishing:
       email:
         recipients:
