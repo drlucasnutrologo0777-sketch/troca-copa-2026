@@ -234,7 +234,7 @@ class _WebAppScreenState extends State<WebAppScreen> {
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(color: Color(0xFF2E8B57)),
+                    CircularProgressIndicator(color: Color(0xFF502D96)),
                     SizedBox(height: 16),
                     Text('Carregando…', style: TextStyle(fontSize: 15)),
                   ],
