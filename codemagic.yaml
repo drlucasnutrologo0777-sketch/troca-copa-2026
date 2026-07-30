@@ -460,7 +460,7 @@ workflows:
         BUNDLE_ID: com.medicodecasa.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         MH_BUILD_NAME: "1.0.0"
-        MH_BUILD_NUMBER: "1"
+        MH_BUILD_NUMBER: "2"
         APP_STORE_APPLE_ID: "6796102702"
       flutter: stable
       xcode: latest
