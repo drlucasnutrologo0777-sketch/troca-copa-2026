@@ -622,8 +622,7 @@ workflows:
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         MH_BUILD_NAME: "1.0.0"
         MH_BUILD_NUMBER: "4"
-        # Cole o UDID do iPhone (40 caracteres) nas variaveis de ambiente do Codemagic
-        IPHONE_UDID: ""
+        # IPHONE_UDID: definir so na UI do Codemagic ao rodar este workflow (nao colocar vazio aqui)
       flutter: stable
       xcode: latest
       cocoapods: default
