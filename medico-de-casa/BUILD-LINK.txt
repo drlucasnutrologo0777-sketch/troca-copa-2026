@@ -1,0 +1,35 @@
+Medico de Casa — Build 1.0.0+7 (TestFlight)
+============================================
+
+HUB — iniciar build iOS
+  Codemagic apps:     https://codemagic.io/apps
+  Workflow:           Medico de Casa — iOS TestFlight
+  Repo:               drlucasnutrologo0777-sketch/troca-copa-2026
+  Branch:             main
+  Working directory:  medico-de-casa
+  Atalho local:       BUILD-7-CLIQUE.bat
+
+Upload TestFlight (App Store Connect)
+  TestFlight iOS:     https://appstoreconnect.apple.com/apps/6796102702/testflight/ios
+  App (geral):        https://appstoreconnect.apple.com/apps/6796102702
+  Beta publico:       https://testflight.apple.com/join/tnMrHP5Z
+
+Web / Firebase
+  App:                https://medico-de-casa.web.app
+  Suporte:            https://medico-de-casa.web.app/suporte.html
+
+Build atual
+  Versao:             1.0.0+7
+  Bundle stamp:       mh_v7_foto_perfil_ios
+  Ultimo ASC upload:  ios/ASC_LAST_UPLOADED_BUILD.txt (atualizar apos upload OK)
+
+O que mudou no build 7
+  - Foto perfil: galeria nativa iOS (nao depende do input file do WebView)
+  - Documentos CRM/RG/comprovante/diploma: mesma galeria nativa
+  - HEIC convertido para JPEG antes do upload Firebase
+
+Fluxo cadastro medico (testar no TestFlight build 7)
+  1. Criar conta -> endereco (CEP)
+  2. Sobre voce -> foto + especialidades + CRM -> Continuar
+  3. Anexar documentos (4 obrigatorios) -> Concluir cadastro
+  4. Menu principal (cuidador-painel)

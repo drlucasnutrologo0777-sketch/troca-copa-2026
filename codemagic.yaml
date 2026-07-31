@@ -460,7 +460,7 @@ workflows:
         BUNDLE_ID: com.medicodecasa.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         MH_BUILD_NAME: "1.0.0"
-        MH_BUILD_NUMBER: "6"
+        MH_BUILD_NUMBER: "7"
         APP_STORE_APPLE_ID: "6796102702"
       flutter: stable
       xcode: latest
@@ -621,7 +621,7 @@ workflows:
         BUNDLE_ID: com.medicodecasa.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         MH_BUILD_NAME: "1.0.0"
-        MH_BUILD_NUMBER: "6"
+        MH_BUILD_NUMBER: "7"
         # IPHONE_UDID: definir so na UI do Codemagic ao rodar este workflow (nao colocar vazio aqui)
       flutter: stable
       xcode: latest

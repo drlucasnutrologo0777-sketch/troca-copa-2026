@@ -25,7 +25,7 @@ workflows:
         APP_STORE_APPLE_ID: "6796102702"
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         MH_BUILD_NAME: "1.0.0"
-        MH_BUILD_NUMBER: "6"
+        MH_BUILD_NUMBER: "7"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -147,7 +147,7 @@ workflows:
             --max-find-build-wait 900 \
             --max-build-processing-wait 3600 \
             --verbose
-          echo "Upload concluido (build ${BUILD_NUM}). TestFlight no App Store Connect."
+          echo "Upload concluido (build ${BUILD_NUM}). TestFlight: https://appstoreconnect.apple.com/apps/6796102702/testflight/ios"
 
     artifacts:
       - build/ios/ipa/*.ipa

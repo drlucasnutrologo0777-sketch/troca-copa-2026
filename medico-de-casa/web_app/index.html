@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#502D96"/>
 <title>Medico de Casa</title>
-<!-- Medico de Casa iOS build 1.0.0+6 — distancia km + IAP + geo -->
+<!-- Medico de Casa iOS build 1.0.0+7 — foto perfil iPhone + distancia km + IAP -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" href="favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
@@ -342,10 +342,10 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <textarea class="inp" id="cuid-bio" rows="4" style="height:auto;padding:12px 14px" placeholder="Ex.: 8 anos em atendimento domiciliar, visitas de 30 a 60 min…"></textarea>
 
       <label class="lbl">Foto de perfil (obrigatória)</label>
-      <div class="photo-pick" id="etapa2-foto-box" style="width:100px;height:100px;margin:0 0 16px;position:relative" onclick="document.getElementById('etapa2-foto-inp').click()">
+      <div class="photo-pick" id="etapa2-foto-box" style="width:100px;height:100px;margin:0 0 16px;position:relative" role="button" tabindex="0" onclick="ic24AbrirFotoEtapa2(event)">
         <img id="etapa2-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
         <span id="etapa2-foto-txt">📷 Toque para enviar foto</span>
-        <input type="file" id="etapa2-foto-inp" accept="image/*,.heic,.heif" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilEtapa2(this)"/>
+        <input type="file" id="etapa2-foto-inp" accept="image/*,.heic,.heif" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;font-size:16px" onchange="fotoPerfilEtapa2(this)"/>
       </div>
 
       <label class="lbl">Especialidades (escolha até 3) *</label>
@@ -528,44 +528,44 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <strong>Opcionais:</strong> comprovante de especialidade (RQE), pós-graduação e outros certificados.
       </div>
       <p class="step" style="margin-top:12px">Obrigatórios *</p>
-      <div class="doc req" data-doc="crm" data-required="1">
+      <div class="doc req" data-doc="crm" data-required="1" onclick="ic24AbrirDocumento('crm', event)">
         <div class="ic">🩺</div>
         <div><b>CRM *</b><small>Carteira do Conselho Regional de Medicina</small></div>
         <span class="ok">✓</span>
         <input type="file" accept="image/*,.heic,.heif,application/pdf" onchange="anexar(this)"/>
       </div>
-      <div class="doc req" data-doc="rg" data-required="1">
+      <div class="doc req" data-doc="rg" data-required="1" onclick="ic24AbrirDocumento('rg', event)">
         <div class="ic">🪪</div>
         <div><b>RG *</b><small>Documento de identidade (frente e verso legíveis)</small></div>
         <span class="ok">✓</span>
         <input type="file" accept="image/*,.heic,.heif,application/pdf" onchange="anexar(this)"/>
       </div>
-      <div class="doc req" data-doc="comprovante" data-required="1">
+      <div class="doc req" data-doc="comprovante" data-required="1" onclick="ic24AbrirDocumento('comprovante', event)">
         <div class="ic">🏠</div>
         <div><b>Comprovante de endereço *</b><small>Conta de luz, água ou telefone (até 90 dias)</small></div>
         <span class="ok">✓</span>
         <input type="file" accept="image/*,.heic,.heif,application/pdf" onchange="anexar(this)"/>
       </div>
-      <div class="doc req" data-doc="diploma" data-required="1">
+      <div class="doc req" data-doc="diploma" data-required="1" onclick="ic24AbrirDocumento('diploma', event)">
         <div class="ic">🎓</div>
         <div><b>Diploma de Medicina *</b><small>Graduação em Medicina</small></div>
         <span class="ok">✓</span>
         <input type="file" accept="image/*,.heic,.heif,application/pdf" onchange="anexar(this)"/>
       </div>
       <p class="step" style="margin-top:16px">Opcionais</p>
-      <div class="doc" data-doc="especialidade">
+      <div class="doc" data-doc="especialidade" onclick="ic24AbrirDocumento('especialidade', event)">
         <div class="ic">📋</div>
         <div><b>Comprovante de especialidade</b><small>RQE, título ou certificado de residência (opcional)</small></div>
         <span class="ok">✓</span>
         <input type="file" accept="image/*,.heic,.heif,application/pdf" onchange="anexar(this)"/>
       </div>
-      <div class="doc" data-doc="pos">
+      <div class="doc" data-doc="pos" onclick="ic24AbrirDocumento('pos', event)">
         <div class="ic">📜</div>
         <div><b>Diploma de pós-graduação</b><small>Especialização, MBA ou mestrado (opcional)</small></div>
         <span class="ok">✓</span>
         <input type="file" accept="image/*,.heic,.heif,application/pdf" onchange="anexar(this)"/>
       </div>
-      <div class="doc" data-doc="outros">
+      <div class="doc" data-doc="outros" onclick="ic24AbrirDocumento('outros', event)">
         <div class="ic">📎</div>
         <div><b>Outros diplomas / certificados</b><small>Cursos e certificações extras (opcional)</small></div>
         <span class="ok">✓</span>
@@ -1631,7 +1631,7 @@ function removeEspecialidade(i){
 }
 async function irCuidadorEtapa3(){
   if(!document.getElementById('cuid-bio').value.trim()){ toast('Escreva um pouco sobre você'); return; }
-  if(!window._photoUploaded && !window._pendingProfilePhoto && !window._photoLocalOk && !(window._cuidPainel?.photoUrl)){
+  if(typeof ic24FotoPerfilOk==='function' ? !ic24FotoPerfilOk() : (!window._photoUploaded && !window._pendingProfilePhoto && !window._photoLocalOk && !(window._cuidPainel?.photoUrl))){
     toast('Envie sua foto de perfil — toque no círculo acima'); return;
   }
   try{
@@ -1648,7 +1648,7 @@ async function irCuidadorEtapa3(){
   }catch(e){ toast(e.message||'Erro ao salvar perfil'); }
 }
 async function finalizarCuidador(){
-  if(!window._photoUploaded && !window._pendingProfilePhoto && !window._photoLocalOk && !(window._cuidPainel?.photoUrl)){
+  if(typeof ic24FotoPerfilOk==='function' ? !ic24FotoPerfilOk() : (!window._photoUploaded && !window._pendingProfilePhoto && !window._photoLocalOk && !(window._cuidPainel?.photoUrl))){
     toast('Foto de perfil obrigatória — volte à etapa 2'); show('cuidador-etapa2'); return;
   }
   try{
@@ -1823,43 +1823,64 @@ async function entrar(){
     show(rota.screen);
   }catch(err){ toast(ic24AuthError(err)); }
 }
-function fotoPerfil(input){
-  const f=input.files[0];
-  if(!f)return;
-  const r=new FileReader();
-  r.onload=()=>{
-    const img=document.getElementById('fotoPreview');
-    img.src=r.result; img.style.display='block';
-    document.getElementById('fotoIcon').style.display='none';
-    document.getElementById('fotoTxt').style.display='none';
-    document.getElementById('fotoBox').classList.add('has');
-  };
-  r.readAsDataURL(f);
-  window._pendingProfilePhoto=f;
-  toast('Foto selecionada — será enviada ao Firebase ao continuar');
+function ic24IsNativeShell(){
+  return !!(window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler==='function');
 }
-function fotoPerfilEtapa2(input){
-  const f=input.files[0];
-  if(!f)return;
-  const r=new FileReader();
-  r.onload=()=>{
-    const img=document.getElementById('etapa2-foto-preview');
-    if(img){ img.src=r.result; img.style.display='block'; }
-    const txt=document.getElementById('etapa2-foto-txt');
-    if(txt) txt.style.display='none';
-  };
-  r.readAsDataURL(f);
-  window._pendingProfilePhoto=f;
+async function ic24ProcessarFotoEtapa2(file){
+  if(!file) return;
+  await ic24PreviewFotoPerfil(file,'etapa2-foto-preview','etapa2-foto-txt','etapa2-foto-box');
   ic24InitFirebase();
   if(!ic24Auth.currentUser){
-    toast('Foto selecionada — será enviada ao finalizar o cadastro');
+    toast('Foto selecionada — será enviada ao continuar');
     return;
   }
-  ic24UploadFotoPerfil(f).then(()=>{
+  try{
+    await ic24UploadFotoPerfil(window._pendingProfilePhoto||file);
     window._pendingProfilePhoto=null;
     window._photoUploaded=true;
-    toast('Foto salva no Firebase');
-  }).catch(e=>{ toast(e.message||'Erro ao enviar foto — tente outra imagem'); input.value=''; window._pendingProfilePhoto=null; });
+    window._photoLocalOk=true;
+    toast('Foto salva');
+  }catch(e){
+    window._photoLocalOk=true;
+    window._pendingProfilePhoto=window._pendingProfilePhoto||file;
+    toast((e.message||'Upload falhou')+' — toque Continuar para tentar de novo');
+  }
+}
+async function ic24AbrirFotoEtapa2(ev){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+  if(ic24IsNativeShell()){
+    try{
+      const r=await window.flutter_inappwebview.callHandler('ic24PickGalleryImage');
+      if(!r||!r.ok){
+        if(r&&r.cancelled) return;
+        toast((r&&r.error)||'Não foi possível abrir a galeria');
+        return;
+      }
+      const bin=atob(r.base64);
+      const arr=new Uint8Array(bin.length);
+      for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+      const file=new File([arr], r.name||'photo.jpg', {type:r.mime||'image/jpeg'});
+      await ic24ProcessarFotoEtapa2(file);
+    }catch(e){ toast(e.message||'Erro ao escolher foto'); }
+    return;
+  }
+  document.getElementById('etapa2-foto-inp').click();
+}
+async function fotoPerfil(input){
+  const f=input.files&&input.files[0];
+  if(!f) return;
+  window._pendingProfilePhoto=f;
+  window._photoLocalOk=true;
+  await ic24PreviewFotoPerfil(f,'fotoPreview','fotoTxt','fotoBox');
+  const icon=document.getElementById('fotoIcon');
+  if(icon) icon.style.display='none';
+  toast('Foto selecionada — será enviada ao Firebase ao continuar');
+}
+async function fotoPerfilEtapa2(input){
+  const f=input.files&&input.files[0];
+  if(!f) return;
+  await ic24ProcessarFotoEtapa2(f);
+  input.value='';
 }
 async function fotoPerfilPainel(input){
   const f=input.files[0];
@@ -1878,34 +1899,52 @@ async function fotoPerfilPainel(input){
   }catch(e){ toast(e.message||'Erro ao salvar foto'); }
 }
 function anexarDocCurriculo(docKey){
-  const inp=document.createElement('input');
-  inp.type='file';
-  inp.accept='image/*,.heic,.heif,application/pdf';
-  inp.onchange=()=>{
-    if(!inp.files[0]) return;
-    ic24UploadDocumento(docKey,inp.files[0]).then(()=>{
-      toast('Documento enviado ao Firebase');
-      carregarPainelCuidador();
-    }).catch(e=>toast(e.message||'Erro no upload'));
-  };
-  inp.click();
+  ic24AbrirDocumento(docKey);
+}
+async function ic24FileFromNativePick(r){
+  const bin=atob(r.base64);
+  const arr=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+  return new File([arr], r.name||'doc.jpg', {type:r.mime||'image/jpeg'});
+}
+async function ic24EnviarDocumento(docKey, file){
+  if(!file) return;
+  ic24InitFirebase();
+  if(!ic24Auth.currentUser){ toast('Faça login como médico'); return; }
+  const row=document.querySelector('#documentos .doc[data-doc="'+docKey+'"]');
+  const nome=row?.querySelector('b')?.textContent||docKey;
+  toast('Enviando '+String(nome).split('—')[0].trim()+'…');
+  try{
+    await ic24UploadDocumento(docKey, file);
+    if(row) row.classList.add('done');
+    toast('Salvo no Firebase: '+String(nome).split('—')[0].trim());
+    if(typeof syncDocumentosUI==='function') await syncDocumentosUI();
+    if(typeof carregarPainelCuidador==='function') carregarPainelCuidador();
+  }catch(e){ toast(e.message||'Erro no upload — tente outra foto'); }
+}
+async function ic24AbrirDocumento(docKey, ev){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+  if(ic24IsNativeShell()){
+    try{
+      const r=await window.flutter_inappwebview.callHandler('ic24PickGalleryImage');
+      if(!r||!r.ok){
+        if(r&&r.cancelled) return;
+        toast((r&&r.error)||'Não foi possível abrir a galeria');
+        return;
+      }
+      await ic24EnviarDocumento(docKey, await ic24FileFromNativePick(r));
+    }catch(e){ toast(e.message||'Erro ao escolher arquivo'); }
+    return;
+  }
+  const row=document.querySelector('#documentos .doc[data-doc="'+docKey+'"]');
+  const inp=row?.querySelector('input[type=file]');
+  if(inp) inp.click();
 }
 function anexar(input){
   if(!input.files[0])return;
-  ic24InitFirebase();
-  if(!ic24Auth.currentUser){ toast('Faça login como médico'); return; }
   const docKey=input.closest('.doc')?.getAttribute('data-doc');
-  const nome=input.closest('.doc')?.querySelector('b')?.textContent||docKey;
   if(!docKey){ toast('Tipo de documento inválido'); return; }
-  const row=input.closest('.doc');
-  toast('Enviando '+nome.split('—')[0].trim()+'…');
-  ic24UploadDocumento(docKey,input.files[0]).then(async ()=>{
-    if(row) row.classList.add('done');
-    input.value='';
-    toast('Salvo no Firebase: '+nome.split('—')[0].trim());
-    if(typeof syncDocumentosUI==='function') await syncDocumentosUI();
-    if(typeof carregarPainelCuidador==='function') carregarPainelCuidador();
-  }).catch(e=>{ input.value=''; toast(e.message||'Erro no upload — tente outra foto'); });
+  ic24EnviarDocumento(docKey, input.files[0]).finally(()=>{ input.value=''; });
 }
 async function finalizar(){
   return finalizarMedicoHome();

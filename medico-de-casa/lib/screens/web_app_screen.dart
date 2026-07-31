@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../services/ic24_iap_service.dart';
 import '../services/web_app_bundle.dart';
@@ -76,6 +78,29 @@ class _WebAppScreenState extends State<WebAppScreen> {
     );
   }
 
+  Future<Map<String, dynamic>> _pickGalleryImage() async {
+    try {
+      final picker = ImagePicker();
+      final xfile = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 88,
+        maxWidth: 1600,
+      );
+      if (xfile == null) {
+        return {'ok': false, 'cancelled': true};
+      }
+      final bytes = await xfile.readAsBytes();
+      return {
+        'ok': true,
+        'base64': base64Encode(bytes),
+        'name': xfile.name.isNotEmpty ? xfile.name : 'photo.jpg',
+        'mime': 'image/jpeg',
+      };
+    } catch (e) {
+      return {'ok': false, 'error': e.toString()};
+    }
+  }
+
   void _registerNativeBridge(InAppWebViewController controller) {
     controller.addJavaScriptHandler(
       handlerName: 'ic24PurchasePlatformFee',
@@ -102,6 +127,16 @@ class _WebAppScreenState extends State<WebAppScreen> {
           'price': svc.precoExibicao,
         };
       },
+    );
+
+    controller.addJavaScriptHandler(
+      handlerName: 'ic24PickGalleryImage',
+      callback: (args) => _pickGalleryImage(),
+    );
+
+    controller.addJavaScriptHandler(
+      handlerName: 'ic24PickProfilePhoto',
+      callback: (args) => _pickGalleryImage(),
     );
   }
 

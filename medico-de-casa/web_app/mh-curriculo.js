@@ -136,8 +136,8 @@ async function ic24ConvertToJpegBlob(file) {
   });
 }
 
-/** Prévia local — mantém arquivo se upload falhar (iOS). */
-function ic24PreviewFotoPerfil(file, previewId, txtId, boxId) {
+/** Prévia local — mantém arquivo se upload falhar (iOS). Converte HEIC antes da prévia. */
+async function ic24PreviewFotoPerfil(file, previewId, txtId, boxId) {
   if (!file) return;
   window._pendingProfilePhoto = file;
   window._photoLocalOk = true;
@@ -152,13 +152,24 @@ function ic24PreviewFotoPerfil(file, previewId, txtId, boxId) {
     if (txt) txt.style.display = 'none';
     if (box) box.classList.add('has');
   };
+  let previewFile = file;
+  const name = (file.name || '').toLowerCase();
+  const isHeic = /heic|heif/i.test(file.type || '') || /heic|heif/i.test(name);
+  if (isHeic || !file.type || file.type === 'application/octet-stream') {
+    try {
+      previewFile = await ic24ConvertToJpegBlob(file);
+      window._pendingProfilePhoto = previewFile;
+    } catch (_) {
+      /* mantém original — upload tenta converter depois */
+    }
+  }
   try {
-    show(URL.createObjectURL(file));
+    show(URL.createObjectURL(previewFile));
   } catch (_) {
     const r = new FileReader();
     r.onload = () => show(r.result);
     r.onerror = () => toast('Prévia indisponível — foto será enviada ao continuar');
-    r.readAsDataURL(file);
+    r.readAsDataURL(previewFile);
   }
 }
 
