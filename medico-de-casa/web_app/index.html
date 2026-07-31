@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#502D96"/>
 <title>Medico de Casa</title>
-<!-- Medico de Casa iOS build 1.0.0+5 — splash/logo medico (nao Idoso) -->
+<!-- Medico de Casa iOS build 1.0.0+6 — distancia km + IAP + geo -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" href="favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
@@ -345,7 +345,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <div class="photo-pick" id="etapa2-foto-box" style="width:100px;height:100px;margin:0 0 16px;position:relative" onclick="document.getElementById('etapa2-foto-inp').click()">
         <img id="etapa2-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
         <span id="etapa2-foto-txt">📷 Toque para enviar foto</span>
-        <input type="file" id="etapa2-foto-inp" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilEtapa2(this)"/>
+        <input type="file" id="etapa2-foto-inp" accept="image/*,.heic,.heif" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilEtapa2(this)"/>
       </div>
 
       <label class="lbl">Especialidades (escolha até 3) *</label>
@@ -441,7 +441,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <img id="fotoPreview" alt="" style="display:none"/>
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#502D96" stroke-width="2" id="fotoIcon"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
         <span id="fotoTxt">Toque para<br/>foto do perfil</span>
-        <input type="file" accept="image/*" onchange="fotoPerfil(this)"/>
+        <input type="file" accept="image/*,.heic,.heif" onchange="fotoPerfil(this)"/>
       </label>
 
       <label class="lbl">Nome completo</label>
@@ -522,9 +522,9 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <p class="step" id="documentos-step-label">Etapa 3 de 3 — Documentos</p>
       <div class="progress" id="documentos-progress"><i class="done"></i><i class="done"></i><i class="done"></i></div>
       <h1 class="h1">Anexar documentos</h1>
-      <p class="hint">Envie fotos legíveis. Obrigatórios para abrir sua área principal: CRM, comprovante de endereço e diploma de medicina.</p>
+      <p class="hint">Envie fotos legíveis. Obrigatórios: CRM, RG, comprovante de endereço e diploma de medicina.</p>
       <div class="note">
-        <strong>Obrigatórios:</strong> CRM, comprovante de endereço e diploma de medicina.<br>
+        <strong>Obrigatórios:</strong> CRM, RG, comprovante de endereço e diploma de medicina.<br>
         <strong>Opcionais:</strong> comprovante de especialidade (RQE), pós-graduação e outros certificados.
       </div>
       <p class="step" style="margin-top:12px">Obrigatórios *</p>
@@ -532,38 +532,44 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
         <div class="ic">🩺</div>
         <div><b>CRM *</b><small>Carteira do Conselho Regional de Medicina</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif,application/pdf" onchange="anexar(this)"/>
+      </div>
+      <div class="doc req" data-doc="rg" data-required="1">
+        <div class="ic">🪪</div>
+        <div><b>RG *</b><small>Documento de identidade (frente e verso legíveis)</small></div>
+        <span class="ok">✓</span>
+        <input type="file" accept="image/*,.heic,.heif,application/pdf" onchange="anexar(this)"/>
       </div>
       <div class="doc req" data-doc="comprovante" data-required="1">
         <div class="ic">🏠</div>
         <div><b>Comprovante de endereço *</b><small>Conta de luz, água ou telefone (até 90 dias)</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif,application/pdf" onchange="anexar(this)"/>
       </div>
       <div class="doc req" data-doc="diploma" data-required="1">
         <div class="ic">🎓</div>
         <div><b>Diploma de Medicina *</b><small>Graduação em Medicina</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif,application/pdf" onchange="anexar(this)"/>
       </div>
       <p class="step" style="margin-top:16px">Opcionais</p>
       <div class="doc" data-doc="especialidade">
         <div class="ic">📋</div>
-        <div><b>Comprovante de especialidade</b><small>RQE, título ou certificado de residência</small></div>
+        <div><b>Comprovante de especialidade</b><small>RQE, título ou certificado de residência (opcional)</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif,application/pdf" onchange="anexar(this)"/>
       </div>
       <div class="doc" data-doc="pos">
         <div class="ic">📜</div>
-        <div><b>Diploma de pós-graduação</b><small>Especialização, MBA ou mestrado</small></div>
+        <div><b>Diploma de pós-graduação</b><small>Especialização, MBA ou mestrado (opcional)</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif,application/pdf" onchange="anexar(this)"/>
       </div>
       <div class="doc" data-doc="outros">
         <div class="ic">📎</div>
-        <div><b>Outros diplomas / certificados</b><small>Cursos e certificações extras</small></div>
+        <div><b>Outros diplomas / certificados</b><small>Cursos e certificações extras (opcional)</small></div>
         <span class="ok">✓</span>
-        <input type="file" accept="image/*" onchange="anexar(this)"/>
+        <input type="file" accept="image/*,.heic,.heif,application/pdf" onchange="anexar(this)"/>
       </div>
       <button class="btn btn-p" type="button" style="margin-top:16px" onclick="finalizarMedicoHome()">Concluir cadastro — abrir menu principal</button>
     </div>
@@ -930,6 +936,12 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
     </div>
     <div class="pad" style="display:flex;flex-direction:column;min-height:70vh">
       <div class="note" id="chatLockNote">Chat bloqueado — feche o negócio com o médico em Minhas ofertas para conversar.</div>
+      <div class="note" id="chatCrmAviso" style="display:none;margin-bottom:12px;font-size:13px;line-height:1.45">
+        <strong>Lembrete — confira o CRM do médico</strong><br/>
+        Antes da visita, solicite o <strong>currículo Lates</strong> (inclui CRM, diploma e documentos).
+        Você também pode pedir o número do CRM aqui no chat.
+        <button class="btn btn-o" type="button" style="margin-top:10px;height:42px;width:100%" onclick="irSolicitarCrmNoChat()">Solicitar currículo e CRM</button>
+      </div>
       <div class="chat-msgs" id="chatMsgs"></div>
       <div class="chat-bar">
         <input class="inp" id="chatInput" placeholder="Digite sua mensagem..." style="margin:0"/>
@@ -1046,11 +1058,13 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
       <div class="photo-pick" id="cuid-foto-box" style="width:100px;height:100px;margin:0 0 16px;position:relative" onclick="document.getElementById('cuid-foto-inp').click()">
         <img id="cuid-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
         <span id="cuid-foto-txt">📷 Toque para enviar foto</span>
-        <input type="file" id="cuid-foto-inp" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilPainel(this)"/>
+        <input type="file" id="cuid-foto-inp" accept="image/*,.heic,.heif" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="fotoPerfilPainel(this)"/>
       </div>
       <label class="lbl">CPF</label>
       <input class="inp" id="cuid-cpf" placeholder="000.000.000-00" maxlength="14" oninput="maskCpf(this)"/>
       <div class="cv" id="cuid-curriculo-dados"></div>
+      <p class="step" style="margin-top:14px">Solicitações de currículo</p>
+      <div id="cuid-cv-solicitacoes"></div>
       <div class="note" style="margin-top:12px">
         <strong>Documentos verificados pelo app</strong><br/>
         ✓ CRM ativo &nbsp; ✓ Diploma de Medicina<br/>
@@ -1498,6 +1512,7 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
 <script src="pix.js"></script>
 <script src="firebase-mh.js"></script>
 <script src="mh-curriculo.js"></script>
+<script src="mh-geo.js"></script>
 <script src="ic24-ofertas.js"></script>
 <script src="ic24-cobranca.js"></script>
 <script src="ic24-disponibilidade.js"></script>
@@ -1616,7 +1631,7 @@ function removeEspecialidade(i){
 }
 async function irCuidadorEtapa3(){
   if(!document.getElementById('cuid-bio').value.trim()){ toast('Escreva um pouco sobre você'); return; }
-  if(!window._photoUploaded && !window._pendingProfilePhoto && !(window._cuidPainel?.photoUrl)){
+  if(!window._photoUploaded && !window._pendingProfilePhoto && !window._photoLocalOk && !(window._cuidPainel?.photoUrl)){
     toast('Envie sua foto de perfil — toque no círculo acima'); return;
   }
   try{
@@ -1629,11 +1644,11 @@ async function irCuidadorEtapa3(){
     window._docVoltar='cuidador-etapa2';
     await syncDocumentosUI();
     show('documentos');
-    toast('Etapa 3: envie CRM, comprovante e diploma');
+    toast('Etapa 3: envie CRM, RG, comprovante e diploma');
   }catch(e){ toast(e.message||'Erro ao salvar perfil'); }
 }
 async function finalizarCuidador(){
-  if(!window._photoUploaded && !window._pendingProfilePhoto && !(window._cuidPainel?.photoUrl)){
+  if(!window._photoUploaded && !window._pendingProfilePhoto && !window._photoLocalOk && !(window._cuidPainel?.photoUrl)){
     toast('Foto de perfil obrigatória — volte à etapa 2'); show('cuidador-etapa2'); return;
   }
   try{
@@ -1865,7 +1880,7 @@ async function fotoPerfilPainel(input){
 function anexarDocCurriculo(docKey){
   const inp=document.createElement('input');
   inp.type='file';
-  inp.accept='image/*';
+  inp.accept='image/*,.heic,.heif,application/pdf';
   inp.onchange=()=>{
     if(!inp.files[0]) return;
     ic24UploadDocumento(docKey,inp.files[0]).then(()=>{
@@ -1882,11 +1897,15 @@ function anexar(input){
   const docKey=input.closest('.doc')?.getAttribute('data-doc');
   const nome=input.closest('.doc')?.querySelector('b')?.textContent||docKey;
   if(!docKey){ toast('Tipo de documento inválido'); return; }
-  ic24UploadDocumento(docKey,input.files[0]).then(()=>{
-    input.closest('.doc').classList.add('done');
-    toast('Enviado: '+nome.split('—')[0].trim()+' — salvo no Firebase');
+  const row=input.closest('.doc');
+  toast('Enviando '+nome.split('—')[0].trim()+'…');
+  ic24UploadDocumento(docKey,input.files[0]).then(async ()=>{
+    if(row) row.classList.add('done');
+    input.value='';
+    toast('Salvo no Firebase: '+nome.split('—')[0].trim());
+    if(typeof syncDocumentosUI==='function') await syncDocumentosUI();
     if(typeof carregarPainelCuidador==='function') carregarPainelCuidador();
-  }).catch(e=>toast(e.message||'Erro no upload'));
+  }).catch(e=>{ input.value=''; toast(e.message||'Erro no upload — tente outra foto'); });
 }
 async function finalizar(){
   return finalizarMedicoHome();
@@ -1901,11 +1920,50 @@ async function solicitarCurriculoContratante(){
     const box=document.getElementById('pesquisa-curriculo-link');
     if(box){
       box.style.display='block';
-      box.innerHTML='<strong>Currículo liberado:</strong><br/><a href="'+fullLink+'" target="_blank" rel="noopener">'+fullLink+'</a>';
+      box.innerHTML='<strong>Solicitação enviada — aguardando médico autorizar.</strong><br/>Link (libera após autorização):<br/><a href="'+fullLink+'" target="_blank" rel="noopener">'+fullLink+'</a>';
     }
-    window.open(fullLink,'_blank');
-    toast('Currículo Lates gerado — link válido por 7 dias');
+    toast('Pedido enviado — o médico precisa autorizar no currículo');
   }catch(e){ toast(e.message||'Erro ao solicitar currículo'); }
+}
+function renderSolicitacoesCurriculoCuidador(list){
+  window._cvSolicitacoes=list||[];
+  const notif=document.getElementById('cuid-notificacoes');
+  const box=document.getElementById('cuid-cv-solicitacoes');
+  const pending=(list||[]).filter(r=>r.status==='pending');
+  if(notif){
+    if(pending.length){
+      notif.style.display='block';
+      notif.className='note';
+      notif.innerHTML='<strong>'+pending.length+' paciente(s) pediram currículo.</strong> Abra <b>Currículo</b> e toque em Autorizar.';
+    }else{
+      notif.style.display='none';
+      notif.innerHTML='';
+    }
+  }
+  if(!box) return;
+  if(!pending.length){
+    box.innerHTML='<p class="hint">Nenhuma solicitação pendente. Quando um paciente pedir, aparece aqui para você autorizar o acesso aos documentos.</p>';
+    return;
+  }
+  box.innerHTML=pending.map(r=>{
+    const tok=String(r.token||r.id||'').replace(/\\/g,'').replace(/'/g,'');
+    return '<div class="list-item" style="margin-bottom:10px"><b>'+escapeHtml(r.familyName||'Paciente')+'</b><small>Pediu acesso ao currículo e documentos</small><button class="btn btn-p" type="button" style="margin-top:10px;height:44px;width:100%" onclick="enviarCurriculoAoFamilia(\''+tok+'\')">Autorizar — liberar currículo</button></div>';
+  }).join('');
+}
+async function enviarCurriculoAoFamilia(token){
+  try{
+    ic24InitFirebase();
+    const r=await ic24EnviarCurriculoSolicitacao(token);
+    toast('Currículo autorizado — paciente já pode abrir o link');
+    await carregarPainelCuidador();
+    renderSolicitacoesCurriculoCuidador((window._cvSolicitacoes||[]).filter(x=>(x.token||x.id)!==token));
+  }catch(e){ toast(e.message||'Erro ao autorizar currículo'); }
+}
+let _cvListenUnsub=null;
+function iniciarListenCurriculoCuidador(uid){
+  if(!uid||typeof ic24ListenSolicitacoesCurriculoDoctor!=='function') return;
+  if(_cvListenUnsub) _cvListenUnsub();
+  _cvListenUnsub=ic24ListenSolicitacoesCurriculoDoctor(uid,renderSolicitacoesCurriculoCuidador);
 }
 async function salvarCpfEClassificar(){
   const cpf=document.getElementById('cuid-cpf')?.value?.trim();
@@ -1920,11 +1978,12 @@ async function salvarCpfEClassificar(){
 function renderDocsUploadShort(docsMap){
   const box=document.getElementById('cuid-docs-upload');
   if(!box) return;
-  const keys=['crm','comprovante','diploma','especialidade','pos','outros'];
+  const keys=['crm','rg','comprovante','diploma','especialidade','pos','outros'];
   box.innerHTML=keys.map(k=>{
-    const done=docsMap&&docsMap[k];
+    const done=docsMap&&ic24DocEnviado(docsMap,k);
     const meta=IC24_DOC_META[k];
-    return '<div class="list-item" style="cursor:pointer" onclick="anexarDocCurriculo(\''+k+'\')"><b>'+(meta?.label||k)+'</b><small>'+(done?'✓ Enviado — toque para substituir':'Pendente — toque para enviar foto')+'</small></div>';
+    const req=MH_REQUIRED_DOCS.includes(k);
+    return '<div class="list-item" style="cursor:pointer" onclick="anexarDocCurriculo(\''+k+'\')"><b>'+(meta?.label||k)+(req?' *':'')+'</b><small>'+(done?'✓ Enviado — toque para substituir':(req?'Obrigatório — toque para enviar':'Opcional — toque para enviar'))+'</small></div>';
   }).join('');
 }
 async function finalizarFamilia(){
@@ -1987,6 +2046,32 @@ async function abrirChat(chatId,unlocked){
   if(_chatUnsub)_chatUnsub();
   window._ic24ChatId=chatId;
   _chatUnsub=ic24ListenChat(chatId,renderChatMsgs);
+  await atualizarAvisoCrmChat(chatId,unlocked);
+}
+async function atualizarAvisoCrmChat(chatId,unlocked){
+  const aviso=document.getElementById('chatCrmAviso');
+  if(!aviso) return;
+  aviso.style.display='none';
+  window._chatDoctorId='';
+  if(!unlocked||!chatId) return;
+  try{
+    ic24InitFirebase();
+    const uid=ic24Auth.currentUser?.uid;
+    if(!uid) return;
+    const userSnap=await ic24Db.collection('users').doc(uid).get();
+    const role=userSnap.data()?.role||'';
+    if(role!=='patient'&&role!=='family') return;
+    const chatSnap=await ic24Db.collection('chats').doc(chatId).get();
+    window._chatDoctorId=chatSnap.data()?.doctorId||chatSnap.data()?.caregiverId||'';
+    aviso.style.display='block';
+  }catch(_){ /* ignore */ }
+}
+function irSolicitarCrmNoChat(){
+  const id=window._chatDoctorId||'';
+  const el=document.getElementById('fam-curriculo-cuid-id');
+  if(el&&id) el.value=id;
+  show('familia-curriculo');
+  toast('Solicite o currículo — o CRM aparece após o médico autorizar');
 }
 async function enviarChat(){
   const chatId=window._ic24ChatId;
@@ -2107,6 +2192,7 @@ async function carregarPainelCuidador(){
   if(cpfInp&&cpf) cpfInp.value=cpf;
   renderCurriculo(d, cls, docsMap);
   renderDocsUploadShort(docsMap);
+  if(uid) iniciarListenCurriculoCuidador(uid);
   renderRecomendacoes(d);
   renderOfertas();
   renderFaturamento(d);
@@ -2192,12 +2278,12 @@ function renderRecomendacoes(d){
 function renderOfertas(){
   ic24ListarOfertasAbertas({urgent:true}).then(urg=>{
     const box=document.getElementById('ofertas-urgentes');
-    if(box) box.innerHTML=urg.length?urg.map(o=>ic24FmtOferta(o)+'<button class="btn btn-p" type="button" style="margin-top:8px;height:40px" onclick="selecionarOfertaCuidador(\''+o.id+'\')">Ver / Responder</button>').join(''):'<p class="hint">Nenhuma visita urgente no momento.</p>';
+    if(box) box.innerHTML=urg.length?urg.map(o=>ic24FmtOferta(o)+'<button class="btn btn-p" type="button" style="margin-top:8px;height:40px" onclick="selecionarOfertaCuidador(\''+o.id+'\')">Ver / Responder</button>').join(''):'<p class="hint">Nenhuma visita urgente na sua especialidade no momento.</p>';
   }).catch(()=>{});
   ic24ListarOfertasAbertas({urgent:false}).then(all=>{
     const out=document.getElementById('ofertas-outras');
     const others=(all||[]).filter(o=>!o.urgent);
-    if(out) out.innerHTML=others.length?others.map(o=>ic24FmtOferta(o)+'<button class="btn btn-o" type="button" style="margin-top:8px;height:40px" onclick="selecionarOfertaCuidador(\''+o.id+'\')">Responder</button>').join(''):'<p class="hint">Nenhuma oferta aberta.</p>';
+    if(out) out.innerHTML=others.length?others.map(o=>ic24FmtOferta(o)+'<button class="btn btn-o" type="button" style="margin-top:8px;height:40px" onclick="selecionarOfertaCuidador(\''+o.id+'\')">Responder</button>').join(''):'<p class="hint">Nenhuma oferta aberta na sua especialidade — ative visita hoje ou aguarde novos pedidos.</p>';
   }).catch(()=>{});
 }
 function selecionarOfertaCuidador(id){
@@ -2828,8 +2914,11 @@ async function carregarProximosFamilia(){
     const cgs=await ic24ListarMedicosProximos();
     list.innerHTML=cgs.length?cgs.map(c=>{
       const foto=c.photoUrl?'<img src="'+escapeHtml(c.photoUrl)+'" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;margin-right:10px;vertical-align:middle"/>':'';
+      const specs=(c.specialties||[]).slice(0,3).join(' · ');
+      const dist=c.distanceKm!=null?(typeof ic24FmtDistanciaKm==='function'?ic24FmtDistanciaKm(c.distanceKm,c.withinRadius):c.distanceKm+' km'):'';
       return '<div class="list-item"><div style="display:flex;align-items:center">'+foto+'<div><b>'+escapeHtml(c.fullName||'Médico')+'</b><small>'+
-      escapeHtml((c.city||'')+(c.state?' - '+c.state:''))+' · '+
+      (specs?escapeHtml(specs)+' · ':'')+
+      (dist?escapeHtml(dist)+' · ':'')+
       (c.availableToday||c.plantaoHoje?.ativo?'✅ Disponível hoje':'Agenda')+' · '+escapeHtml(typeof ic24ExibirRateCaregiver==='function'?ic24ExibirRateCaregiver(c):'—')+'</small></div></div>'+
       '<button class="btn btn-o" type="button" style="margin-top:8px;height:40px;width:100%" onclick="abrirPerfilCuidadorFamilia(\''+c.id+'\')">Ver perfil</button>'+
       '<button class="btn btn-o" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirCurriculoCuidador(\''+c.id+'\')">Ver currículo</button>'+
@@ -2847,11 +2936,22 @@ async function abrirPerfilCuidadorFamilia(id){
   show('familia-cuidador-perfil');
   try{
     const p=await ic24CarregarPerfilCuidadorPublico(id);
+    let distLine='';
+    if(typeof ic24OrdenarPorDistanciaRaio==='function'&&ic24Auth.currentUser){
+      ic24InitFirebase();
+      const clientSnap=await ic24Db.collection('clients').doc(ic24Auth.currentUser.uid).get();
+      const patient=clientSnap.data()||{};
+      const sorted=await ic24OrdenarPorDistanciaRaio([{...p,id}],patient,(doc)=>doc,ic24DoctorRaioKm);
+      const d=sorted[0];
+      if(d?.distanceKm!=null){
+        distLine=typeof ic24FmtDistanciaKm==='function'?ic24FmtDistanciaKm(d.distanceKm,d.withinRadius):d.distanceKm+' km';
+      }
+    }
     const foto=p.photoUrl?'<img src="'+escapeHtml(p.photoUrl)+'" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:12px;display:block"/>':'';
     const prefs=p.paymentPreferences||{};
     const rec=prefs.paymentSchedule==='semanal'?'Semanal':prefs.paymentSchedule==='quinzenal'?'Quinzenal':'Diária';
     box.innerHTML=foto+'<h3 style="margin:0 0 8px">'+escapeHtml(p.fullName)+'</h3>'+
-      '<p class="hint">'+escapeHtml([p.city,p.state].filter(Boolean).join(' - '))+'</p>'+
+      (distLine?'<p class="hint">'+escapeHtml(distLine)+'</p>':'')+
       '<p style="font-size:14px">'+escapeHtml(p.bio||'')+'</p>'+
       '<p><strong>'+escapeHtml(typeof ic24ExibirRateCaregiver==='function'?ic24ExibirRateCaregiver(p):'Consulte agenda/visita')+'</strong> · Recebimento: '+rec+'</p>'+
       (p.availableToday?'<p style="color:var(--p)">✓ Disponível hoje</p>':'')+
@@ -2868,8 +2968,8 @@ async function abrirCurriculoCuidador(id){
     if(!ic24Auth.currentUser){ toast('Faça login como paciente'); irLogin(); return; }
     const r=await ic24SolicitarCurriculo(id);
     const fullLink=location.origin+location.pathname.replace(/index\.html?$/,'')+r.link;
-    toast('Currículo liberado');
-    window.open(fullLink,'_blank');
+    toast(r.status==='pending'?'Solicitação enviada — aguarde o médico autorizar':'Currículo liberado');
+    if(r.status!=='pending') window.open(fullLink,'_blank');
   }catch(e){ toast(e.message||'Erro ao solicitar currículo'); }
 }
 
@@ -3035,9 +3135,11 @@ async function solicitarCurriculoFamilia(){
     const r=await ic24SolicitarCurriculo(caregiverId);
     const fullLink=location.origin+location.pathname.replace(/index\.html?$/,'')+r.link;
     const box=document.getElementById('fam-curriculo-link');
-    if(box){ box.style.display='block'; box.innerHTML='<a href="'+fullLink+'" target="_blank">'+fullLink+'</a>'; }
-    window.open(fullLink,'_blank');
-    toast('Currículo Lates gerado');
+    if(box){
+      box.style.display='block';
+      box.innerHTML='Aguardando autorização do médico. Link (abre após liberar):<br/><a href="'+fullLink+'" target="_blank">'+fullLink+'</a>';
+    }
+    toast('Solicitação enviada — aguarde o médico autorizar');
   }catch(e){ toast(e.message||'Erro'); }
 }
 

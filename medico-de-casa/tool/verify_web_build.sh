@@ -10,6 +10,7 @@ test -f web_app/index.html || { echo "ERRO: web_app/index.html ausente"; exit 1;
 grep -q 'ic24_taxa_manutencao' web_app/ic24-cobranca.js || { echo "ERRO: IAP ic24_taxa_manutencao ausente"; exit 1; }
 grep -q 'ic24SalvarCuidador' web_app/firebase-mh.js || { echo "ERRO: firebase-mh.js sem ic24SalvarCuidador"; exit 1; }
 grep -q 'finalizarMedicoHome' web_app/mh-app.js || { echo "ERRO: mh-app.js sem finalizarMedicoHome"; exit 1; }
+grep -q 'mh-geo.js' web_app/index.html || { echo "ERRO: mh-geo.js nao referenciado em index.html"; exit 1; }
 grep -q 'Protótipo Web' web_app/index.html && { echo "ERRO: badge Protótipo Web (Apple rejeita)"; exit 1; } || true
 BUILD_STAMP=$(grep '^version:' pubspec.yaml | sed 's/version: /Medico de Casa iOS build /')
 grep -q "$BUILD_STAMP" web_app/index.html || {

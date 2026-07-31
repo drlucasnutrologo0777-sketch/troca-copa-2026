@@ -22,6 +22,73 @@ function ic24IsVisitOffer(o) {
   return !!(o && (o.type === 'visit_request' || Number(o.visitDurationMin) > 0));
 }
 
+function ic24NormSpec(s) {
+  return String(s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+}
+
+/** Médico só vê ofertas da sua especialidade (Clínica geral vê todas). */
+function ic24SpecialtyMatches(doctorSpecs, offerSpec) {
+  const os = ic24NormSpec(offerSpec);
+  if (!os) return true;
+  const specs = (doctorSpecs || []).map(ic24NormSpec).filter(Boolean);
+  if (!specs.length) return false;
+  if (specs.some((s) => s === 'clinica geral' || s === 'medicina de familia' || s === 'medicina de família')) {
+    return true;
+  }
+  return specs.some((s) => s === os || os.includes(s) || s.includes(os));
+}
+
+function ic24OfertaVisivelMedico(o, doctorUid, doctorSpecs) {
+  if (!o) return false;
+  if (o.targetCaregiverId === doctorUid) return true;
+  const spec = o.specialty || o.triage?.specialty || '';
+  return ic24SpecialtyMatches(doctorSpecs, spec);
+}
+
+function ic24FmtLocalOferta(o) {
+  o = o || {};
+  const bairro = o.neighborhood || o.patientNeighborhood || '';
+  const cidade = [o.city, o.state].filter(Boolean).join(' - ');
+  if (bairro && cidade) return bairro + ' · ' + cidade;
+  if (bairro) return bairro;
+  if (cidade) return cidade;
+  return o.patientAddress || '';
+}
+
+async function ic24CarregarEnderecoCliente(familyId) {
+  ic24InitFirebase();
+  const clientSnap = await ic24Db.collection('clients').doc(familyId).get();
+  const c = clientSnap.exists ? clientSnap.data() : {};
+  const neighborhood = c.neighborhood || c.bairro || null;
+  const city = c.city || c.cidade || null;
+  const state = c.state || c.uf || null;
+  const parts = [neighborhood, city && state ? city + ' - ' + state : city].filter(Boolean);
+  const out = {
+    cep: c.cep || null,
+    street: c.street || c.rua || null,
+    number: c.number || c.numero || null,
+    complement: c.complement || null,
+    neighborhood,
+    city,
+    state,
+    latitude: c.latitude ?? null,
+    longitude: c.longitude ?? null,
+    patientAddress: c.address || parts.join(' · ') || null,
+  };
+  if ((out.latitude == null || out.longitude == null) && out.cep && typeof ic24ResolverCoordenadas === 'function') {
+    const coords = await ic24ResolverCoordenadas(out);
+    if (coords) {
+      out.latitude = coords.lat;
+      out.longitude = coords.lng;
+    }
+  }
+  return out;
+}
+
 function ic24VisitCountForFee(offer, r) {
   if (ic24IsVisitOffer(offer)) return 1;
   return Math.max(1, Number(r?.jobDurationDays || offer?.jobDurationDays) || 1);
@@ -70,12 +137,20 @@ async function ic24VincularFamiliaAtiva(caregiverId, familyId) {
 
 async function ic24ListarMedicosProximos() {
   ic24InitFirebase();
-  const snap = await ic24Db.collection('doctors').where('availableToday', '==', true).limit(30).get();
-  if (snap.empty) {
-    const snap2 = await ic24Db.collection('doctors').limit(20).get();
-    return snap2.docs.map((d) => ({ id: d.id, ...d.data() }));
+  const familyId = ic24Auth.currentUser?.uid;
+  let patient = {};
+  if (familyId) {
+    const c = await ic24Db.collection('clients').doc(familyId).get();
+    patient = c.exists ? c.data() : {};
   }
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  const snap = await ic24Db.collection('doctors').where('availableToday', '==', true).limit(30).get();
+  let list = snap.empty
+    ? (await ic24Db.collection('doctors').limit(20).get()).docs.map((d) => ({ id: d.id, ...d.data() }))
+    : snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  if (familyId && typeof ic24OrdenarPorDistanciaRaio === 'function') {
+    list = await ic24OrdenarPorDistanciaRaio(list, patient, (doc) => doc, ic24DoctorRaioKm);
+  }
+  return list;
 }
 
 async function ic24CriarOferta(familiaPayload) {
@@ -87,6 +162,7 @@ async function ic24CriarOferta(familiaPayload) {
   if (Number(u.cancellationFeePending || 0) > 0) {
     throw new Error('Multa de cancelamento pendente — quite para publicar novas ofertas');
   }
+  const loc = await ic24CarregarEnderecoCliente(familyId);
   const ref = ic24Db.collection('job_offers').doc();
   const data = {
     id: ref.id,
@@ -95,6 +171,7 @@ async function ic24CriarOferta(familiaPayload) {
     status: 'open',
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    ...loc,
     ...familiaPayload,
   };
   await ref.set(data);
@@ -113,6 +190,34 @@ async function ic24ListarOfertasAbertas(opts = {}) {
   const snap = await ic24QuerySnap(() => q.orderBy('createdAt', 'desc').limit(30), fb);
   let list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   if (opts.urgent === false) list = list.filter((o) => !o.urgent);
+  if (opts.filterByDoctor !== false) {
+    const uid = ic24Auth.currentUser?.uid;
+    if (uid) {
+      const userSnap = await ic24Db.collection('users').doc(uid).get();
+      const role = userSnap.data()?.role || '';
+      if (role === 'doctor' || role === 'caregiver') {
+        const docSnap = await ic24Db.collection('doctors').doc(uid).get();
+        const doctor = docSnap.exists ? docSnap.data() : {};
+        const specs = doctor.specialties || [];
+        list = list.filter((o) => ic24OfertaVisivelMedico(o, uid, specs));
+        if (typeof ic24OrdenarPorDistanciaRaio === 'function') {
+          list = await ic24OrdenarPorDistanciaRaio(
+            list,
+            doctor,
+            (o) => ({
+              cep: o.cep,
+              latitude: o.latitude,
+              longitude: o.longitude,
+            }),
+            () => ic24DoctorRaioKm(doctor),
+          );
+        }
+      }
+    }
+  }
+  const distanceSorted =
+    opts.filterByDoctor !== false && list.length > 0 && list.some((o) => o.distanceKm != null);
+  if (distanceSorted) return list;
   return ic24SortByCreated(list);
 }
 
@@ -201,6 +306,7 @@ async function ic24FamiliaProporCuidador(caregiverId, { dailyRate, message, dura
   const userSnap = await ic24Db.collection('users').doc(familyId).get();
   const cgSnap = await ic24Db.collection('doctors').doc(caregiverId).get();
   if (!cgSnap.exists) throw new Error('Médico não encontrado');
+  const loc = await ic24CarregarEnderecoCliente(familyId);
   const ref = ic24Db.collection('job_offers').doc();
   const data = {
     id: ref.id,
@@ -219,6 +325,7 @@ async function ic24FamiliaProporCuidador(caregiverId, { dailyRate, message, dura
     urgent: false,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    ...loc,
   };
   await ref.set(data);
   try {
@@ -705,6 +812,14 @@ async function ic24EnviarFaleConosco(assunto, mensagem) {
 function ic24FmtOferta(o) {
   const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const sched = { diaria: 'Diária', semanal: 'Semanal', quinzenal: 'Quinzenal', mensal: 'Mensal', urgente_hoje: 'Urgente hoje' };
+  const spec = o.specialty || o.triage?.specialty || '';
+  const dist =
+    o.distanceKm != null && typeof ic24FmtDistanciaKm === 'function'
+      ? ic24FmtDistanciaKm(o.distanceKm, o.withinRadius)
+      : o.distanceKm != null
+        ? o.distanceKm + ' km'
+        : '';
+  const rate = o.dailyRate || o.consultationRate || '—';
   return (
     '<div class="list-item' +
     (o.urgent ? '" style="border-color:var(--p)"' : '"') +
@@ -712,13 +827,16 @@ function ic24FmtOferta(o) {
     esc(o.title || 'Plantão') +
     (o.urgent ? ' 🔴' : '') +
     '</b><small>' +
+    (spec ? '<strong>' + esc(spec) + '</strong> · ' : '') +
+    (dist ? esc(dist) + ' · ' : '') +
     esc(sched[o.scheduleType] || o.scheduleType) +
-    ' · ' +
-    esc(o.careNeeds || o.elderlyType || '') +
     ' · R$ ' +
-    esc(o.dailyRate || '—') +
-    '/dia</small>' +
-    (o.familyName ? '<small style="display:block;margin-top:4px">Família: ' + esc(o.familyName) + '</small>' : '') +
+    esc(rate) +
+    '/visita</small>' +
+    (o.careNeeds || o.chiefComplaint
+      ? '<small style="display:block;margin-top:4px;color:var(--m)">' + esc((o.chiefComplaint || o.careNeeds || '').slice(0, 120)) + '</small>'
+      : '') +
+    (o.familyName ? '<small style="display:block;margin-top:4px">Paciente: ' + esc(o.familyName) + '</small>' : '') +
     '</div>'
   );
 }

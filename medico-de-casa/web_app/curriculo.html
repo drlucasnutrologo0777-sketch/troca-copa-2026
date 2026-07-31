@@ -7,7 +7,7 @@
 <title>Currículo Lates — Medico de Casa</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-:root{--p:#2E8B57;--pd:#267A4C;--pl:#E8F5EE;--soft:#F5F7FA;--line:#E0E0E0;--t:#2D2D2D;--m:#666;--gold:#D4AF37}
+:root{--p:#502D96;--pd:#3D2278;--pl:#EDE7F6;--soft:#F5F7FA;--line:#E0E0E0;--t:#2D2D2D;--m:#666;--gold:#D4AF37}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--t);line-height:1.5}
 .wrap{max-width:720px;margin:0 auto;padding:20px 16px 48px}
@@ -21,8 +21,9 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--t
 .card p{font-size:14px;margin-bottom:6px}
 .class-box{background:var(--pl);border-left:4px solid var(--p);padding:14px;border-radius:0 12px 12px 0;margin-bottom:14px}
 .doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
-.doc-item{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;text-decoration:none;color:inherit}
+.doc-item{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;display:block}
 .doc-item img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--soft)}
+.doc-item .pdf-box{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:var(--pl);font-size:36px}
 .doc-item span{display:block;padding:8px;font-size:11px;font-weight:600;text-align:center}
 .doc-item .ok{color:var(--p);font-size:10px}
 .err{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:16px;border-radius:12px;text-align:center}
@@ -36,60 +37,91 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--t
   <div class="loading" id="loading">Carregando currículo…</div>
 </div>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-mh.js"></script>
 <script src="mh-curriculo.js"></script>
 <script>
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function fmt(v){return v!=null&&v!==''?'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}
+function ic24MostrarErroCurriculo(msg){
+  const app=document.getElementById('app');
+  if(!app) return;
+  app.innerHTML='<div class="err">'+esc(msg||'Erro ao carregar currículo')+'</div>';
+}
+function renderDocItem(d){
+  const url=d.url||'';
+  const isPdf=/\.pdf(\?|$)/i.test(url)||/pdf/i.test(d.type||'');
+  const inner=isPdf
+    ? '<div class="pdf-box">📄</div>'
+    : '<img src="'+esc(url)+'" alt="'+esc(d.label)+'" loading="lazy" onerror="this.parentElement.querySelector(\'.pdf-box\')||(this.outerHTML=\'<div class=pdf-box>🖼</div>\')"/>';
+  return '<a class="doc-item" href="'+esc(url)+'" target="_blank" rel="noopener">'+inner+
+    '<span>'+esc(d.label)+'<br/><span class="ok">'+(d.verified?'✓ Verificado':'Em análise')+'</span></span></a>';
+}
+window.addEventListener('error',function(e){
+  ic24MostrarErroCurriculo(e.message||'Erro inesperado — feche e abra o app de novo');
+});
+window.addEventListener('unhandledrejection',function(e){
+  const msg=(e.reason&&e.reason.message)||String(e.reason||'Erro ao carregar currículo');
+  ic24MostrarErroCurriculo(msg);
+});
 (async function(){
   const app=document.getElementById('app');
+  const loadTimer=setTimeout(function(){
+    if(/Carregando currículo/i.test(app?.textContent||'')){
+      ic24MostrarErroCurriculo('Demorou demais — verifique internet e solicite o currículo de novo');
+    }
+  },25000);
   const token=new URLSearchParams(location.search).get('t');
   if(!token){
-    app.innerHTML='<div class="err">Link inválido. O contratante deve solicitar o currículo pelo app.</div>';
+    clearTimeout(loadTimer);
+    app.innerHTML='<div class="err">Link inválido. O paciente deve solicitar o currículo pelo app.</div>';
     return;
   }
   try{
     const { request, curriculum: c }=await ic24CarregarCurriculoPorToken(token);
+    clearTimeout(loadTimer);
     const cls=c.classification||{};
     const docs=(c.documents||[]).filter(d=>d.url);
     document.title='Currículo — '+(c.fullName||'Médico');
     app.innerHTML=
       '<div class="hero">'+
+        (c.photoUrl?'<img src="'+esc(c.photoUrl)+'" alt="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.35);margin-bottom:10px"/>':'')+
         '<div style="font-size:12px;opacity:.85">Currículo Lates · Medico de Casa</div>'+
         '<h1>'+esc(c.fullName)+'</h1>'+
         '<div class="sub">'+esc(c.city)+(c.state?', '+esc(c.state):'')+' · CPF '+esc(c.cpfMasked)+'</div>'+
+        (c.crm?'<div class="sub" style="margin-top:4px">CRM '+esc(c.crm)+'</div>':'')+
         '<div class="stars">'+(cls.stars||'★★★★☆')+'</div>'+
         '<span class="badge">'+esc(cls.label||'Classificação pendente')+'</span>'+
       '</div>'+
       '<div class="class-box"><strong>Classificação automática pelo app</strong><br/>'+
-        'Score documental: <strong>'+(cls.score||0)+'/100</strong> · '+(cls.documentsCount||0)+' documento(s) enviado(s)'+
-        (cls.missingRequired&&cls.missingRequired.length?'<br/><small style="color:var(--m)">Pendente: '+esc(cls.missingRequired.join(', '))+'</small>':'')+
+        'Score documental: <strong>'+(cls.score||0)+'/100</strong> · '+(cls.documentsCount||docs.length)+' documento(s) enviado(s)'+
+        (cls.missingRequired&&cls.missingRequired.length?'<br/><small style="color:var(--m)">Pendente no cadastro: '+esc(cls.missingRequired.join(', '))+'</small>':'')+
       '</div>'+
       '<div class="card"><h2>Sobre</h2><p>'+esc(c.bio||'—')+'</p></div>'+
       '<div class="card"><h2>Especialidades</h2><p>'+esc((c.specialties||[]).join(' · ')||'—')+'</p></div>'+
       '<div class="card"><h2>Valores</h2>'+
-        '<p><strong>Hora:</strong> '+fmt(c.hourRate)+' &nbsp; <strong>Diária:</strong> '+fmt(c.dailyRate)+'</p>'+
+        '<p><strong>Consulta/visita:</strong> '+fmt(c.consultationRate||c.dailyRate)+'</p>'+
         (c.city?'<p><strong>Região:</strong> '+esc(c.city)+(c.state?', '+esc(c.state):'')+'</p>':'')+
       '</div>'+
-      '<div class="card"><h2>Documentos verificados</h2>'+
-        '<p style="font-size:13px;color:var(--m);margin-bottom:12px">Fotos enviadas no cadastro — validadas pela plataforma.</p>'+
+      '<div class="card"><h2>Documentos</h2>'+
+        '<p style="font-size:13px;color:var(--m);margin-bottom:12px">Fotos liberadas pelo médico — toque para abrir em tela cheia.</p>'+
         '<div class="doc-grid">'+
-          (docs.length?docs.map(d=>'<a class="doc-item" href="'+esc(d.url)+'" target="_blank" rel="noopener">'+
-            '<img src="'+esc(d.url)+'" alt="'+esc(d.label)+'"/>'+
-            '<span>'+esc(d.label)+'<br/><span class="ok">'+(d.verified?'✓ Verificado':'Em análise')+'</span></span></a>').join(''):
-            '<p>Nenhum documento anexado ainda.</p>')+
+          (docs.length?docs.map(renderDocItem).join(''):
+            '<p>Nenhum documento anexado neste currículo.</p>')+
         '</div>'+
       '</div>'+
       '<div class="card" style="font-size:13px;color:var(--m)">'+
-        'Solicitado por: <strong>'+esc(request.familyName||'Contratante')+'</strong><br/>'+
-        'Este currículo é confidencial — sem telefone, e-mail ou endereço completo. Contato pelo chat após fechar negócio.'+
+        'Solicitado por: <strong>'+esc(request.familyName||'Paciente')+'</strong><br/>'+
+        'Autorizado em: <strong>'+(request.sharedAt?new Date(request.sharedAt.toDate?request.sharedAt.toDate():request.sharedAt).toLocaleString('pt-BR'):'—')+'</strong><br/>'+
+        'Confidencial — sem telefone, e-mail ou endereço completo. Contato pelo chat após fechar negócio.'+
       '</div>'+
       '<p class="brand"><b>Medico de Casa</b> — médicos visitadores com segurança e confiança</p>';
   }catch(e){
-    app.innerHTML='<div class="err">'+esc(e.message||'Erro ao carregar currículo')+'</div>';
+    clearTimeout(loadTimer);
+    ic24MostrarErroCurriculo(e.message||'Erro ao carregar currículo');
   }
 })();
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
-function fmt(v){return v!=null&&v!==''?'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}
 </script>
 </body>
 </html>

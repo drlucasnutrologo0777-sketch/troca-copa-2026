@@ -20,14 +20,18 @@ function toggleEspecialidadeMed(cb) {
   if (el) el.textContent = window._medSpecs.length + ' de 3: ' + (window._medSpecs.join(', ') || '—');
 }
 
-const MH_REQUIRED = ['crm', 'comprovante', 'diploma'];
+const MH_REQUIRED = MH_REQUIRED_DOCS;
 
 async function finalizarMedicoHome() {
-  const ok = MH_REQUIRED.every((k) =>
-    document.querySelector('#documentos .doc[data-doc="' + k + '"]')?.classList.contains('done'),
-  );
-  if (!ok) {
-    toast('Envie CRM, comprovante de endereço e diploma de medicina');
+  try {
+    const missing = await ic24MissingRequiredDocs();
+    if (missing.length) {
+      toast('Obrigatório: ' + missing.join(', '));
+      if (typeof syncDocumentosUI === 'function') await syncDocumentosUI();
+      return;
+    }
+  } catch (e) {
+    toast(e.message || 'Erro ao verificar documentos');
     return;
   }
   await finalizarCuidador();

@@ -25,7 +25,7 @@ workflows:
         APP_STORE_APPLE_ID: "6796102702"
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         MH_BUILD_NAME: "1.0.0"
-        MH_BUILD_NUMBER: "5"
+        MH_BUILD_NUMBER: "6"
       flutter: stable
       xcode: latest
       cocoapods: default

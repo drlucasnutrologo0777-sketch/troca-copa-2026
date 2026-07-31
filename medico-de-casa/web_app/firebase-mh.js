@@ -11,17 +11,26 @@ const MH_FB = {
 
 /** Coleção principal do médico (substitui caregivers) */
 const MH_DOCTOR_COL = 'doctors';
-const MH_REQUIRED_DOCS = ['crm', 'comprovante', 'diploma'];
-const MH_OPTIONAL_DOCS = ['especialidade', 'pos', 'outros', 'rg', 'cpf'];
 
 let ic24Auth = null;
 let ic24Db = null;
 
-function ic24InitFirebase() {
+function ic24InitFirebase(opts) {
+  const requireAuth = !opts || opts.requireAuth !== false;
   if (!window.firebase) throw new Error('Firebase SDK não carregou');
   if (!firebase.apps.length) firebase.initializeApp(MH_FB);
-  ic24Auth = firebase.auth();
+  if (typeof firebase.firestore !== 'function') {
+    throw new Error('Firebase Firestore não carregou');
+  }
   ic24Db = firebase.firestore();
+  if (requireAuth) {
+    if (typeof firebase.auth !== 'function') {
+      throw new Error('Firebase Auth não carregou. Feche e abra o app de novo.');
+    }
+    ic24Auth = firebase.auth();
+  } else {
+    ic24Auth = null;
+  }
   return { auth: ic24Auth, db: ic24Db };
 }
 
@@ -119,6 +128,18 @@ function ic24StripUndefined(obj) {
   return out;
 }
 
+async function ic24AnexarCoordsEndereco(addr) {
+  const out = { ...(addr || {}) };
+  if ((out.latitude == null || out.longitude == null) && out.cep && typeof ic24CoordsFromCep === 'function') {
+    const coords = await ic24CoordsFromCep(out.cep);
+    if (coords) {
+      out.latitude = coords.lat;
+      out.longitude = coords.lng;
+    }
+  }
+  return out;
+}
+
 async function ic24SalvarCuidador() {
   ic24InitFirebase();
   const uid = ic24Auth.currentUser?.uid;
@@ -129,7 +150,7 @@ async function ic24SalvarCuidador() {
     document.getElementById('acc-nome')?.value?.trim() ||
     userData.fullName ||
     ic24Auth.currentUser.email;
-  const addr = ic24EnderecoMap('cad');
+  const addr = await ic24AnexarCoordsEndereco(ic24EnderecoMap('cad'));
   const bio = document.getElementById('cuid-bio')?.value?.trim() || '';
   const specialties = (window._medSpecs || window._cuidSpecs || []).slice(0, 3);
   const crmNum = document.getElementById('med-crm-num')?.value?.trim() || document.getElementById('crm-num')?.value?.trim() || '';
@@ -175,7 +196,7 @@ async function ic24SalvarFamilia() {
   if (!uid) throw new Error('Faça login ou crie a conta primeiro');
   const nome = document.getElementById('fam-nome').value.trim();
   const tel = document.getElementById('fam-tel').value.trim();
-  const addr = ic24EnderecoMap('fam');
+  const addr = await ic24AnexarCoordsEndereco(ic24EnderecoMap('fam'));
   await ic24Db.collection('clients').doc(uid).set(
     {
       fullName: nome,
@@ -342,7 +363,7 @@ function ic24AvaliarCadastroCuidador(d, docsMap) {
   if (!(d.crmNumber || d.crm)) {
     return { complete: false, screen: 'cuidador-etapa2', message: 'Informe seu CRM' };
   }
-  if (!d.photoUrl && !window._photoUploaded) {
+  if (!d.photoUrl && !window._photoUploaded && !window._photoLocalOk && !window._pendingProfilePhoto) {
     return { complete: false, screen: 'cuidador-etapa2', message: 'Envie sua foto de perfil' };
   }
   const docRota = ic24AvaliarDocumentacaoCuidador(d, docsMap);
@@ -354,12 +375,13 @@ function ic24AvaliarCadastroCuidador(d, docsMap) {
 
 function ic24AvaliarDocumentacaoCuidador(d, docsMap) {
   docsMap = docsMap || {};
-  const missingDocs = MH_REQUIRED_DOCS.filter((k) => !(docsMap[k]?.fileUrl || docsMap[k]?.url));
+  const required = typeof MH_REQUIRED_DOCS !== 'undefined' ? MH_REQUIRED_DOCS : ['crm', 'comprovante', 'diploma', 'rg'];
+  const missingDocs = required.filter((k) => !(docsMap[k]?.fileUrl || docsMap[k]?.url));
   if (missingDocs.length) {
     return {
       complete: false,
       screen: 'documentos',
-      message: 'Envie CRM, comprovante de endereço e diploma de medicina',
+      message: 'Envie CRM, RG, comprovante de endereço e diploma de medicina',
       missingDocs,
     };
   }

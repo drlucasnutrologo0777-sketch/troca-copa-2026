@@ -4,12 +4,15 @@ const IC24_DOC_META = {
   crm: { type: 'CRM', label: 'CRM — Conselho Regional de Medicina', weight: 35, tier: 'compliance', required: true },
   comprovante: { type: 'Comprovante', label: 'Comprovante de endereço', weight: 10, tier: 'identity', required: true },
   diploma: { type: 'DiplomaMedicina', label: 'Diploma de Medicina', weight: 30, tier: 'education', required: true },
+  rg: { type: 'RG', label: 'RG — documento de identidade', weight: 10, tier: 'identity', required: true },
   especialidade: { type: 'Especialidade', label: 'Comprovante de especialidade (RQE)', weight: 20, tier: 'education' },
   pos: { type: 'PosGraduacao', label: 'Diploma pós-graduação', weight: 15, tier: 'education' },
   outros: { type: 'OutrosCert', label: 'Outros certificados', weight: 5, tier: 'education' },
-  rg: { type: 'RG', label: 'RG', weight: 5, tier: 'identity' },
   cpf: { type: 'CPF', label: 'CPF', weight: 5, tier: 'identity' },
 };
+
+/** Obrigatórios no cadastro — especialidade e pós são opcionais. */
+const MH_REQUIRED_DOCS = ['crm', 'comprovante', 'diploma', 'rg'];
 
 const MH_STORAGE_PREFIX = 'doctors';
 
@@ -17,6 +20,9 @@ let ic24Storage = null;
 
 function ic24InitStorage() {
   ic24InitFirebase();
+  if (typeof firebase.storage !== 'function') {
+    throw new Error('Firebase Storage não carregou. Verifique conexão e reabra o app.');
+  }
   if (!ic24Storage) ic24Storage = firebase.storage();
   return ic24Storage;
 }
@@ -52,7 +58,8 @@ function ic24ClassificarDocumentos(docsMap, cg) {
   const hasCrm = uploaded.includes('crm');
   const hasDiploma = uploaded.includes('diploma');
   const hasEndereco = uploaded.includes('comprovante');
-  if (score >= 80 && hasCrm && hasDiploma && hasEndereco) {
+  const hasRg = uploaded.includes('rg');
+  if (score >= 80 && hasCrm && hasDiploma && hasEndereco && hasRg) {
     level = 'senior';
     label = 'Médico verificado — documentação completa';
     stars = '★★★★★ 4,9';
@@ -73,23 +80,135 @@ function ic24NormalizeUploadFile(file) {
   let type = file.type || '';
   if (!type || type === 'application/octet-stream') {
     const name = (file.name || '').toLowerCase();
-    if (name.endsWith('.png')) type = 'image/png';
+    if (name.endsWith('.heic') || name.endsWith('.heif')) type = 'image/jpeg';
+    else if (name.endsWith('.png')) type = 'image/png';
+    else if (name.endsWith('.webp')) type = 'image/webp';
     else if (name.endsWith('.pdf')) type = 'application/pdf';
     else type = 'image/jpeg';
   }
+  if (/heic|heif/i.test(type)) type = 'image/jpeg';
   return { file, contentType: type };
+}
+
+/** iPhone envia HEIC — converte para JPEG real antes do Firebase Storage. */
+async function ic24ConvertToJpegBlob(file) {
+  const { file: f, contentType } = ic24NormalizeUploadFile(file);
+  const name = (f.name || '').toLowerCase();
+  const isHeic = /heic|heif/i.test(f.type || '') || /heic|heif/i.test(name);
+  const isOctet = !f.type || f.type === 'application/octet-stream';
+  if (!isHeic && !isOctet && (contentType === 'image/png' || contentType === 'image/jpeg' || contentType === 'image/webp')) {
+    return f;
+  }
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(f);
+    img.onload = () => {
+      const max = 1600;
+      let w = img.naturalWidth || max;
+      let h = img.naturalHeight || max;
+      if (w > max || h > max) {
+        const scale = max / Math.max(w, h);
+        w = Math.round(w * scale);
+        h = Math.round(h * scale);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      canvas.toBlob(
+        (blob) => {
+          URL.revokeObjectURL(url);
+          if (!blob) {
+            reject(new Error('Não foi possível processar a foto — tente outra imagem'));
+            return;
+          }
+          resolve(new File([blob], 'photo.jpg', { type: 'image/jpeg' }));
+        },
+        'image/jpeg',
+        0.9,
+      );
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Foto ilegível — tire outra ou escolha JPG/PNG da galeria'));
+    };
+    img.src = url;
+  });
+}
+
+/** Prévia local — mantém arquivo se upload falhar (iOS). */
+function ic24PreviewFotoPerfil(file, previewId, txtId, boxId) {
+  if (!file) return;
+  window._pendingProfilePhoto = file;
+  window._photoLocalOk = true;
+  const img = document.getElementById(previewId);
+  const txt = document.getElementById(txtId);
+  const box = boxId ? document.getElementById(boxId) : null;
+  const show = (url) => {
+    if (img) {
+      img.src = url;
+      img.style.display = 'block';
+    }
+    if (txt) txt.style.display = 'none';
+    if (box) box.classList.add('has');
+  };
+  try {
+    show(URL.createObjectURL(file));
+  } catch (_) {
+    const r = new FileReader();
+    r.onload = () => show(r.result);
+    r.onerror = () => toast('Prévia indisponível — foto será enviada ao continuar');
+    r.readAsDataURL(file);
+  }
+}
+
+function ic24FotoPerfilOk() {
+  return !!(
+    window._photoUploaded ||
+    window._pendingProfilePhoto ||
+    window._photoLocalOk ||
+    window._cuidPainel?.photoUrl
+  );
+}
+
+async function ic24EnsureDoctorDoc() {
+  ic24InitFirebase();
+  const uid = ic24Auth.currentUser?.uid;
+  if (!uid) throw new Error('Faça login como médico');
+  const userSnap = await ic24Db.collection('users').doc(uid).get();
+  const userData = userSnap.data() || {};
+  if (userData.role !== 'doctor' && userData.role !== 'caregiver') {
+    await ic24Db.collection('users').doc(uid).set({ role: 'doctor', legacyRole: 'caregiver' }, { merge: true });
+  }
+  const docSnap = await ic24Db.collection(mhDoctorCol()).doc(uid).get();
+  if (!docSnap.exists) {
+    await ic24Db.collection(mhDoctorCol()).doc(uid).set(
+      {
+        fullName: userData.fullName || ic24Auth.currentUser.email || 'Médico',
+        email: ic24Auth.currentUser.email || '',
+        app: 'medico_de_casa',
+        kycStatus: 'incomplete',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
+  }
 }
 
 async function ic24UploadFotoPerfil(file) {
   if (!file) throw new Error('Selecione uma foto');
-  const { file: f, contentType } = ic24NormalizeUploadFile(file);
   ic24InitStorage();
+  if (typeof firebase.storage !== 'function') {
+    throw new Error('Firebase Storage não carregou — verifique conexão e reabra o app');
+  }
+  await ic24EnsureDoctorDoc();
+  const jpegFile = await ic24ConvertToJpegBlob(file);
   const uid = ic24Auth.currentUser?.uid;
   if (!uid) throw new Error('Faça login como médico');
-  const ext = (f.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
-  const path = MH_STORAGE_PREFIX + '/' + uid + '/profile/photo_' + Date.now() + '.' + ext;
+  const path = MH_STORAGE_PREFIX + '/' + uid + '/profile/photo_' + Date.now() + '.jpg';
   const ref = ic24Storage.ref().child(path);
-  const snap = await ref.put(f, { contentType });
+  const snap = await ref.put(jpegFile, { contentType: 'image/jpeg' });
   const url = await snap.ref.getDownloadURL();
   await ic24Db.collection(mhDoctorCol()).doc(uid).set(
     { photoUrl: url, photoPath: path, updatedAt: firebase.firestore.FieldValue.serverTimestamp() },
@@ -103,14 +222,22 @@ async function ic24UploadDocumento(docKey, file) {
   if (!file) throw new Error('Selecione um arquivo');
   const meta = IC24_DOC_META[docKey];
   if (!meta) throw new Error('Tipo de documento inválido');
-  const { file: f, contentType } = ic24NormalizeUploadFile(file);
   ic24InitStorage();
+  await ic24EnsureDoctorDoc();
   const uid = ic24Auth.currentUser?.uid;
   if (!uid) throw new Error('Faça login como médico');
-  const ext = (f.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+  let uploadFile;
+  let contentType;
+  if ((file.type || '').includes('pdf') || (file.name || '').toLowerCase().endsWith('.pdf')) {
+    ({ file: uploadFile, contentType } = ic24NormalizeUploadFile(file));
+  } else {
+    uploadFile = await ic24ConvertToJpegBlob(file);
+    contentType = 'image/jpeg';
+  }
+  const ext = contentType === 'application/pdf' ? 'pdf' : 'jpg';
   const path = MH_STORAGE_PREFIX + '/' + uid + '/documents/' + docKey + '_' + Date.now() + '.' + ext;
   const ref = ic24Storage.ref().child(path);
-  const snap = await ref.put(f, { contentType });
+  const snap = await ref.put(uploadFile, { contentType });
   const url = await snap.ref.getDownloadURL();
   const docData = {
     documentType: meta.type,
@@ -135,6 +262,25 @@ async function ic24ListDocumentos(uid) {
     map[d.id] = { id: d.id, ...d.data() };
   });
   return map;
+}
+
+function ic24DocEnviado(docsMap, key) {
+  const d = docsMap && docsMap[key];
+  return !!(d && (d.fileUrl || d.url));
+}
+
+async function ic24MissingRequiredDocs(docsMap) {
+  if (!docsMap) {
+    ic24InitFirebase();
+    const uid = ic24Auth.currentUser?.uid;
+    if (!uid) throw new Error('Faça login como médico');
+    docsMap = await ic24ListDocumentos(uid);
+  }
+  return MH_REQUIRED_DOCS.filter((k) => !ic24DocEnviado(docsMap, k)).map((k) => IC24_DOC_META[k]?.label || k);
+}
+
+function ic24DocsObrigatoriosOk(docsMap) {
+  return MH_REQUIRED_DOCS.every((k) => ic24DocEnviado(docsMap, k));
 }
 
 async function ic24RecomputeCurriculo(uid) {
@@ -197,48 +343,110 @@ function ic24Token() {
   return Array.from(a, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
+function ic24SanitizeCurriculoPublico(c) {
+  const out = { ...(c || {}) };
+  delete out.email;
+  delete out.phone;
+  delete out.street;
+  delete out.number;
+  delete out.complement;
+  delete out.neighborhood;
+  delete out.cep;
+  delete out.cpf;
+  return out;
+}
+
+async function ic24MontarCurriculoSnapshot(doctorId) {
+  const curriculum = await ic24RecomputeCurriculo(doctorId);
+  return ic24SanitizeCurriculoPublico(curriculum);
+}
+
 async function ic24SolicitarCurriculo(doctorId) {
   ic24InitFirebase();
   const familyId = ic24Auth.currentUser?.uid;
   if (!familyId) throw new Error('Faça login como paciente/familiar');
+  if (!doctorId) throw new Error('Informe o ID do médico');
   const userSnap = await ic24Db.collection('users').doc(familyId).get();
   const role = userSnap.data()?.role || '';
   if (role !== 'patient' && role !== 'family') throw new Error('Apenas pacientes podem solicitar currículo');
   const token = ic24Token();
-  const curSnap = await ic24Db.collection('curriculum_public').doc(doctorId).get();
-  if (!curSnap.exists) {
-    if (typeof ic24RecomputeCurriculo === 'function') await ic24RecomputeCurriculo(doctorId);
-    const cur2 = await ic24Db.collection('curriculum_public').doc(doctorId).get();
-    if (!cur2.exists) throw new Error('Currículo ainda não disponível — médico precisa enviar documentos');
-  }
-  const curriculum = (await ic24Db.collection('curriculum_public').doc(doctorId).get()).data();
   await ic24Db.collection('cv_requests').doc(token).set({
     token,
     familyId,
     doctorId,
     caregiverId: doctorId,
-    status: 'shared',
+    status: 'pending',
     familyName: userSnap.data()?.fullName || 'Paciente',
-    curriculum,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    sharedAt: firebase.firestore.FieldValue.serverTimestamp(),
     expiresAt: firebase.firestore.Timestamp.fromDate(new Date(Date.now() + 7 * 24 * 3600 * 1000)),
   });
-  return { token, link: 'curriculo.html?t=' + encodeURIComponent(token), doctorId, caregiverId: doctorId };
+  return {
+    token,
+    link: 'curriculo.html?t=' + encodeURIComponent(token),
+    doctorId,
+    caregiverId: doctorId,
+    status: 'pending',
+  };
+}
+
+async function ic24EnviarCurriculoSolicitacao(token) {
+  ic24InitFirebase();
+  const uid = ic24Auth.currentUser?.uid;
+  if (!uid) throw new Error('Faça login como médico');
+  const ref = ic24Db.collection('cv_requests').doc(token);
+  const snap = await ref.get();
+  if (!snap.exists) throw new Error('Solicitação não encontrada');
+  const req = snap.data();
+  const docId = req.doctorId || req.caregiverId;
+  if (docId !== uid) throw new Error('Esta solicitação não é para você');
+  if (req.status === 'shared') throw new Error('Currículo já enviado');
+  const curriculum = await ic24MontarCurriculoSnapshot(uid);
+  if (!(curriculum.documents || []).some((d) => d.url)) {
+    throw new Error('Envie seus documentos no currículo antes de liberar ao paciente');
+  }
+  await ref.update({
+    status: 'shared',
+    curriculum,
+    sharedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+  return { token, link: 'curriculo.html?t=' + encodeURIComponent(token), status: 'shared' };
+}
+
+function ic24ListenSolicitacoesCurriculoDoctor(uid, cb) {
+  ic24InitFirebase();
+  return ic24Db
+    .collection('cv_requests')
+    .where('doctorId', '==', uid)
+    .where('status', '==', 'pending')
+    .orderBy('createdAt', 'desc')
+    .limit(10)
+    .onSnapshot(
+      (snap) => cb(snap.docs.map((d) => ({ id: d.id, token: d.id, ...d.data() }))),
+      () => cb([]),
+    );
 }
 
 async function ic24CarregarCurriculoPorToken(token) {
-  ic24InitFirebase();
+  ic24InitFirebase({ requireAuth: false });
   const reqSnap = await ic24Db.collection('cv_requests').doc(token).get();
   if (!reqSnap.exists) throw new Error('Solicitação não encontrada ou link inválido');
   const req = reqSnap.data();
   if (req.expiresAt && req.expiresAt.toDate() < new Date()) throw new Error('Link expirado — solicite novamente');
+  if (req.status !== 'shared') throw new Error('O médico ainda não autorizou este currículo — aguarde a liberação');
   let curriculum = req.curriculum;
   const docId = req.doctorId || req.caregiverId;
   if (!curriculum && docId) {
-    const curSnap = await ic24Db.collection('curriculum_public').doc(docId).get();
-    if (!curSnap.exists) throw new Error('Currículo não encontrado');
-    curriculum = curSnap.data();
+    try {
+      ic24InitFirebase();
+      if (ic24Auth.currentUser) {
+        const curSnap = await ic24Db.collection('curriculum_public').doc(docId).get();
+        if (curSnap.exists) curriculum = curSnap.data();
+      }
+    } catch (_) {
+      /* snapshot embutido é a fonte principal */
+    }
   }
+  if (!curriculum) throw new Error('Currículo não disponível — peça ao médico para autorizar novamente');
+  curriculum = ic24SanitizeCurriculoPublico(curriculum);
   return { request: req, curriculum };
 }
