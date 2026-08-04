@@ -370,7 +370,7 @@ workflows:
             echo "ERRO: build deve ser > 12 (DUPLICATE TestFlight)"
             exit 1
           fi
-          grep -q 'allowingReadAccessTo' lib/screens/web_app_screen.dart || { echo "ERRO: WebView iOS file://"; exit 1; }
+          grep -aF 'allowingReadAccessTo' lib/screens/web_app_screen.dart >/dev/null || { echo 'ERRO: WebView iOS file:// — falta allowingReadAccessTo em web_app_screen.dart'; file lib/screens/web_app_screen.dart; exit 1; }
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${BO_BUILD_NAME}" ios/Runner/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${BO_BUILD_NUMBER}" ios/Runner/Info.plist
           sed -i.bak "s/FLUTTER_BUILD_NAME=.*/FLUTTER_BUILD_NAME=${BO_BUILD_NAME}/" ios/Flutter/Version.xcconfig
@@ -540,7 +540,7 @@ workflows:
         script: |
           set -e
           echo "Gerando Medico de Casa ${MH_BUILD_NAME} (${MH_BUILD_NUMBER})"
-          grep -q 'allowingReadAccessTo' lib/screens/web_app_screen.dart || { echo "ERRO: WebView iOS file://"; exit 1; }
+          grep -aF 'allowingReadAccessTo' lib/screens/web_app_screen.dart >/dev/null || { echo 'ERRO: WebView iOS file:// — falta allowingReadAccessTo em web_app_screen.dart'; file lib/screens/web_app_screen.dart; exit 1; }
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${MH_BUILD_NAME}" ios/Runner/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${MH_BUILD_NUMBER}" ios/Runner/Info.plist
           sed -i.bak "s/FLUTTER_BUILD_NAME=.*/FLUTTER_BUILD_NAME=${MH_BUILD_NAME}/" ios/Flutter/Version.xcconfig
