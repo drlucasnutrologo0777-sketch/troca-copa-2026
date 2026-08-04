@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#134175"/>
 <title>Babá ON</title>
-<!-- Babá ON iOS build 1.0.0+11 — fix cadastro mãe/pai -->
+<!-- Babá ON iOS build 1.0.0+12 -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" href="favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
@@ -1555,6 +1555,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
 <script src="pix.js"></script>
 <script src="firebase-ic24.js"></script>
+<script src="bo-geo.js"></script>
 <script src="ic24-curriculo.js"></script>
 <script src="ic24-ofertas.js"></script>
 <script src="ic24-cobranca.js"></script>
@@ -3069,22 +3070,63 @@ async function carregarPainelFamilia(){
   if(el) el.textContent=nome;
 }
 
+function ic24LinhaBuscaBaba(c){
+  const nome=c.fullName||'Babá';
+  const nivel=c.nivelLabel||(typeof ic24RotuloNivelBaba==='function'?ic24RotuloNivelBaba(c):'Babá');
+  const disp=c.disponivelLabel||(c.availableToday||c.plantaoHoje?.ativo?'Disponível':'Agenda');
+  const dist=c.distanceKm!=null
+    ?(typeof ic24FmtDistanciaKm==='function'?ic24FmtDistanciaKm(c.distanceKm,c.withinRadius):(c.distanceKm+' km'))
+    :(c.distanceLabel||'');
+  const valor=typeof ic24ExibirRateCaregiver==='function'?ic24ExibirRateCaregiver(c):'—';
+  return {
+    titulo:nome,
+    subtitulo:nivel+(disp?' · '+disp:'')+(dist?' · Distância '+dist:'')+(valor?' · '+valor:'')
+  };
+}
+
+async function atualizarLocalizacaoFamilia(){
+  try{
+    toast('Capturando GPS…');
+    const r=await ic24CapturarGpsESalvar('clients');
+    toast('Localização atualizada (±'+r.accuracyM+' m) — endereço não é exibido nas buscas');
+    await carregarProximosFamilia();
+  }catch(e){
+    const msg=e&&e.code===1?'Permita o acesso à localização nas configurações do iPhone/iPad.':(e.message||'Não foi possível obter GPS');
+    toast(msg);
+  }
+}
+
+async function atualizarLocalizacaoBaba(){
+  try{
+    toast('Capturando GPS…');
+    const r=await ic24CapturarGpsESalvar('caregivers');
+    toast('Localização da babá atualizada (±'+r.accuracyM+' m)');
+  }catch(e){
+    const msg=e&&e.code===1?'Permita o acesso à localização nas configurações.':(e.message||'Não foi possível obter GPS');
+    toast(msg);
+  }
+}
+
 async function carregarProximosFamilia(){
   const list=document.getElementById('fam-proximos-list');
   if(!list) return;
-  list.innerHTML='<p class="hint">Carregando…</p>';
+  list.innerHTML='<p class="hint">Carregando babás próximas…</p>';
   try{
+    // GPS sob demanda (não automático) — evita pedido de permissão inesperado na App Review
     const cgs=await ic24ListarBabasProximos();
-    list.innerHTML=cgs.length?cgs.map(c=>{
+    list.innerHTML=
+      '<button class="btn btn-o" type="button" style="margin-bottom:12px" onclick="atualizarLocalizacaoFamilia()">📍 Atualizar minha localização (GPS)</button>'+
+      '<p class="hint" style="margin-bottom:12px">Distância usa GPS salvo ou CEP. Endereço não aparece na lista.</p>'+
+      (cgs.length?cgs.map(c=>{
+      const linha=ic24LinhaBuscaBaba(c);
       const foto=c.photoUrl?'<img src="'+escapeHtml(c.photoUrl)+'" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;margin-right:10px;vertical-align:middle"/>':'';
-      return '<div class="list-item"><div style="display:flex;align-items:center">'+foto+'<div><b>'+escapeHtml(c.fullName||'Babá')+'</b><small>'+
-      escapeHtml((c.city||'')+(c.state?' - '+c.state:''))+' · '+
-      (c.availableToday||c.plantaoHoje?.ativo?'✅ Disponível hoje':'Agenda')+' · '+escapeHtml(typeof ic24ExibirRateCaregiver==='function'?ic24ExibirRateCaregiver(c):'—')+'</small></div></div>'+
+      return '<div class="list-item"><div style="display:flex;align-items:center">'+foto+'<div><b>'+escapeHtml(linha.titulo)+'</b><small>'+
+      escapeHtml(linha.subtitulo)+'</small></div></div>'+
       '<button class="btn btn-o" type="button" style="margin-top:8px;height:40px;width:100%" onclick="abrirPerfilBabaFamilia(\''+c.id+'\')">Ver perfil</button>'+
       '<button class="btn btn-o" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirCurriculoBaba(\''+c.id+'\')">Ver currículo</button>'+
       '<button class="btn btn-p" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirPropostaBabá(\''+c.id+'\',\'mae-proximos\')">Oferecer proposta</button></div>';
     }).join(''):
-      '<p class="hint">Nenhuma babá disponível hoje. Peça para ativarem "Oferecer plantão hoje".</p>';
+      '<p class="hint">Nenhuma babá disponível hoje. Peça para ativarem "Oferecer plantão hoje".</p>');
   }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
 }
 
@@ -3096,13 +3138,25 @@ async function abrirPerfilBabaFamilia(id){
   show('mae-baba-perfil');
   try{
     const p=await ic24CarregarPerfilBabaPublico(id);
+    let distLine='';
+    if(typeof ic24OrdenarPorDistanciaRaio==='function'&&ic24Auth.currentUser){
+      ic24InitFirebase();
+      const clientSnap=await ic24Db.collection('clients').doc(ic24Auth.currentUser.uid).get();
+      const patient=clientSnap.data()||{};
+      const sorted=await ic24OrdenarPorDistanciaRaio([{...p,id}],patient,(doc)=>doc,typeof ic24BabaRaioKm==='function'?ic24BabaRaioKm:()=>0);
+      const d=sorted[0];
+      if(d?.distanceKm!=null){
+        distLine=typeof ic24FmtDistanciaKm==='function'?ic24FmtDistanciaKm(d.distanceKm,d.withinRadius):d.distanceKm+' km';
+      }
+    }
     const foto=p.photoUrl?'<img src="'+escapeHtml(p.photoUrl)+'" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:12px;display:block"/>':'';
     const prefs=p.paymentPreferences||{};
     const rec=prefs.paymentSchedule==='semanal'?'Semanal':prefs.paymentSchedule==='quinzenal'?'Quinzenal':'Diária';
-    const endereco=(typeof ic24FormatAddressPublic==='function'?ic24FormatAddressPublic(p):p.address)||[p.city,p.state].filter(Boolean).join(' - ');
+    const nivel=typeof ic24RotuloNivelBaba==='function'?ic24RotuloNivelBaba(p):'Babá';
+    const disp=p.availableToday?'Disponível':'Agenda';
+    // Perfil público: distância sim, endereço NÃO
     box.innerHTML=foto+'<h3 style="margin:0 0 8px">'+escapeHtml(p.fullName)+'</h3>'+
-      '<p class="hint">'+escapeHtml([p.city,p.state].filter(Boolean).join(' - '))+'</p>'+
-      '<p style="font-size:14px"><strong>Endereço:</strong> '+escapeHtml(endereco||'—')+'</p>'+
+      '<p class="hint">'+escapeHtml(nivel+' · '+disp+(distLine?' · Distância '+distLine:''))+'</p>'+
       '<p style="font-size:14px">'+escapeHtml(p.bio||'')+'</p>'+
       '<p><strong>'+escapeHtml(typeof ic24ExibirRateCaregiver==='function'?ic24ExibirRateCaregiver(p):'Consulte agenda/plantão')+'</strong> · Recebimento: '+rec+'</p>'+
       (p.availableToday?'<p style="color:var(--p)">✓ Disponível hoje</p>':'')+

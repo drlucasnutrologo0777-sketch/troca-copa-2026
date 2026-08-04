@@ -1,9 +1,13 @@
-Babá ON — Codemagic
+Babá ON — Codemagic (build 1.0.0+12)
 1. https://codemagic.io/apps → troca-copa-2026
 2. Start new build → **Babá ON — iOS TestFlight** → branch main
 
 Bundle: com.babaon.app
 IAP: bo_taxa_manutencao
-Build: 1.0.0+3
+Build: 1.0.0+12
 
-App Store Connect: crie app Babá ON com bundle com.babaon.app antes do primeiro upload.
+Evita DUPLICATE: build deve ser > 11 (build 6 e 11 já na Apple).
+Upload usa resolve_asc_apple_id.py (Apple ID correto no altool).
+
+TestFlight (após processar):
+https://appstoreconnect.apple.com/apps → Babá ON → TestFlight

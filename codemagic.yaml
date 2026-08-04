@@ -298,7 +298,7 @@ workflows:
         BUNDLE_ID: com.babaon.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         BO_BUILD_NAME: "1.0.0"
-        BO_BUILD_NUMBER: "11"
+        BO_BUILD_NUMBER: "12"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -321,10 +321,12 @@ workflows:
           grep -q "ic24PreviewFotoPerfil" web_app/ic24-curriculo.js || { echo "ERRO: preview foto perfil ausente"; exit 1; }
           grep -q "curriculo-viewer" web_app/index.html || { echo "ERRO: visualizador curriculo ausente"; exit 1; }
           grep -q "validarEnderecoFam" web_app/index.html || { echo "ERRO: fix cadastro família ausente"; exit 1; }
-          grep -q "baba_v11_familia_cadastro_fix" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp v11"; exit 1; }
+          grep -q "baba_v12" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp v12"; exit 1; }
+          grep -q "bo-geo.js" web_app/index.html || { echo "ERRO: bo-geo.js ausente no index"; exit 1; }
+          grep -q "bo_taxa_manutencao" web_app/ic24-cobranca.js || { echo "ERRO: IAP product id"; exit 1; }
           grep -q "IC24_DOCS_OBRIGATORIOS" web_app/firebase-ic24.js || { echo "ERRO: firebase-ic24.js"; exit 1; }
-          if [ "${BO_BUILD_NUMBER}" -le 6 ]; then
-            echo "ERRO: build ${BO_BUILD_NUMBER} deve ser > 6 (TestFlight DUPLICATE — build 6 ja na Apple)"
+          if [ "${BO_BUILD_NUMBER}" -le 11 ]; then
+            echo "ERRO: build ${BO_BUILD_NUMBER} deve ser > 11 (TestFlight — builds <=11 ja na Apple / DUPLICATE build 6)"
             exit 1
           fi
           echo "Commit: $(git rev-parse --short HEAD 2>/dev/null || echo local)"
@@ -364,8 +366,8 @@ workflows:
         script: |
           set -e
           echo "Gerando Babá ON ${BO_BUILD_NAME} (${BO_BUILD_NUMBER})"
-          if [ "$BO_BUILD_NUMBER" -le 6 ]; then
-            echo "ERRO: build deve ser > 6 (DUPLICATE TestFlight)"
+          if [ "$BO_BUILD_NUMBER" -le 11 ]; then
+            echo "ERRO: build deve ser > 11 (DUPLICATE TestFlight / build 6 e 11 ja na Apple)"
             exit 1
           fi
           grep -q 'allowingReadAccessTo' lib/screens/web_app_screen.dart || { echo "ERRO: WebView iOS file://"; exit 1; }
@@ -390,8 +392,8 @@ workflows:
           IPA_CHECK=$(find build/ios/ipa -name "*.ipa" | head -1)
           IPA_BUILT=$(bash tool/ipa_bundle_version.sh "$IPA_CHECK" 2>/dev/null || echo "")
           echo "CFBundleVersion no IPA gerado: ${IPA_BUILT} (obrigatorio ${BO_BUILD_NUMBER})"
-          if [ -z "${IPA_BUILT:-}" ] || [ "$IPA_BUILT" -le 6 ]; then
-            echo "ERRO: IPA build ${IPA_BUILT:-vazio} — DUPLICATE na Apple (ultimo aceito: 6)"
+          if [ -z "${IPA_BUILT:-}" ] || [ "$IPA_BUILT" -le 11 ]; then
+            echo "ERRO: IPA build ${IPA_BUILT:-vazio} — deve ser > 11 (DUPLICATE TestFlight)"
             exit 1
           fi
           if [ "${IPA_BUILT}" != "${BO_BUILD_NUMBER}" ]; then
@@ -407,18 +409,26 @@ workflows:
           test -n "$IPA"
           BUILD_NUM="${BO_BUILD_NUMBER}"
           IPA_VER=$(bash tool/ipa_bundle_version.sh "$IPA" 2>/dev/null || unzip -p "$IPA" 'Payload/*.app/Info.plist' | plutil -extract CFBundleVersion raw - 2>/dev/null || echo "")
+          IPA_SHORT=$(bash tool/ipa_bundle_version.sh "$IPA" --short 2>/dev/null || echo "")
           echo "IPA CFBundleVersion: ${IPA_VER} (obrigatorio ${BUILD_NUM})"
-          if [ -z "${IPA_VER:-}" ] || [ "$IPA_VER" -le 6 ]; then
-            echo "ERRO: IPA build ${IPA_VER:-vazio} — deve ser > 6"
+          echo "IPA CFBundleShortVersionString: ${IPA_SHORT} (obrigatorio ${BO_BUILD_NAME})"
+          if [ -z "${IPA_VER:-}" ] || [ "$IPA_VER" -le 11 ]; then
+            echo "ERRO: IPA build ${IPA_VER:-vazio} — deve ser > 11 (evita DUPLICATE build 6/11)"
             exit 1
           fi
           if [ "${IPA_VER}" != "${BUILD_NUM}" ]; then
             echo "ERRO: IPA ${IPA_VER} != BO_BUILD_NUMBER ${BUILD_NUM}"
             exit 1
           fi
+          if [ -n "${IPA_SHORT}" ] && [ "${IPA_SHORT}" != "${BO_BUILD_NAME}" ]; then
+            echo "ERRO: IPA marketing ${IPA_SHORT} != ${BO_BUILD_NAME}"
+            exit 1
+          fi
           API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
           export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
           pip3 install --quiet PyJWT requests
+          APP_STORE_APPLE_ID=$(python3 tool/resolve_asc_apple_id.py)
+          echo "Bundle $BUNDLE_ID -> Apple ID $APP_STORE_APPLE_ID"
           app-store-connect publish \
             --path "$IPA" \
             --private-key "@file:$API_KEY" \
@@ -426,9 +436,14 @@ workflows:
             --max-find-build-wait 900 \
             --max-build-processing-wait 3600 \
             --verbose
+          echo "${BUILD_NUM}" > ios/ASC_LAST_UPLOADED_BUILD.txt
+          echo "Upload concluido (build ${BUILD_NUM})."
+          echo "Codemagic: https://codemagic.io/apps"
+          echo "TestFlight: https://appstoreconnect.apple.com/apps/${APP_STORE_APPLE_ID}/testflight/ios"
 
     artifacts:
       - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
 
     publishing:
       email:

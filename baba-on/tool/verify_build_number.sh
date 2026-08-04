@@ -29,9 +29,22 @@ if [ -n "${BO_BUILD_NUMBER:-}" ] && [ "$BO_BUILD_NUMBER" != "$PUBSPEC_NUM" ]; th
   echo "ERRO: BO_BUILD_NUMBER (${BO_BUILD_NUMBER}) != pubspec (+${PUBSPEC_NUM})"
   exit 1
 fi
+
+# Build 6 ja foi aceito no TestFlight — numeros <= 6 causam DUPLICATE.
 if [ "$PUBSPEC_NUM" -le 6 ]; then
-  echo "ERRO: build ${PUBSPEC_NUM} <= 6 — TestFlight DUPLICATE (build 6 ja enviado)"
+  echo "ERRO: build ${PUBSPEC_NUM} <= 6 — Apple rejeita DUPLICATE (build 6 ja no TestFlight)"
   exit 1
+fi
+
+ASC_FILE=ios/ASC_LAST_UPLOADED_BUILD.txt
+if [ -f "$ASC_FILE" ]; then
+  ASC_LAST=$(tr -d ' \n\r' < "$ASC_FILE")
+  if [ -n "$ASC_LAST" ] && [ "$PUBSPEC_NUM" -le "$ASC_LAST" ]; then
+    echo "ERRO: build +${PUBSPEC_NUM} <= ultimo enviado a Apple (+${ASC_LAST}) em ${ASC_FILE}"
+    echo "SOLUCAO: incremente para +$((ASC_LAST + 1)) em pubspec, Version.xcconfig, BO_IOS_BUILD.txt e codemagic.yaml"
+    exit 1
+  fi
+  echo "Apple ultimo upload: +${ASC_LAST} -> proximo build +${PUBSPEC_NUM} OK"
 fi
 
 echo "OK: build ${PUBSPEC_NAME}+${PUBSPEC_NUM} alinhado"

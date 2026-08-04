@@ -10,8 +10,10 @@
 	<string>Babá ON</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Usamos sua localização para calcular a distância entre mães/pais e babás. O endereço completo não é exibido na busca — só a distância em km.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Usamos a câmera para fotografar documentos de cadastro e foto de perfil da babá.</string>
+	<string>Usamos a câmera para fotos de perfil e documentos da babá.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Usamos suas fotos para enviar documentos e definir a foto de perfil.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
@@ -21,10 +23,6 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleDarkContent</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

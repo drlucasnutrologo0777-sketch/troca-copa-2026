@@ -119,6 +119,9 @@ service cloud.firestore {
         || isAdmin()
         || (isFamily() && resource.data.availableToday == true);
       allow create: if isOwner(caregiverId) && isCaregiver();
+      // Dono (babá) pode atualizar perfil + GPS (latitude/longitude/lat/lng,
+      // locationSource, locationUpdatedAt, locationAccuracyM).
+      // Família só rating ou vínculo de taxa — NÃO pode alterar localização da babá.
       allow update: if isOwner(caregiverId) || isAdmin()
         || (isFamily() && isRatingOnlyUpdate())
         || (isFamily() && isFamilyMatchLinkUpdate())
@@ -144,7 +147,10 @@ service cloud.firestore {
 
     match /clients/{clientId} {
       allow read: if isOwner(clientId) || isAdmin();
-      allow create, update: if isOwner(clientId) && isFamily();
+      // Mãe/pai grava endereço próprio + GPS (lat/lng) para origem da distância.
+      // Leitura só do dono/admin — coordenadas da família não são públicas.
+      allow create: if isOwner(clientId) && isFamily();
+      allow update: if isOwner(clientId) && isFamily();
       allow delete: if isOwner(clientId) || isAdmin();
     }
 

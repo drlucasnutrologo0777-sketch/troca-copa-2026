@@ -43,14 +43,36 @@ async function ic24VincularFamiliaAtiva(caregiverId, familyId) {
   );
 }
 
+/** Lista babás ordenadas por distância (GPS/CEP — sem exibir endereço). */
 async function ic24ListarBabasProximos() {
   ic24InitFirebase();
-  const snap = await ic24Db.collection('caregivers').where('availableToday', '==', true).limit(30).get();
-  if (snap.empty) {
-    const snap2 = await ic24Db.collection('caregivers').limit(20).get();
-    return snap2.docs.map((d) => ({ id: d.id, ...d.data() }));
+  const familyId = ic24Auth.currentUser?.uid;
+  let patient = {};
+  if (familyId) {
+    const c = await ic24Db.collection('clients').doc(familyId).get();
+    patient = c.exists ? c.data() : {};
   }
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  const snap = await ic24Db.collection('caregivers').where('availableToday', '==', true).limit(30).get();
+  let list = snap.empty
+    ? (await ic24Db.collection('caregivers').limit(20).get()).docs.map((d) => ({ id: d.id, ...d.data() }))
+    : snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  if (familyId && typeof ic24OrdenarPorDistanciaRaio === 'function') {
+    list = await ic24OrdenarPorDistanciaRaio(
+      list,
+      patient,
+      (doc) => doc,
+      typeof ic24BabaRaioKm === 'function' ? ic24BabaRaioKm : () => 0,
+    );
+  } else {
+    list = list.map((c) => ({
+      ...c,
+      distanceKm: null,
+      nivelLabel: typeof ic24RotuloNivelBaba === 'function' ? ic24RotuloNivelBaba(c) : 'Babá',
+      disponivelLabel:
+        typeof ic24StatusDisponivelBaba === 'function' ? ic24StatusDisponivelBaba(c) : 'Agenda',
+    }));
+  }
+  return list;
 }
 
 async function ic24CriarOferta(familiaPayload) {
