@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 grep -q 'BabaOnApp' lib/main.dart
-grep -q 'Babá ON iOS build 1.0.0+12' web_app/index.html
+grep -q 'Babá ON iOS build 1.0.0+13' web_app/index.html
 grep -q 'bo_taxa_manutencao' web_app/ic24-cobranca.js
+grep -q 'Ver taxa pendente' web_app/index.html
 grep -q 'bo-geo.js' web_app/index.html
-test -f web_app/index.html
 test -f web_app/bo-geo.js
 echo "OK Babá ON web bundle"

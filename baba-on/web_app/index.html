@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#134175"/>
 <title>Babá ON</title>
-<!-- Babá ON iOS build 1.0.0+12 -->
+<!-- Babá ON iOS build 1.0.0+13 -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" href="favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
@@ -1472,7 +1472,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       </div>
       <div class="cv" id="taxa-detalhe" style="margin-top:12px"></div>
       <p class="step" style="margin-top:16px">Pagar taxa pendente</p>
-      <p class="hint">Pagamento via <strong>Apple App Store</strong> — produto consumível <code>bo_taxa_manutencao</code> (US$ 1,99 por diária; várias compras se o trabalho tiver várias diárias).</p>
+      <p class="hint">Pagamento via <strong>Apple App Store</strong> — produto consumível <code>bo_taxa_manutencao</code> (US$ 1,99 por diária; várias compras se o trabalho tiver várias diárias). Conta demo de revisão já vem com taxa pendente.</p>
       <button class="btn btn-p" type="button" id="taxa-pagar-btn" style="margin-top:12px" onclick="pagarTaxaPlataforma()">Pagar taxa via App Store</button>
       <div class="note" style="margin-top:12px;font-size:12px">
         Histórico de taxas pagas via App Store (<code>bo_taxa_manutencao</code>).
@@ -2466,13 +2466,18 @@ function renderTaxa(d){
   if(pendEl) pendEl.textContent=pend>0?ic24FmtTaxaUsd(pend):'US$ 0,00';
   const btn=document.getElementById('taxa-pagar-btn');
   if(btn){
-    btn.disabled=pend<=0.001;
-    btn.textContent=pend>0?(diariasPend>1?'Pagar '+diariasPend+'× taxa via App Store ('+ic24FmtTaxaUsd(pend)+')':'Pagar taxa via App Store ('+ic24FmtTaxaUsd(pend)+')'):'Sem taxa pendente — feche um negócio primeiro';
-    btn.style.opacity=pend>0?'1':'0.55';
+    // Nunca disabled — App Review: botão morto = rejeição 2.1(b)
+    btn.disabled=false;
+    btn.removeAttribute('disabled');
+    btn.setAttribute('aria-label', pend>0 ? 'Pagar taxa pendente via App Store' : 'Ver taxa pendente');
+    btn.textContent=pend>0
+      ?(diariasPend>1?'Pagar '+diariasPend+'× taxa via App Store ('+ic24FmtTaxaUsd(pend)+')':'Pagar taxa via App Store ('+ic24FmtTaxaUsd(pend)+')')
+      :'Ver taxa pendente';
+    btn.style.opacity='1';
   }
   document.getElementById('taxa-detalhe').innerHTML=
     '<p>Taxa de manutenção: <strong>'+ic24FmtTaxaUsd(IC24_FEE_FIXED_USD)+'</strong> ('+ic24FmtTaxaBrl(IC24_FEE_FIXED_BRL)+') <strong>por diária</strong> (máx. 1 cobrança pendente por negócio).</p>'+
-    (pend>0?'<p style="margin-top:8px">Taxa pendente: <strong style="color:var(--err)">'+ic24FmtTaxaUsd(pend)+'</strong> · <strong>'+diariasPend+' diária(s)</strong>'+(offerId?' · plantão <code>'+escapeHtml(String(offerId).slice(0,12))+'…</code>':'')+'</p>':'<p style="margin-top:8px;color:var(--p)">Nenhuma taxa pendente — você pode aceitar novos negócios.</p>')+
+    (pend>0?'<p style="margin-top:8px">Taxa pendente: <strong style="color:var(--err)">'+ic24FmtTaxaUsd(pend)+'</strong> · <strong>'+diariasPend+' diária(s)</strong>'+(offerId?' · plantão <code>'+escapeHtml(String(offerId).slice(0,12))+'…</code>':'')+'</p>':'<p style="margin-top:8px;color:var(--p)">Nenhuma taxa pendente. Conta demo <strong>baba.demo@babaon.test.local</strong> já vem com taxa US$ 1,99 para testar o IAP.</p>')+
     (ic24OffersBlockedByFee(d)?'<p style="margin-top:8px;color:var(--err)">Aceitar ofertas <strong>bloqueado</strong> até quitar via App Store.</p>':'')+
     '<p style="margin-top:8px">Diárias recebidas: <strong>'+fmtMoeda(bruto)+'</strong> · '+Number(fin.plantoes||0)+' cobrança(s) paga(s)</p>';
   renderTaxaAlerta(d);
