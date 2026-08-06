@@ -1,6 +1,10 @@
 /**
  * Garante taxa IAP pendente na conta demo da babá (revisão Apple).
  * Uso: node scripts/seed_review_iap_demo.mjs
+ *
+ * Regras Firestore: só a família pode acumular taxa (isFamilyMatchLinkUpdate),
+ * com campos exatamente: activeFamilyId, platformFeePending, platformFeePendingDiarias,
+ * platformFeeCurrency, platformFeePendingOfferId, platformFeeUpdatedAt, updatedAt.
  */
 import { readFileSync } from 'fs';
 
@@ -9,6 +13,7 @@ const PASS = 'Demo123!';
 const BABA_EMAIL = 'baba.demo@babaon.test.local';
 const FAMILY_EMAIL = 'pai.demo@babaon.test.local';
 const OFFER_ID = 'review_demo_iap_offer';
+const FEE = 1.99;
 
 function loadApiKey() {
   const js = readFileSync(new URL('../web_app/firebase-ic24.js', import.meta.url), 'utf8');
@@ -46,21 +51,33 @@ function fv(type, value) {
   return { stringValue: String(value) };
 }
 
-async function patchDoc(token, path, fields) {
-  const mask = Object.keys(fields).join('&updateMask.fieldPaths=');
-  return json(
-    `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/${path}?updateMask.fieldPaths=${mask}`,
-    {
-      method: 'PATCH',
-      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fields }),
-    },
+async function getDoc(token, path) {
+  const r = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/${path}`,
+    { headers: { Authorization: 'Bearer ' + token } },
   );
+  if (r.status === 404) return null;
+  const t = await r.text();
+  const j = JSON.parse(t);
+  if (!r.ok) throw new Error((j.error?.message || t).slice(0, 500));
+  return j;
 }
 
-async function setDoc(token, path, fields) {
+function fieldVal(fields, key) {
+  const f = fields?.[key];
+  if (!f) return null;
+  if (f.doubleValue != null) return Number(f.doubleValue);
+  if (f.integerValue != null) return Number(f.integerValue);
+  if (f.stringValue != null) return f.stringValue;
+  return null;
+}
+
+async function patchDoc(token, path, fields) {
+  const mask = Object.keys(fields)
+    .map((k) => `updateMask.fieldPaths=${encodeURIComponent(k)}`)
+    .join('&');
   return json(
-    `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/${path}`,
+    `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/${path}?${mask}`,
     {
       method: 'PATCH',
       headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
@@ -78,57 +95,57 @@ const caregiverUid = cg.localId;
 console.log('Login família demo…');
 const fam = await signIn(FAMILY_EMAIL, apiKey);
 
-console.log('Criando/atualizando oferta demo…');
-await setDoc(fam.idToken, `job_offers/${OFFER_ID}`, {
-  id: fv('string', OFFER_ID),
-  familyId: fv('string', fam.localId),
-  familyName: fv('string', 'Pai Demo Família'),
-  matchedCaregiverId: fv('string', caregiverUid),
-  status: fv('string', 'matched'),
-  title: fv('string', 'Plantão demo revisão Apple'),
-  platformFeeStatus: fv('string', 'pending'),
-  platformFeeAmount: fv('double', 1.99),
-  platformFeePendingDiarias: fv('int', 1),
-  platformFeeCurrency: fv('string', 'USD'),
-  agreedDailyRate: fv('double', 280),
-  jobDurationDays: fv('int', 1),
-});
+const existing = await getDoc(cg.idToken, `caregivers/${caregiverUid}`);
+const pendingNow = fieldVal(existing?.fields, 'platformFeePending') || 0;
+console.log('Taxa atual:', pendingNow);
 
-console.log('Acumulando taxa pendente US$ 1,99 na babá…');
-await patchDoc(fam.idToken, `caregivers/${caregiverUid}`, {
-  platformFeePending: fv('double', 1.99),
-  platformFeePendingDiarias: fv('int', 1),
-  platformFeeCurrency: fv('string', 'USD'),
-  platformFeePendingOfferId: fv('string', OFFER_ID),
-  activeFamilyId: fv('string', fam.localId),
-  approved: fv('bool', true),
-  photoUrl: fv('string', 'https://baba-on-3634a.web.app/logo.png'),
-  bio: fv('string', 'Babá demo para revisão Apple — cadastro completo'),
-  street: fv('string', 'Rua Demo'),
-  number: fv('string', '100'),
-  cep: fv('string', '39400000'),
-  city: fv('string', 'Montes Claros'),
-  state: fv('string', 'MG'),
-});
+if (pendingNow < FEE - 0.001) {
+  console.log('Criando/atualizando oferta demo…');
+  await patchDoc(fam.idToken, `job_offers/${OFFER_ID}`, {
+    id: fv('string', OFFER_ID),
+    familyId: fv('string', fam.localId),
+    familyName: fv('string', 'Pai Demo Família'),
+    matchedCaregiverId: fv('string', caregiverUid),
+    status: fv('string', 'matched'),
+    title: fv('string', 'Plantão demo revisão Apple'),
+    platformFeeStatus: fv('string', 'pending'),
+    platformFeeAmount: fv('double', FEE),
+    platformFeePendingDiarias: fv('int', 1),
+    platformFeeCurrency: fv('string', 'USD'),
+    agreedDailyRate: fv('double', 280),
+    jobDurationDays: fv('int', 1),
+  });
+
+  console.log('Acumulando taxa pendente US$ 1,99…');
+  await patchDoc(fam.idToken, `caregivers/${caregiverUid}`, {
+    activeFamilyId: fv('string', fam.localId),
+    platformFeePending: fv('double', FEE),
+    platformFeePendingDiarias: fv('int', 1),
+    platformFeeCurrency: fv('string', 'USD'),
+    platformFeePendingOfferId: fv('string', OFFER_ID),
+    platformFeeUpdatedAt: fv('string', new Date().toISOString()),
+    updatedAt: fv('string', new Date().toISOString()),
+  });
+} else {
+  console.log('Taxa já OK — mantendo US$', pendingNow);
+}
 
 const PHOTO = 'https://baba-on-3634a.web.app/logo.png';
 for (const docKey of ['rg_frente', 'rg_verso', 'comprovante', 'antecedentes']) {
-  await setDoc(cg.idToken, `caregivers/${caregiverUid}/documents/${docKey}`, {
-    docKey: fv('string', docKey),
-    label: fv('string', docKey),
-    fileUrl: fv('string', PHOTO),
-    status: fv('string', 'approved'),
-  });
+  try {
+    await patchDoc(cg.idToken, `caregivers/${caregiverUid}/documents/${docKey}`, {
+      docKey: fv('string', docKey),
+      label: fv('string', docKey),
+      fileUrl: fv('string', PHOTO),
+      status: fv('string', 'approved'),
+    });
+  } catch (e) {
+    console.warn('doc', docKey, e.message);
+  }
 }
 
-await setDoc(cg.idToken, `curriculum_public/${caregiverUid}`, {
-  caregiverId: fv('string', caregiverUid),
-  fullName: fv('string', 'Ana Demo Babá'),
-  city: fv('string', 'Montes Claros'),
-  state: fv('string', 'MG'),
-  photoUrl: fv('string', PHOTO),
-  bio: fv('string', 'Babá demo — revisão App Store'),
-});
-
-console.log('OK — babá demo com taxa pendente US$ 1,99 (1 diária) + docs RG.');
+const after = await getDoc(cg.idToken, `caregivers/${caregiverUid}`);
+console.log('OK — taxa pendente US$', fieldVal(after?.fields, 'platformFeePending'));
 console.log('UID babá:', caregiverUid);
+console.log('Login review: baba.demo@babaon.test.local / Demo123!');
+

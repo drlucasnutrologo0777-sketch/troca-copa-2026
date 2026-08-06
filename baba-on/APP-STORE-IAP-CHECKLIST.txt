@@ -1,0 +1,26 @@
+Babá ON — Checklist App Store Connect (Guideline 2.1(b))
+Build a enviar: 1.0.0+14 · Bundle: com.babaon.app
+================================================================================
+
+A) CÓDIGO (feito)
+[x] Demo auto-reseed US$ 1,99 no login (baba.demo@…)
+[x] Botão Taxa do app reabre seed antes de pagar
+[x] Build 14 em pubspec / Version.xcconfig / BO_IOS_BUILD / codemagic
+[x] Review notes: IAP-REVIEW-NOTAS.txt
+[x] Screenshot: IAP-REVIEW-SCREENSHOT.png (na pasta do projeto)
+
+B) VOCÊ NO APP STORE CONNECT (obrigatório agora)
+[ ] Distribuição = PÚBLICO
+[ ] IAP bo_taxa_manutencao → upload CAPTURA DE TELA de revisão (IAP-REVIEW-SCREENSHOT.png)
+[ ] Na versão 1.0 build 14 → marcar IAP bo_taxa_manutencao
+[ ] Colar IAP-REVIEW-NOTAS.txt em App Review Information
+[ ] Agreement Paid Apps = Ativo (já está)
+
+C) BUILD
+[ ] git push no GitHub
+[ ] Codemagic Start build (Babá ON) — build 14
+[ ] Upload OK → ASC_LAST_UPLOADED_BUILD.txt = 14
+[ ] Submit for Review
+
+Login review: baba.demo@babaon.test.local / Demo123!
+Taxa pendente DEVE mostrar US$ 1,99

@@ -1,51 +1,31 @@
 App Store Connect — Review Notes (English — paste in Version → App Review Information)
-Build: 1.0 (8) · Bundle: com.babaon.app · IAP: bo_taxa_manutencao
-First IAP submitted WITH this version (selected under In-App Purchases and Subscriptions).
+Build: 1.0 (14) · Bundle: com.babaon.app · IAP: bo_taxa_manutencao
+Submit IAP WITH this version (In-App Purchases and Subscriptions + Review screenshot).
 ================================================================================
 
-IN-APP PURCHASE TEST — READ FIRST
-Product ID (exact): bo_taxa_manutencao · Consumable · US$ 1.99 tier
+FIX FOR GUIDELINE 2.1(b)
+• Consumable bo_taxa_manutencao is included with this binary for review.
+• Demo babysitter account AUTO-SEEDES US$ 1.99 pending platform fee on every login.
+• Taxa do app screen shows pending US$ 1.99 and button "Pagar taxa via App Store".
+• Paid Apps Agreement is Active. Banking/Tax Active.
 
-The demo babysitter account is pre-seeded with ONE pending platform fee (US$ 1.99 / 1 care day):
+IN-APP PURCHASE TEST — READ FIRST
+Product ID (exact): bo_taxa_manutencao · Consumable · US$ 1.99
 
 1. Log in: baba.demo@babaon.test.local / Demo123!
 2. Menu → Taxa do app
-3. Confirm: Taxa pendente: US$ 1.99 (must NOT be US$ 0.00)
-4. Tap Pagar taxa via App Store
-5. Complete consumable bo_taxa_manutencao with a Sandbox Apple ID
+3. Confirm: Taxa pendente shows US$ 1.99 (NOT US$ 0.00)
+4. Tap "Pagar taxa via App Store"
+5. Complete Sandbox purchase of bo_taxa_manutencao
 
-If pending fee shows US$ 0.00, contact us — run seed_review_iap_demo.mjs before review.
-
-APP OVERVIEW
-Babá ON connects parents with professional babysitters in Brazil. NOT medical or emergency service. Emergency: 190 (Police) or 192 (SAMU). Child protection: 100.
+If pending ever shows US$ 0.00, pull-to-refresh / reopen Taxa do app — demo auto-reseeds.
 
 DEMO ACCOUNTS (password both: Demo123!)
-• Babysitter: baba.demo@babaon.test.local — Ana Demo Babá
-• Parent: pai.demo@babaon.test.local — Pai Demo Família
-
-Sign in: open app → Entrar → email + password → profile home.
-
-BABYSITTER FLOW
-Offers → accept/counter → payment method & duration (days) → parent closes deal → chat → clock-in → care log → billing (external PIX) → Taxa do app (IAP).
-
-PARENT FLOW
-Nearby babysitters → proposal/urgent shift → close deal → chat → confirm clock-in → care log → payments → rate/report.
+• Babysitter: baba.demo@babaon.test.local — HAS pending IAP fee US$ 1.99
+• Parent: pai.demo@babaon.test.local
 
 PAYMENTS (Guideline 3.1)
-• Parent → babysitter daily pay: external PIX/bank link (outside App Store). No IAP.
-• Platform fee: US$ 1.99 per agreed care day — ONLY Apple IAP consumable bo_taxa_manutencao (Taxa do app). Example: 10 days = 10 × US$ 1.99 purchases. No PIX for platform fee.
-
-APP PRICE
-The app is FREE to download. Platform fee is charged only in-app after a completed booking agreement.
-
-PERMISSIONS
-Camera/photo library: profile and documents only. No continuous GPS. Chat only after both parties agree.
-
-ACCOUNT & LEGAL
-Delete account: in-app or https://baba-on-3634a.web.app/exclusao-conta.html
-Privacy: https://baba-on-3634a.web.app/privacidade.html
-Support: https://baba-on-3634a.web.app/suporte.html
+• Parent → babysitter daily pay: external PIX (outside App Store).
+• Platform fee ONLY: Apple IAP consumable bo_taxa_manutencao.
 
 Contact: Eder Lucas Santos · +55 11 96836-2005 · drlucasnutrologo0777@icloud.com
-
-Thank you for reviewing Babá ON.

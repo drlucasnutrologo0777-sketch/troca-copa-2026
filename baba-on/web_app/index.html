@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#134175"/>
 <title>Babá ON</title>
-<!-- Babá ON iOS build 1.0.0+13 -->
+<!-- Babá ON iOS build 1.0.0+14 -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" href="favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
@@ -2186,6 +2186,9 @@ async function carregarPainelBaba(){
   if(uid){
     const snap=await ic24Db.collection('caregivers').doc(uid).get();
     d=snap.exists?snap.data():{};
+    if(typeof ic24EnsureReviewDemoFee==='function'){
+      try{ d=await ic24EnsureReviewDemoFee(d); }catch(e){ console.warn('review demo fee',e); }
+    }
     docsMap=await ic24ListDocumentos(uid);
     d.documentsList=Object.entries(docsMap).map(([k,v])=>({key:k,...v}));
     if(d.activeFamilyId) window._activeFamilyId=d.activeFamilyId;
@@ -2983,7 +2986,10 @@ async function carregarCobrancasHistorico(){
 }
 async function pagarTaxaPlataforma(){
   try{
-    const d=window._babaPainel||{};
+    let d=window._babaPainel||{};
+    if(typeof ic24EnsureReviewDemoFee==='function'){
+      try{ d=await ic24EnsureReviewDemoFee(d); window._babaPainel=d; }catch(_){}
+    }
     const pend=ic24PlatformFeePending(d);
     if(pend<=0.001){
       toast('Sem taxa pendente. Feche um negócio (família + babá) ou use a conta demo preparada para revisão.');
