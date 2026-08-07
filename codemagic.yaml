@@ -1,10 +1,10 @@
-# TROCA COPA 2026 — iPhone (TestFlight)
+# TROCA COPA 2026 ? iPhone (TestFlight)
 # Chave API e assinatura ficam em ios/codemagic_signing/ (no repo).
 # Nao precisa colar PRIVATE_KEY no Codemagic.
 
 workflows:
   troca-copa-ios:
-    name: TROCA COPA 2026 — iOS
+    name: TROCA COPA 2026 ? iOS
     max_build_duration: 90
     instance_type: mac_mini_m2
 
@@ -21,11 +21,11 @@ workflows:
       cocoapods: default
 
     scripts:
-      - name: AVISO — isto e TROCA COPA (nao Idoso Care)
+      - name: AVISO ? isto e TROCA COPA (nao Idoso Care)
         script: |
-          echo "========== TROCA COPA 2026 — NAO E IDOSO CARE =========="
-          echo "Para Idoso Care no iPhone: workflow 'Idoso Care 24H — iOS TestFlight'"
-          echo "Para Medico de Casa: workflow 'Medico de Casa — iOS TestFlight'"
+          echo "========== TROCA COPA 2026 ? NAO E IDOSO CARE =========="
+          echo "Para Idoso Care no iPhone: workflow 'Idoso Care 24H ? iOS TestFlight'"
+          echo "Para Medico de Casa: workflow 'Medico de Casa ? iOS TestFlight'"
       - name: Verificar credenciais Apple
         script: |
           set -e
@@ -103,7 +103,7 @@ workflows:
           failure: true
 
   idoso-care-ios:
-    name: Idoso Care 24H — iOS TestFlight
+    name: Idoso Care 24H ? iOS TestFlight
     max_build_duration: 90
     instance_type: mac_mini_m2
     working_directory: idoso-care-24h
@@ -133,7 +133,7 @@ workflows:
       - name: CONFIRMAR IDOSO CARE WEB (nao Troca Copa)
         script: |
           set -e
-          echo "========== IDOSO CARE 24H — BUILD (pubspec) =========="
+          echo "========== IDOSO CARE 24H ? BUILD (pubspec) =========="
           echo "Diretorio: $(pwd)"
           test -f web_app/index.html || { echo "ERRO: pasta idoso-care-24h nao encontrada"; exit 1; }
           bash tool/verify_web_build.sh
@@ -185,13 +185,13 @@ workflows:
       - name: Build IPA
         script: |
           set -e
-          echo "Gerando Idoso Care ${IC24_BUILD_NAME} (${IC24_BUILD_NUMBER}) — trains 2.0.0/2.0.1 fechados na Apple"
+          echo "Gerando Idoso Care ${IC24_BUILD_NAME} (${IC24_BUILD_NUMBER}) ? trains 2.0.0/2.0.1 fechados na Apple"
           if [ "$IC24_BUILD_NUMBER" -le 66 ]; then
-            echo "ERRO: build deve ser > 66 (66 ja enviado ao TestFlight — DUPLICATE)"
+            echo "ERRO: build deve ser > 66 (66 ja enviado ao TestFlight ? DUPLICATE)"
             exit 1
           fi
           if [ "$IC24_BUILD_NAME" = "2.0.0" ] || [ "$IC24_BUILD_NAME" = "2.0.1" ]; then
-            echo "ERRO: train ${IC24_BUILD_NAME} fechado na Apple — use 2.0.2+"
+            echo "ERRO: train ${IC24_BUILD_NAME} fechado na Apple ? use 2.0.2+"
             exit 1
           fi
           grep -q 'allowingReadAccessTo' lib/screens/web_app_screen.dart || { echo "ERRO: WebView iOS deve usar file:// (build 53)"; exit 1; }
@@ -235,7 +235,7 @@ workflows:
           echo "CFBundleVersion no IPA: ${BUILD_NUM} (obrigatorio ${IC24_BUILD_NUMBER}, > 59)"
           echo "CFBundleShortVersionString no IPA: ${SHORT_VER} (obrigatorio ${IC24_BUILD_NAME}, > 2.0.1)"
           if [ -z "${BUILD_NUM:-}" ] || [ "$BUILD_NUM" -le 66 ]; then
-            echo "ERRO: IPA build ${BUILD_NUM:-vazio} — deve ser > 66 (DUPLICATE na Apple)"
+            echo "ERRO: IPA build ${BUILD_NUM:-vazio} ? deve ser > 66 (DUPLICATE na Apple)"
             exit 1
           fi
           if [ "${BUILD_NUM}" != "${IC24_BUILD_NUMBER}" ]; then
@@ -243,7 +243,7 @@ workflows:
             exit 1
           fi
           if [ -z "${SHORT_VER:-}" ] || [ "$SHORT_VER" = "2.0.0" ] || [ "$SHORT_VER" = "2.0.1" ]; then
-            echo "ERRO: versao marketing ${SHORT_VER:-vazia} — trains 2.0.0/2.0.1 fechados na Apple"
+            echo "ERRO: versao marketing ${SHORT_VER:-vazia} ? trains 2.0.0/2.0.1 fechados na Apple"
             exit 1
           fi
           if [ "${SHORT_VER}" != "${IC24_BUILD_NAME}" ]; then
@@ -277,7 +277,7 @@ workflows:
           success: true
           failure: true
   baba-on-ios:
-    name: Babá ON — iOS TestFlight
+    name: Bab? ON ? iOS TestFlight
     max_build_duration: 90
     instance_type: mac_mini_m2
     working_directory: baba-on
@@ -298,7 +298,7 @@ workflows:
         BUNDLE_ID: com.babaon.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         BO_BUILD_NAME: "1.0.0"
-        BO_BUILD_NUMBER: "14"
+        BO_BUILD_NUMBER: "15"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -307,7 +307,7 @@ workflows:
       - name: CONFIRMAR BABA ON (nao Troca Copa / Idoso)
         script: |
           set -e
-          echo "========== BABA ON — BUILD (pubspec) =========="
+          echo "========== BABA ON ? BUILD (pubspec) =========="
           echo "Diretorio: $(pwd)"
           test -f web_app/index.html || { echo "ERRO: pasta baba-on nao encontrada"; exit 1; }
           bash tool/verify_web_build.sh
@@ -320,13 +320,13 @@ workflows:
           grep -q "rg_frente" web_app/index.html || { echo "ERRO: etapa3 sem rg_frente"; exit 1; }
           grep -q "ic24PreviewFotoPerfil" web_app/ic24-curriculo.js || { echo "ERRO: preview foto perfil ausente"; exit 1; }
           grep -q "curriculo-viewer" web_app/index.html || { echo "ERRO: visualizador curriculo ausente"; exit 1; }
-          grep -q "validarEnderecoFam" web_app/index.html || { echo "ERRO: fix cadastro família ausente"; exit 1; }
-          grep -q "baba_v14" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp v14"; exit 1; }
+          grep -q "validarEnderecoFam" web_app/index.html || { echo "ERRO: fix cadastro fam?lia ausente"; exit 1; }
+          grep -q "baba_v21" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp deve ser baba_v21 (atual no web_app_bundle.dart)"; exit 1; }
           grep -q "bo-geo.js" web_app/index.html || { echo "ERRO: bo-geo.js ausente no index"; exit 1; }
           grep -q "bo_taxa_manutencao" web_app/ic24-cobranca.js || { echo "ERRO: IAP product id"; exit 1; }
           grep -q "IC24_DOCS_OBRIGATORIOS" web_app/firebase-ic24.js || { echo "ERRO: firebase-ic24.js"; exit 1; }
-          if [ "${BO_BUILD_NUMBER}" -le 13 ]; then
-            echo "ERRO: build ${BO_BUILD_NUMBER} deve ser > 13 (TestFlight — evita DUPLICATE)"
+          if [ "${BO_BUILD_NUMBER}" -le 14 ]; then
+            echo "ERRO: build ${BO_BUILD_NUMBER} deve ser > 14 (TestFlight ? evita DUPLICATE)"
             exit 1
           fi
           echo "Commit: $(git rev-parse --short HEAD 2>/dev/null || echo local)"
@@ -365,12 +365,12 @@ workflows:
       - name: Build IPA
         script: |
           set -e
-          echo "Gerando Babá ON ${BO_BUILD_NAME} (${BO_BUILD_NUMBER})"
-          if [ "$BO_BUILD_NUMBER" -le 13 ]; then
-            echo "ERRO: build deve ser > 13 (DUPLICATE TestFlight)"
+          echo "Gerando Bab? ON ${BO_BUILD_NAME} (${BO_BUILD_NUMBER})"
+          if [ "$BO_BUILD_NUMBER" -le 14 ]; then
+            echo "ERRO: build deve ser > 14 (DUPLICATE TestFlight)"
             exit 1
           fi
-          grep -aF 'allowingReadAccessTo' lib/screens/web_app_screen.dart >/dev/null || { echo 'ERRO: WebView iOS file:// � falta allowingReadAccessTo em web_app_screen.dart'; file lib/screens/web_app_screen.dart; exit 1; }
+          grep -aF 'allowingReadAccessTo' lib/screens/web_app_screen.dart >/dev/null || { echo 'ERRO: WebView iOS file:// ? falta allowingReadAccessTo em web_app_screen.dart'; file lib/screens/web_app_screen.dart; exit 1; }
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${BO_BUILD_NAME}" ios/Runner/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${BO_BUILD_NUMBER}" ios/Runner/Info.plist
           sed -i.bak "s/FLUTTER_BUILD_NAME=.*/FLUTTER_BUILD_NAME=${BO_BUILD_NAME}/" ios/Flutter/Version.xcconfig
@@ -392,8 +392,8 @@ workflows:
           IPA_CHECK=$(find build/ios/ipa -name "*.ipa" | head -1)
           IPA_BUILT=$(bash tool/ipa_bundle_version.sh "$IPA_CHECK" 2>/dev/null || echo "")
           echo "CFBundleVersion no IPA gerado: ${IPA_BUILT} (obrigatorio ${BO_BUILD_NUMBER})"
-          if [ -z "${IPA_BUILT:-}" ] || [ "$IPA_BUILT" -le 13 ]; then
-            echo "ERRO: IPA build ${IPA_BUILT:-vazio} — deve ser > 13 (DUPLICATE TestFlight)"
+          if [ -z "${IPA_BUILT:-}" ] || [ "$IPA_BUILT" -le 14 ]; then
+            echo "ERRO: IPA build ${IPA_BUILT:-vazio} ? deve ser > 14 (DUPLICATE TestFlight)"
             exit 1
           fi
           if [ "${IPA_BUILT}" != "${BO_BUILD_NUMBER}" ]; then
@@ -412,8 +412,8 @@ workflows:
           IPA_SHORT=$(bash tool/ipa_bundle_version.sh "$IPA" --short 2>/dev/null || echo "")
           echo "IPA CFBundleVersion: ${IPA_VER} (obrigatorio ${BUILD_NUM})"
           echo "IPA CFBundleShortVersionString: ${IPA_SHORT} (obrigatorio ${BO_BUILD_NAME})"
-          if [ -z "${IPA_VER:-}" ] || [ "$IPA_VER" -le 13 ]; then
-            echo "ERRO: IPA build ${IPA_VER:-vazio} — deve ser > 13 (evita DUPLICATE)"
+          if [ -z "${IPA_VER:-}" ] || [ "$IPA_VER" -le 14 ]; then
+            echo "ERRO: IPA build ${IPA_VER:-vazio} ? deve ser > 14 (evita DUPLICATE)"
             exit 1
           fi
           if [ "${IPA_VER}" != "${BUILD_NUM}" ]; then
@@ -454,7 +454,7 @@ workflows:
           failure: true
 
   medico-casa-ios:
-    name: Medico de Casa — iOS TestFlight
+    name: Medico de Casa ? iOS TestFlight
     max_build_duration: 90
     instance_type: mac_mini_m2
     working_directory: medico-de-casa
@@ -485,7 +485,7 @@ workflows:
       - name: CONFIRMAR MEDICO DE CASA (nao Troca Copa / Idoso / Baba)
         script: |
           set -e
-          echo "========== MEDICO DE CASA — BUILD (pubspec) =========="
+          echo "========== MEDICO DE CASA ? BUILD (pubspec) =========="
           echo "Diretorio: $(pwd)"
           test -f web_app/index.html || { echo "ERRO: pasta medico-de-casa nao encontrada"; exit 1; }
           bash tool/verify_web_build.sh
@@ -540,7 +540,7 @@ workflows:
         script: |
           set -e
           echo "Gerando Medico de Casa ${MH_BUILD_NAME} (${MH_BUILD_NUMBER})"
-          grep -aF 'allowingReadAccessTo' lib/screens/web_app_screen.dart >/dev/null || { echo 'ERRO: WebView iOS file:// � falta allowingReadAccessTo em web_app_screen.dart'; file lib/screens/web_app_screen.dart; exit 1; }
+          grep -aF 'allowingReadAccessTo' lib/screens/web_app_screen.dart >/dev/null || { echo 'ERRO: WebView iOS file:// ? falta allowingReadAccessTo em web_app_screen.dart'; file lib/screens/web_app_screen.dart; exit 1; }
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${MH_BUILD_NAME}" ios/Runner/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${MH_BUILD_NUMBER}" ios/Runner/Info.plist
           sed -i.bak "s/FLUTTER_BUILD_NAME=.*/FLUTTER_BUILD_NAME=${MH_BUILD_NAME}/" ios/Flutter/Version.xcconfig
@@ -607,7 +607,7 @@ workflows:
           echo "3. Groups: SO Internal (drlucas). NAO External."
           echo "4. NAO Submit for Beta Review. NAO link testflight.apple.com/join/"
           echo "5. iPhone icloud -> TestFlight -> puxar p/ atualizar"
-          echo "Plano B: workflow Medico de Casa — iOS Ad Hoc"
+          echo "Plano B: workflow Medico de Casa ? iOS Ad Hoc"
           echo "==============================================================="
 
     artifacts:
@@ -623,7 +623,7 @@ workflows:
           failure: true
 
   medico-casa-adhoc-ios:
-    name: Medico de Casa — iOS Ad Hoc
+    name: Medico de Casa ? iOS Ad Hoc
     max_build_duration: 90
     instance_type: mac_mini_m2
     working_directory: medico-de-casa

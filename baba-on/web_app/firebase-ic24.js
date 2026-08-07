@@ -14,8 +14,16 @@ let ic24Db = null;
 function ic24InitFirebase() {
   if (!window.firebase) throw new Error('Firebase SDK não carregou');
   if (!firebase.apps.length) firebase.initializeApp(IC24_FB);
-  ic24Auth = firebase.auth();
+  if (typeof firebase.firestore !== 'function') {
+    throw new Error('Firestore não carregou — atualize o app');
+  }
   ic24Db = firebase.firestore();
+  // Auth é opcional em páginas públicas (curriculo.html?t=…)
+  if (typeof firebase.auth === 'function') {
+    ic24Auth = firebase.auth();
+  } else {
+    ic24Auth = null;
+  }
   return { auth: ic24Auth, db: ic24Db };
 }
 
@@ -44,30 +52,111 @@ async function ic24CriarConta({ nome, email, senha, senha2, role }) {
   if (senha.length < 6) throw new Error('Senha com mínimo 6 caracteres');
   if (senha !== senha2) throw new Error('As senhas não coincidem');
   ic24InitFirebase();
-  const cred = await ic24Auth.createUserWithEmailAndPassword(email.trim(), senha);
+  const emailNorm = email.trim().toLowerCase();
+  const cred = await ic24Auth.createUserWithEmailAndPassword(emailNorm, senha);
   const uid = cred.user.uid;
+  const papel = role || 'family';
   await ic24Db.collection('users').doc(uid).set({
-    email: email.trim().toLowerCase(),
+    email: emailNorm,
     fullName: nome.trim(),
-    role: role || 'family',
+    role: papel,
     status: 'active',
     verified: false,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
-  return { uid, role: role || 'family', fullName: nome.trim() };
+  // Trava: Auth e-mail e users.email nascem iguais; papel único na criação.
+  return { uid, role: papel, fullName: nome.trim() };
 }
 
-async function ic24Entrar(email, senha) {
+/**
+ * Segurança de identidade:
+ * - users.email SEMPRE = Auth.email (nunca outro e-mail no mesmo UID)
+ * - nome do perfil vem do doc do papel (caregiver/clients), não de lixo antigo
+ * - impede confusão João Paulo / Joana no mesmo login
+ */
+async function ic24ReconciliarPerfilSeguranca() {
   ic24InitFirebase();
-  const cred = await ic24Auth.signInWithEmailAndPassword(email.trim(), senha);
-  const snap = await ic24Db.collection('users').doc(cred.user.uid).get();
-  const data = snap.data() || {};
+  const user = ic24Auth.currentUser;
+  if (!user) return null;
+  const uid = user.uid;
+  const authEmail = String(user.email || '')
+    .trim()
+    .toLowerCase();
+  const userRef = ic24Db.collection('users').doc(uid);
+  const snap = await userRef.get();
+  let data = snap.exists ? snap.data() || {} : {};
+  const patch = {};
+  const storedEmail = String(data.email || '')
+    .trim()
+    .toLowerCase();
+  if (authEmail && storedEmail !== authEmail) {
+    patch.email = authEmail;
+  }
+  let role = data.role || 'family';
+  const cgSnap = await ic24Db.collection('caregivers').doc(uid).get();
+  const clSnap = await ic24Db.collection('clients').doc(uid).get();
+  const cg = cgSnap.exists ? cgSnap.data() || {} : null;
+  const cl = clSnap.exists ? clSnap.data() || {} : null;
+
+  // Se tem perfil de babá completo, papel oficial é caregiver.
+  if (cg && (cg.fullName || cg.cpf || cg.cep)) {
+    if (role !== 'caregiver') patch.role = 'caregiver';
+    role = 'caregiver';
+    const nomeCg = String(cg.fullName || '').trim();
+    if (nomeCg && nomeCg !== String(data.fullName || '').trim()) {
+      patch.fullName = nomeCg;
+    }
+    if (cg.email && String(cg.email).trim().toLowerCase() !== authEmail) {
+      await ic24Db
+        .collection('caregivers')
+        .doc(uid)
+        .set({ email: authEmail }, { merge: true });
+    }
+  } else if (cl && (cl.fullName || cl.cep)) {
+    if (role !== 'family') patch.role = 'family';
+    role = 'family';
+    const nomeCl = String(cl.fullName || '').trim();
+    if (nomeCl && nomeCl !== String(data.fullName || '').trim()) {
+      patch.fullName = nomeCl;
+    }
+    if (cl.email && String(cl.email).trim().toLowerCase() !== authEmail) {
+      await ic24Db
+        .collection('clients')
+        .doc(uid)
+        .set({ email: authEmail }, { merge: true });
+    }
+  }
+
+  if (!data.fullName && patch.fullName == null) {
+    patch.fullName = authEmail;
+  }
+  if (Object.keys(patch).length) {
+    patch.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+    patch.identityReconciledAt = firebase.firestore.FieldValue.serverTimestamp();
+    await userRef.set(patch, { merge: true });
+    data = { ...data, ...patch };
+  }
   return {
-    uid: cred.user.uid,
-    role: data.role || 'family',
-    fullName: data.fullName || email,
+    uid,
+    role: data.role || role || 'family',
+    fullName: data.fullName || authEmail,
+    email: authEmail,
   };
+}
+
+/** Pai e babá não podem ser o mesmo UID. */
+function ic24AssertParticipantesDistintos(familyId, caregiverId, acao) {
+  if (!familyId || !caregiverId) {
+    throw new Error('Participantes inválidos');
+  }
+  if (familyId === caregiverId) {
+    throw new Error(
+      'Segurança: o contratante e a babá precisam ser contas diferentes (e-mails diferentes). ' +
+        (acao || 'Esta ação') +
+        ' não pode usar o mesmo login.',
+    );
+  }
 }
 
 function ic24EnderecoMap(prefix) {
@@ -129,6 +218,17 @@ async function ic24SalvarBaba() {
   });
   if (!cpf) delete payload.cpf;
   await ic24Db.collection('caregivers').doc(uid).set(payload, { merge: true });
+  await ic24Db.collection('users').doc(uid).set(
+    {
+      email: String(ic24Auth.currentUser.email || '')
+        .trim()
+        .toLowerCase(),
+      fullName: nome,
+      role: 'caregiver',
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    },
+    { merge: true },
+  );
 }
 
 async function ic24SalvarPainelBaba(partial) {
@@ -154,9 +254,22 @@ async function ic24SalvarFamilia() {
   await ic24Db.collection('clients').doc(uid).set(
     {
       fullName: nome,
-      email: ic24Auth.currentUser.email,
+      email: String(ic24Auth.currentUser.email || '')
+        .trim()
+        .toLowerCase(),
       phone: tel,
       ...addr,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    },
+    { merge: true },
+  );
+  await ic24Db.collection('users').doc(uid).set(
+    {
+      email: String(ic24Auth.currentUser.email || '')
+        .trim()
+        .toLowerCase(),
+      fullName: nome,
+      role: 'family',
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     },
     { merge: true },
@@ -181,7 +294,7 @@ const IC24_DEMO_CAREGIVER = 'demo_caregiver_maria';
 
 async function ic24CriarChatNegocioFechado(familyId, caregiverId, offerId) {
   ic24InitFirebase();
-  if (!familyId || !caregiverId) throw new Error('Participantes inválidos');
+  ic24AssertParticipantesDistintos(familyId, caregiverId, 'Fechar negócio');
   const chatId = 'chat_' + familyId + '_' + caregiverId;
   await ic24Db.collection('chats').doc(chatId).set(
     {
@@ -216,20 +329,34 @@ async function ic24BuscarChatAtivoUsuario() {
   ic24InitFirebase();
   const uid = ic24Auth.currentUser?.uid;
   if (!uid) return null;
-  const byFamily = await ic24Db
-    .collection('chats')
-    .where('familyId', '==', uid)
-    .where('chatUnlocked', '==', true)
-    .limit(1)
-    .get();
-  if (!byFamily.empty) return { id: byFamily.docs[0].id, ...byFamily.docs[0].data() };
-  const byCaregiver = await ic24Db
-    .collection('chats')
-    .where('caregiverId', '==', uid)
-    .where('chatUnlocked', '==', true)
-    .limit(1)
-    .get();
-  if (!byCaregiver.empty) return { id: byCaregiver.docs[0].id, ...byCaregiver.docs[0].data() };
+  const pickUnlocked = (snap) => {
+    const hit = snap.docs
+      .map((d) => ({ id: d.id, ...d.data() }))
+      .find((c) => c.chatUnlocked === true);
+    return hit || null;
+  };
+  // array-contains não exige índice composto (a query antiga familyId+chatUnlocked quebrava sem índice)
+  try {
+    const byPart = await ic24Db.collection('chats').where('participants', 'array-contains', uid).limit(15).get();
+    const unlocked = pickUnlocked(byPart);
+    if (unlocked) return unlocked;
+  } catch (_e) {
+    /* fallback abaixo */
+  }
+  try {
+    const byFamily = await ic24Db.collection('chats').where('familyId', '==', uid).limit(10).get();
+    const unlocked = pickUnlocked(byFamily);
+    if (unlocked) return unlocked;
+  } catch (_e2) {
+    /* continua */
+  }
+  try {
+    const byCaregiver = await ic24Db.collection('chats').where('caregiverId', '==', uid).limit(10).get();
+    const unlocked = pickUnlocked(byCaregiver);
+    if (unlocked) return unlocked;
+  } catch (_e3) {
+    /* sem chat */
+  }
   return null;
 }
 
@@ -367,8 +494,82 @@ function ic24InitFunctions() {
 
 async function ic24SairConta() {
   ic24InitFirebase();
-  if (ic24Auth.currentUser) await ic24Auth.signOut();
-  window._ic24User = null;
+  window._ic24IgnorarAuthRedirect = true;
+  try {
+    if (ic24Auth.currentUser) await ic24Auth.signOut();
+  } finally {
+    window._ic24User = null;
+    window._babaPainel = {};
+    window._babaDocs = {};
+    window._cuidDocs = {};
+    window._cuidadorSelecionado = null;
+    window._activeFamilyId = null;
+    window._pendingProfilePhoto = null;
+    try {
+      const emailEl = document.getElementById('email');
+      const senhaEl = document.getElementById('senha');
+      if (emailEl) emailEl.value = '';
+      if (senhaEl) senhaEl.value = '';
+    } catch (_) {
+      /* DOM pode não existir */
+    }
+    setTimeout(() => {
+      window._ic24IgnorarAuthRedirect = false;
+    }, 800);
+  }
+}
+
+/**
+ * Login seguro: nunca reaproveita sessão anterior.
+ * 1) encerra sessão atual
+ * 2) autentica exatamente o e-mail digitado
+ * 3) confere Auth.email === e-mail do formulário
+ */
+async function ic24Entrar(email, senha) {
+  ic24InitFirebase();
+  const emailNorm = String(email || '')
+    .trim()
+    .toLowerCase();
+  if (!emailNorm || !senha) throw new Error('Preencha e-mail e senha');
+
+  window._ic24IgnorarAuthRedirect = true;
+  try {
+    if (ic24Auth.currentUser) {
+      await ic24Auth.signOut();
+    }
+    const cred = await ic24Auth.signInWithEmailAndPassword(emailNorm, senha);
+    const authEmail = String(cred.user.email || '')
+      .trim()
+      .toLowerCase();
+    if (authEmail !== emailNorm) {
+      await ic24Auth.signOut();
+      throw new Error(
+        'Segurança: a sessão não corresponde ao e-mail digitado. Tente novamente.',
+      );
+    }
+    const perfil = await ic24ReconciliarPerfilSeguranca();
+    if (perfil) {
+      if (perfil.email && perfil.email !== emailNorm) {
+        await ic24Auth.signOut();
+        throw new Error(
+          'Segurança: perfil com e-mail divergente. Conta bloqueada até correção.',
+        );
+      }
+      return perfil;
+    }
+    const snap = await ic24Db.collection('users').doc(cred.user.uid).get();
+    const data = snap.data() || {};
+    return {
+      uid: cred.user.uid,
+      role: data.role || 'family',
+      fullName: data.fullName || emailNorm,
+      email: authEmail,
+    };
+  } finally {
+    setTimeout(() => {
+      window._ic24IgnorarAuthRedirect = false;
+    }, 500);
+  }
 }
 
 async function ic24ExcluirConta(senha) {

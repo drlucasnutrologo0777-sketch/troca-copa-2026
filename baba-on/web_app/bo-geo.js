@@ -153,11 +153,25 @@ function ic24StatusDisponivelBaba(c) {
   return 'Agenda';
 }
 
-/** Dentro do raio primeiro (asc dist), depois fora do raio (asc dist). */
-async function ic24OrdenarPorDistanciaRaio(items, originEnt, getTargetEnt, getRaioKm) {
+/** Dentro do raio → distância ↑ → data/hora ↑ → preço ↑ */
+async function ic24OrdenarPorDistanciaRaio(items, originEnt, getTargetEnt, getRaioKm, need) {
   const origin = await ic24ResolverCoordenadas(originEnt);
   if (!origin) {
-    return (items || []).map((i) => ({ ...i, distanceKm: null, withinRadius: true }));
+    const bare = (items || []).map((i) => ({
+      ...i,
+      distanceKm: null,
+      withinRadius: true,
+      nivelLabel: typeof ic24RotuloNivelBaba === 'function' ? ic24RotuloNivelBaba(i) : 'Babá',
+      disponivelLabel: typeof ic24StatusDisponivelBaba === 'function' ? ic24StatusDisponivelBaba(i) : 'Agenda',
+      priceSort: typeof ic24PrecoDiariaNumerico === 'function' ? ic24PrecoDiariaNumerico(i) : 999999,
+      scheduleScore: typeof ic24ScoreDataHora === 'function' ? ic24ScoreDataHora(i, need) : 9,
+      scheduleLabel: typeof ic24LabelDataHora === 'function' ? ic24LabelDataHora(i, need) : '',
+    }));
+    bare.sort((a, b) => {
+      if (a.scheduleScore !== b.scheduleScore) return a.scheduleScore - b.scheduleScore;
+      return (a.priceSort || 999999) - (b.priceSort || 999999);
+    });
+    return bare;
   }
   const enriched = await Promise.all(
     (items || []).map(async (item) => {
@@ -174,14 +188,22 @@ async function ic24OrdenarPorDistanciaRaio(items, originEnt, getTargetEnt, getRa
         nivelLabel: ic24RotuloNivelBaba(item),
         disponivelLabel: ic24StatusDisponivelBaba(item),
         distanceLabel: dist != null ? ic24FmtDistanciaKm(dist, withinRadius) : null,
+        priceSort: typeof ic24PrecoDiariaNumerico === 'function' ? ic24PrecoDiariaNumerico(item) : 999999,
+        scheduleScore: typeof ic24ScoreDataHora === 'function' ? ic24ScoreDataHora(item, need) : 9,
+        scheduleLabel: typeof ic24LabelDataHora === 'function' ? ic24LabelDataHora(item, need) : '',
       };
     }),
   );
+  // 1) raio  2) distância  3) data/hora  4) preço
   enriched.sort((a, b) => {
     if (a.withinRadius !== b.withinRadius) return a.withinRadius ? -1 : 1;
     const da = a.distanceKm ?? 99999;
     const db = b.distanceKm ?? 99999;
-    return da - db;
+    if (da !== db) return da - db;
+    const sa = a.scheduleScore ?? 9;
+    const sb = b.scheduleScore ?? 9;
+    if (sa !== sb) return sa - sb;
+    return (a.priceSort || 999999) - (b.priceSort || 999999);
   });
   return enriched;
 }

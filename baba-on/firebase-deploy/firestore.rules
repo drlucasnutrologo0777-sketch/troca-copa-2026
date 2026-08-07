@@ -26,8 +26,13 @@ service cloud.firestore {
     function caregiverRefMe() {
       return /databases/$(database)/documents/caregivers/$(request.auth.uid);
     }
+    /** Recebe resource.data (mapa de campos), NÃO o Resource inteiro. */
     function isChatMember(chat) {
-      return signedIn() && request.auth.uid in chat.data.participants;
+      return signedIn() && (
+        request.auth.uid in chat.participants
+        || chat.familyId == request.auth.uid
+        || chat.caregiverId == request.auth.uid
+      );
     }
     function ic24FeeUsd() {
       return 1.99;
@@ -97,20 +102,38 @@ service cloud.firestore {
       return request.resource.data.diff(resource.data).affectedKeys()
         .hasOnly(['rating', 'reviewCount', 'updatedAt']);
     }
+    /** Família pode vincular babá, tirar do plantão "disponível" e/ou acumular taxa IAP. */
     function isFamilyMatchLinkUpdate() {
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      let feeKeys = [
+        'platformFeePending',
+        'platformFeePendingDiarias',
+        'platformFeeCurrency',
+        'platformFeePendingOfferId',
+        'platformFeeUpdatedAt',
+      ];
       return isFamily()
-        && ic24NoPendingPlatformFee(resource.data)
-        && isValidPlatformFeeAccrual()
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly([
-            'activeFamilyId',
-            'platformFeePending',
-            'platformFeePendingDiarias',
-            'platformFeeCurrency',
-            'platformFeePendingOfferId',
-            'platformFeeUpdatedAt',
-            'updatedAt',
-          ]);
+        && changed.hasOnly([
+          'activeFamilyId',
+          'availableToday',
+          'plantaoHoje',
+          'plantoes',
+          'platformFeePending',
+          'platformFeePendingDiarias',
+          'platformFeeCurrency',
+          'platformFeePendingOfferId',
+          'platformFeeUpdatedAt',
+          'updatedAt',
+        ])
+        && (
+          !('activeFamilyId' in request.resource.data)
+          || request.resource.data.activeFamilyId == request.auth.uid
+          || resource.data.activeFamilyId == request.auth.uid
+        )
+        && (
+          !changed.hasAny(feeKeys)
+          || (ic24NoPendingPlatformFee(resource.data) && isValidPlatformFeeAccrual())
+        );
     }
 
     match /caregivers/{caregiverId} {
@@ -199,10 +222,13 @@ service cloud.firestore {
     match /chats/{chatId} {
       allow read, update: if isChatMember(resource.data);
       allow create: if signedIn()
-        && request.auth.uid in request.resource.data.participants;
+        && (request.auth.uid in request.resource.data.participants
+          || request.resource.data.familyId == request.auth.uid
+          || request.resource.data.caregiverId == request.auth.uid);
       match /messages/{msgId} {
-        allow read, create: if isChatMember(
-          get(/databases/$(database)/documents/chats/$(chatId)).data
+        allow read, create: if signedIn() && (
+          get(/databases/$(database)/documents/chats/$(chatId)).data.familyId == request.auth.uid
+          || get(/databases/$(database)/documents/chats/$(chatId)).data.caregiverId == request.auth.uid
         );
       }
     }

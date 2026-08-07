@@ -51,11 +51,13 @@ function ic24PixCopiaColaValor(amount, txid, pixKeyOverride, beneficiaryNameOver
 }
 
 const IC24_REVIEW_DEMO_EMAIL = 'baba.demo@babaon.test.local';
+/** Conta sandbox do dono — mesma garantia de taxa US$ 1,99 para teste IAP. */
+const IC24_SANDBOX_IAP_EMAILS = ['drlucasnutrologo0777@gmail.com'];
 const IC24_REVIEW_DEMO_OFFER = 'review_demo_iap_offer';
 
 function ic24IsReviewDemoAccount() {
   const email = String(ic24Auth?.currentUser?.email || '').trim().toLowerCase();
-  return email === IC24_REVIEW_DEMO_EMAIL;
+  return email === IC24_REVIEW_DEMO_EMAIL || IC24_SANDBOX_IAP_EMAILS.includes(email);
 }
 
 /** Conta de revisão Apple: sempre mantém 1× US$ 1,99 pendente para o IAP funcionar. */

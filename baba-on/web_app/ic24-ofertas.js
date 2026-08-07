@@ -34,17 +34,56 @@ async function ic24ResolverFamilyIdDoBaba(caregiverId) {
   return null;
 }
 
-async function ic24VincularFamiliaAtiva(caregiverId, familyId) {
+async function ic24VincularFamiliaAtiva(caregiverId, familyId, opts) {
   if (!caregiverId || !familyId) return;
   ic24InitFirebase();
-  await ic24Db.collection('caregivers').doc(caregiverId).set(
-    { activeFamilyId: familyId, updatedAt: firebase.firestore.FieldValue.serverTimestamp() },
-    { merge: true },
-  );
+  const ref = ic24Db.collection('caregivers').doc(caregiverId);
+  const snap = await ref.get();
+  const cur = snap.exists ? snap.data() : {};
+  const plantao =
+    cur.plantaoHoje && typeof cur.plantaoHoje === 'object'
+      ? Object.assign({}, cur.plantaoHoje, { ativo: false })
+      : { ativo: false };
+  const patch = {
+    activeFamilyId: familyId,
+    availableToday: false,
+    plantaoHoje: plantao,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  };
+  if (Array.isArray(cur.plantoes) && cur.plantoes.length) {
+    patch.plantoes = cur.plantoes.map((p) => Object.assign({}, p, { ativo: false }));
+  }
+  const diarias = opts && opts.diarias;
+  const offerId = opts && opts.offerId;
+  if (
+    diarias &&
+    typeof ic24HasPendingPlatformFee === 'function' &&
+    !ic24HasPendingPlatformFee(cur) &&
+    typeof ic24CalcPlatformFee === 'function'
+  ) {
+    const fee = ic24CalcPlatformFee(diarias);
+    patch.platformFeePending = fee.usd;
+    patch.platformFeePendingDiarias = fee.diarias;
+    patch.platformFeeCurrency = typeof IC24_FEE_CURRENCY !== 'undefined' ? IC24_FEE_CURRENCY : 'USD';
+    patch.platformFeePendingOfferId = offerId || null;
+    patch.platformFeeUpdatedAt = firebase.firestore.FieldValue.serverTimestamp();
+  }
+  await ref.set(patch, { merge: true });
+  if (offerId && patch.platformFeePending != null) {
+    await ic24Db.collection('job_offers').doc(offerId).set(
+      {
+        platformFeeStatus: 'pending',
+        platformFeeAmount: patch.platformFeePending,
+        platformFeePendingDiarias: patch.platformFeePendingDiarias,
+        platformFeeCurrency: patch.platformFeeCurrency,
+      },
+      { merge: true },
+    );
+  }
 }
 
 /** Lista babás ordenadas por distância (GPS/CEP — sem exibir endereço). */
-async function ic24ListarBabasProximos() {
+async function ic24ListarBabasProximos(need) {
   ic24InitFirebase();
   const familyId = ic24Auth.currentUser?.uid;
   let patient = {};
@@ -56,12 +95,19 @@ async function ic24ListarBabasProximos() {
   let list = snap.empty
     ? (await ic24Db.collection('caregivers').limit(20).get()).docs.map((d) => ({ id: d.id, ...d.data() }))
     : snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  // Já com negócio fechado some da lista de "disponíveis"
+  list = list.filter((c) => !c.activeFamilyId);
+  const filtro = need || {
+    data: new Date().toISOString().slice(0, 10),
+    hora: null,
+  };
   if (familyId && typeof ic24OrdenarPorDistanciaRaio === 'function') {
     list = await ic24OrdenarPorDistanciaRaio(
       list,
       patient,
       (doc) => doc,
       typeof ic24BabaRaioKm === 'function' ? ic24BabaRaioKm : () => 0,
+      filtro,
     );
   } else {
     list = list.map((c) => ({
@@ -70,7 +116,14 @@ async function ic24ListarBabasProximos() {
       nivelLabel: typeof ic24RotuloNivelBaba === 'function' ? ic24RotuloNivelBaba(c) : 'Babá',
       disponivelLabel:
         typeof ic24StatusDisponivelBaba === 'function' ? ic24StatusDisponivelBaba(c) : 'Agenda',
+      priceSort: typeof ic24PrecoDiariaNumerico === 'function' ? ic24PrecoDiariaNumerico(c) : 999999,
+      scheduleScore: typeof ic24ScoreDataHora === 'function' ? ic24ScoreDataHora(c, filtro) : 9,
+      scheduleLabel: typeof ic24LabelDataHora === 'function' ? ic24LabelDataHora(c, filtro) : '',
     }));
+    list.sort((a, b) => {
+      if ((a.scheduleScore ?? 9) !== (b.scheduleScore ?? 9)) return (a.scheduleScore ?? 9) - (b.scheduleScore ?? 9);
+      return (a.priceSort || 999999) - (b.priceSort || 999999);
+    });
   }
   return list;
 }
@@ -79,6 +132,10 @@ async function ic24CriarOferta(familiaPayload) {
   ic24InitFirebase();
   const familyId = ic24Auth.currentUser?.uid;
   if (!familyId) throw new Error('Faça login como família');
+  const targetCg = familiaPayload && familiaPayload.caregiverId;
+  if (targetCg) {
+    ic24AssertParticipantesDistintos(familyId, targetCg, 'Oferecer proposta');
+  }
   const userSnap = await ic24Db.collection('users').doc(familyId).get();
   const u = userSnap.data() || {};
   if (Number(u.cancellationFeePending || 0) > 0) {
@@ -100,15 +157,27 @@ async function ic24CriarOferta(familiaPayload) {
 
 async function ic24ListarOfertasAbertas(opts = {}) {
   ic24InitFirebase();
+  const uid = ic24Auth.currentUser?.uid;
   let q = ic24Db.collection('job_offers').where('status', '==', 'open');
   if (opts.urgent === true) q = q.where('urgent', '==', true);
   const fb = () => {
     let q2 = ic24Db.collection('job_offers').where('status', '==', 'open');
     if (opts.urgent === true) q2 = q2.where('urgent', '==', true);
-    return q2.limit(30);
+    return q2.limit(40);
   };
-  const snap = await ic24QuerySnap(() => q.orderBy('createdAt', 'desc').limit(30), fb);
+  const snap = await ic24QuerySnap(() => q.orderBy('createdAt', 'desc').limit(40), fb);
   let list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  // Proposta direta: só a babá alvo vê. Oferta aberta: todas veem.
+  list = list.filter((o) => {
+    const alvo = o.targetCaregiverId || null;
+    if (o.directedToCaregiver || alvo) return !!uid && alvo === uid;
+    return true;
+  });
+  if (opts.directedOnly === true) {
+    list = list.filter((o) => !!(o.directedToCaregiver || o.targetCaregiverId));
+  } else if (opts.directedOnly === false) {
+    list = list.filter((o) => !(o.directedToCaregiver || o.targetCaregiverId));
+  }
   if (opts.urgent === false) list = list.filter((o) => !o.urgent);
   return ic24SortByCreated(list);
 }
@@ -183,12 +252,17 @@ async function ic24AceitarOfertaComTermos(offerId, payload) {
 }
 
 /** Família envia proposta direta a um cuidador. */
-async function ic24FamiliaProporBaba(caregiverId, { dailyRate, message, durationDays, elderlyType, careNeeds }) {
+async function ic24FamiliaProporBaba(
+  caregiverId,
+  { dailyRate, message, durationDays, elderlyType, careNeeds, serviceDate, serviceTime, scheduleType },
+) {
   ic24InitFirebase();
   const familyId = ic24Auth.currentUser?.uid;
   if (!familyId) throw new Error('Faça login como família');
   if (!caregiverId) throw new Error('Babá não informado');
   if (!dailyRate || dailyRate <= 0) throw new Error('Informe o valor da diária');
+  if (!serviceDate) throw new Error('Informe a data do serviço');
+  if (!serviceTime) throw new Error('Informe a hora de início');
   const userSnap = await ic24Db.collection('users').doc(familyId).get();
   const cgSnap = await ic24Db.collection('caregivers').doc(caregiverId).get();
   if (!cgSnap.exists) throw new Error('Babá não encontrado');
@@ -205,8 +279,10 @@ async function ic24FamiliaProporBaba(caregiverId, { dailyRate, message, duration
     elderlyType: elderlyType || '',
     jobDurationDays: durationDays || 15,
     message: message || '',
+    serviceDate,
+    serviceTime,
+    scheduleType: scheduleType || 'diaria',
     status: 'open',
-    scheduleType: 'diaria',
     urgent: false,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -217,7 +293,14 @@ async function ic24FamiliaProporBaba(caregiverId, { dailyRate, message, duration
       caregiverId,
       familyId,
       offerId: ref.id,
-      message: (userSnap.data()?.fullName || 'Família') + ' enviou proposta de R$ ' + Number(dailyRate).toFixed(2) + '/dia',
+      message:
+        (userSnap.data()?.fullName || 'Família') +
+        ' enviou proposta de R$ ' +
+        Number(dailyRate).toFixed(2) +
+        '/dia · ' +
+        serviceDate +
+        ' às ' +
+        serviceTime,
       read: false,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
@@ -292,8 +375,15 @@ async function ic24Passo1Oferta(offerId, payload) {
   const offerSnap = await ic24Db.collection('job_offers').doc(offerId).get();
   if (!offerSnap.exists) throw new Error('Oferta não encontrada');
   const offer = offerSnap.data();
+  ic24AssertParticipantesDistintos(offer.familyId, caregiverId, 'Aceitar oferta');
   if (offer.status !== 'open' && offer.status !== 'negotiating') {
     throw new Error('Esta oferta não está mais disponível');
+  }
+  if (
+    (offer.directedToCaregiver || offer.targetCaregiverId) &&
+    offer.targetCaregiverId !== caregiverId
+  ) {
+    throw new Error('Esta proposta foi enviada para outra babá');
   }
   if (action === 'reject') {
     const ref = ic24Db.collection('offer_responses').doc();
@@ -412,6 +502,84 @@ async function ic24ListarRespostasOferta(offerId) {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
+async function ic24ListarMinhasRespostasPendentes() {
+  ic24InitFirebase();
+  const caregiverId = ic24Auth.currentUser?.uid;
+  if (!caregiverId) return [];
+  const snap = await ic24QuerySnap(
+    () =>
+      ic24Db
+        .collection('offer_responses')
+        .where('caregiverId', '==', caregiverId)
+        .where('status', '==', 'pending_family')
+        .limit(20),
+    () => ic24Db.collection('offer_responses').where('caregiverId', '==', caregiverId).limit(30),
+  );
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }))
+    .filter((r) => r.status === 'pending_family');
+}
+
+/** Negócio fechado = chat + ponto + diário liberados para os dois. */
+async function ic24NegocioAtivoUsuario() {
+  ic24InitFirebase();
+  const uid = ic24Auth.currentUser?.uid;
+  if (!uid) return null;
+  if (typeof ic24BuscarChatAtivoUsuario === 'function') {
+    const chat = await ic24BuscarChatAtivoUsuario();
+    if (chat && chat.chatUnlocked) {
+      return {
+        unlocked: true,
+        chatId: chat.id,
+        familyId: chat.familyId,
+        caregiverId: chat.caregiverId,
+        offerId: chat.offerId || null,
+      };
+    }
+  }
+  try {
+    const byFam = await ic24Db
+      .collection('job_offers')
+      .where('familyId', '==', uid)
+      .where('status', '==', 'matched')
+      .limit(1)
+      .get();
+    if (!byFam.empty) {
+      const o = { id: byFam.docs[0].id, ...byFam.docs[0].data() };
+      return {
+        unlocked: true,
+        chatId: 'chat_' + o.familyId + '_' + o.matchedCaregiverId,
+        familyId: o.familyId,
+        caregiverId: o.matchedCaregiverId,
+        offerId: o.id,
+      };
+    }
+  } catch (_e) {
+    /* fallback cuidador */
+  }
+  try {
+    const byCg = await ic24Db
+      .collection('job_offers')
+      .where('matchedCaregiverId', '==', uid)
+      .where('status', '==', 'matched')
+      .limit(1)
+      .get();
+    if (!byCg.empty) {
+      const o = { id: byCg.docs[0].id, ...byCg.docs[0].data() };
+      return {
+        unlocked: true,
+        chatId: 'chat_' + o.familyId + '_' + o.matchedCaregiverId,
+        familyId: o.familyId,
+        caregiverId: o.matchedCaregiverId,
+        offerId: o.id,
+      };
+    }
+  } catch (_e2) {
+    /* sem negócio */
+  }
+  return null;
+}
+
 async function ic24FamiliaAceitarContraProposta(responseId, accept, notificationId) {
   ic24InitFirebase();
   const familyId = ic24Auth.currentUser?.uid;
@@ -435,6 +603,7 @@ async function ic24FamiliaAceitarContraProposta(responseId, accept, notification
     const offerSnap = await ic24Db.collection('job_offers').doc(r.offerId).get();
     const offer = offerSnap.exists ? offerSnap.data() : {};
     const rate = r.proposedDailyRate || r.dailyRateUsed || offer.dailyRate;
+    const diarias = Math.max(1, Number(r.jobDurationDays) || Number(offer.jobDurationDays) || 1);
     await ic24Db.collection('job_offers').doc(r.offerId).update({
       status: 'matched',
       matchedCaregiverId: r.caregiverId,
@@ -453,27 +622,38 @@ async function ic24FamiliaAceitarContraProposta(responseId, accept, notification
       firstPaymentRequiresPontoSign: true,
       pendingCaregiverId: null,
       pendingResponseId: null,
-    });
-    await ic24VincularFamiliaAtiva(r.caregiverId, familyId);
-    if (typeof ic24AcumularTaxaPlataforma === 'function') {
-      const diarias = Math.max(1, Number(r.jobDurationDays) || 1);
-      await ic24AcumularTaxaPlataforma(r.caregiverId, diarias, r.offerId);
-    }
-    if (typeof ic24CriarChatNegocioFechado === 'function') {
-      await ic24CriarChatNegocioFechado(familyId, r.caregiverId, r.offerId);
-    }
-    await ic24Db.collection('job_offers').doc(r.offerId).update({
       cancelFeeRate: typeof IC24_CANCEL_FEE_RATE !== 'undefined' ? IC24_CANCEL_FEE_RATE : 0.07,
       cancelFeeAcknowledgedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
-  } else {
-    await ic24Db.collection('job_offers').doc(r.offerId).update({
-      status: 'open',
-      pendingCaregiverId: null,
-      pendingResponseId: null,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+    // Um único write: vínculo + tira plantão + taxa (antes quebrava nas rules e o chat não abria)
+    await ic24VincularFamiliaAtiva(r.caregiverId, familyId, { diarias, offerId: r.offerId });
+    let chatId = null;
+    if (typeof ic24CriarChatNegocioFechado === 'function') {
+      chatId = await ic24CriarChatNegocioFechado(familyId, r.caregiverId, r.offerId);
+    }
+    try {
+      await ic24Db.collection('caregiver_notifications').add({
+        caregiverId: r.caregiverId,
+        familyId,
+        offerId: r.offerId,
+        chatId: chatId || null,
+        type: 'negocio_fechado',
+        message: 'Negócio fechado! O chat com a família foi liberado.',
+        read: false,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    } catch (_e) {
+      /* notificação opcional */
+    }
+    return { chatId, offerId: r.offerId, caregiverId: r.caregiverId };
   }
+  await ic24Db.collection('job_offers').doc(r.offerId).update({
+    status: 'open',
+    pendingCaregiverId: null,
+    pendingResponseId: null,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+  return { chatId: null };
 }
 
 async function ic24ListarPontoPendenteFamilia() {
@@ -690,20 +870,32 @@ async function ic24EnviarFaleConosco(assunto, mensagem) {
 function ic24FmtOferta(o) {
   const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const sched = { diaria: 'Diária', semanal: 'Semanal', quinzenal: 'Quinzenal', mensal: 'Mensal', urgente_hoje: 'Urgente hoje' };
+  const direta = !!(o.directedToCaregiver || o.targetCaregiverId);
+  const stLabel = {
+    open: 'Aberta',
+    awaiting_terms: 'Aguardando babá',
+    pending_family_approval: 'Aguardando sua confirmação',
+    matched: 'Negócio fechado',
+    negotiating: 'Em negociação',
+  };
   return (
     '<div class="list-item' +
-    (o.urgent ? '" style="border-color:var(--p)"' : '"') +
+    (o.urgent || direta ? '" style="border-color:var(--p);background:var(--pl)"' : '"') +
     '><b>' +
     esc(o.title || 'Plantão') +
     (o.urgent ? ' 🔴' : '') +
+    (direta ? ' · proposta para você' : '') +
     '</b><small>' +
     esc(sched[o.scheduleType] || o.scheduleType) +
     ' · ' +
     esc(o.careNeeds || o.elderlyType || '') +
     ' · R$ ' +
     esc(o.dailyRate || '—') +
-    '/dia</small>' +
+    '/dia' +
+    (o.status && o.status !== 'open' ? ' · ' + esc(stLabel[o.status] || o.status) : '') +
+    '</small>' +
     (o.familyName ? '<small style="display:block;margin-top:4px">Família: ' + esc(o.familyName) + '</small>' : '') +
+    (o.message ? '<small style="display:block;margin-top:4px">' + esc(o.message) + '</small>' : '') +
     '</div>'
   );
 }

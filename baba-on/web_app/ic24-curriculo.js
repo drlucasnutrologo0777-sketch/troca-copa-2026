@@ -511,12 +511,20 @@ function ic24ResolveCurriculoUrl(relativeLink) {
 
 
 
-/** Abre currículo sem sair do app (iframe no iOS / WebView). */
+/** Abre currículo no app (usa sessão já logada — evita iframe file:// sem Auth). */
 function ic24AbrirCurriculoLink(relativeLink) {
   const url = ic24ResolveCurriculoUrl(relativeLink);
+  const tokenMatch = String(relativeLink || url || '').match(/[?&]t=([^&]+)/);
+  const token = tokenMatch ? decodeURIComponent(tokenMatch[1]) : '';
+  window._curriculoVoltar = document.querySelector('.screen.on')?.id || 'mae-curriculo';
+  if (token && typeof show === 'function' && typeof ic24MostrarCurriculoNoApp === 'function') {
+    show('curriculo-viewer');
+    ic24MostrarCurriculoNoApp(token);
+    return url;
+  }
   const iframe = document.getElementById('curriculo-iframe');
   if (iframe && (location.protocol === 'file:' || window._ic24NativeIap)) {
-    window._curriculoVoltar = document.querySelector('.screen.on')?.id || 'mae-curriculo';
+    iframe.style.display = 'block';
     iframe.src = url;
     if (typeof show === 'function') show('curriculo-viewer');
     return url;
@@ -524,6 +532,81 @@ function ic24AbrirCurriculoLink(relativeLink) {
   const popup = window.open(url, '_blank', 'noopener');
   if (!popup) location.assign(url);
   return url;
+}
+
+async function ic24MostrarCurriculoNoApp(token) {
+  const box = document.getElementById('curriculo-viewer-body');
+  if (!box) return;
+  box.innerHTML = '<p class="hint">Carregando currículo…</p>';
+  try {
+    const { request, curriculum: c } = await ic24CarregarCurriculoPorToken(token);
+    const cls = c.classification || {};
+    const docs = (c.documents || []).filter((d) => d.url);
+    const esc =
+      typeof escapeHtml === 'function'
+        ? escapeHtml
+        : (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    const fmt = (v) =>
+      v != null && v !== '' ? 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '—';
+    box.innerHTML =
+      '<div class="list-item" style="border-color:var(--p);background:var(--pl)">' +
+      '<b style="font-size:18px">' +
+      esc(c.fullName || 'Babá') +
+      '</b>' +
+      '<small style="display:block;margin-top:6px">' +
+      esc(c.city || '') +
+      (c.state ? ', ' + esc(c.state) : '') +
+      (c.cpfMasked ? ' · CPF ' + esc(c.cpfMasked) : '') +
+      '</small>' +
+      '<p style="margin-top:8px;color:#F9A825">' +
+      esc(cls.stars || '★★★★☆') +
+      ' · ' +
+      esc(cls.label || 'Classificação pendente') +
+      '</p></div>' +
+      '<div class="note" style="margin:12px 0"><strong>Classificação:</strong> score ' +
+      (cls.score || 0) +
+      '/100 · ' +
+      (cls.documentsCount || 0) +
+      ' documento(s)</div>' +
+      '<div class="cv"><p><strong>Sobre:</strong> ' +
+      esc(c.bio || '—') +
+      '</p>' +
+      '<p><strong>Especialidades:</strong> ' +
+      esc((c.specialties || []).join(' · ') || '—') +
+      '</p>' +
+      '<p><strong>Hora:</strong> ' +
+      fmt(c.hourRate) +
+      ' · <strong>Diária:</strong> ' +
+      fmt(c.dailyRate) +
+      '</p></div>' +
+      '<p class="step" style="margin-top:16px">Documentos</p>' +
+      (docs.length
+        ? docs
+            .map(
+              (d) =>
+                '<div class="list-item"><b>' +
+                esc(d.label || 'Documento') +
+                '</b><small>' +
+                (d.verified ? '✓ Verificado' : 'Em análise') +
+                '</small>' +
+                (d.url
+                  ? '<button class="btn btn-o" type="button" style="margin-top:8px;height:36px" onclick="window.open(\'' +
+                    String(d.url).replace(/'/g, '') +
+                    '\',\'_blank\')">Ver foto</button>'
+                  : '') +
+                '</div>',
+            )
+            .join('')
+        : '<p class="hint">Nenhum documento anexado ainda.</p>') +
+      '<p class="hint" style="margin-top:16px">Solicitado por: <strong>' +
+      esc(request.familyName || 'Contratante') +
+      '</strong>. Contato pelo chat após fechar negócio.</p>';
+  } catch (e) {
+    box.innerHTML =
+      '<div class="fee-warn">' +
+      (typeof escapeHtml === 'function' ? escapeHtml(e.message || e) : String(e.message || e)) +
+      '</div>';
+  }
 }
 
 
@@ -541,6 +624,8 @@ async function ic24SolicitarCurriculo(caregiverId) {
   const userSnap = await ic24Db.collection('users').doc(familyId).get();
 
   if ((userSnap.data()?.role || '') !== 'family') throw new Error('Apenas contratantes podem solicitar currículo');
+
+  ic24AssertParticipantesDistintos(familyId, caregiverId, 'Solicitar currículo');
 
   const token = ic24Token();
 
