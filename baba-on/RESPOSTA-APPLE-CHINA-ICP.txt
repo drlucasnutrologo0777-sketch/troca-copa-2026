@@ -1,0 +1,16 @@
+App Store Connect — Resolution Center / Informações de revisão
+Assunto: China — licenças ICP / conteúdo editorial
+App: Babá ON · Bundle: com.babaon.app
+================================================================================
+
+O Babá ON é um marketplace que conecta famílias a babás no Brasil. Não oferece conteúdo religioso, notícias, livros, revistas nem publicação editorial.
+
+Essa exigência de licenciamento na China não se aplica ao Babá ON.
+
+Tipo de app: marketplace de cuidado infantil / plataforma de contratação
+Conteúdo: perfis de usuários, agendamento, mensagens após o match e taxa da plataforma via Apple IAP (bo_taxa_manutencao)
+Sem conteúdo religioso, notícias, livros digitais ou revistas.
+
+================================================================================
+Cole o texto acima no App Store Connect quando a Apple perguntar sobre ICP / licenças de conteúdo na China.
+Contato: Eder Lucas Santos · +55 11 96836-2005 · drlucasnutrologo0777@icloud.com

@@ -5,7 +5,8 @@ import 'screens/web_app_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // iPad Review: app disponível no iPad precisa girar — não travar só portrait
+  await SystemChrome.setPreferredOrientations(DeviceOrientation.values);
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(

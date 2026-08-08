@@ -1,31 +1,22 @@
-App Store Connect — Review Notes (English — paste in Version → App Review Information)
-Build: 1.0 (14) · Bundle: com.babaon.app · IAP: bo_taxa_manutencao
-Submit IAP WITH this version (In-App Purchases and Subscriptions + Review screenshot).
+App Store Connect — Notes (build 16)
 ================================================================================
+Babá ON — App Review Notes (1.0 build 16)
 
-FIX FOR GUIDELINE 2.1(b)
-• Consumable bo_taxa_manutencao is included with this binary for review.
-• Demo babysitter account AUTO-SEEDES US$ 1.99 pending platform fee on every login.
-• Taxa do app screen shows pending US$ 1.99 and button "Pagar taxa via App Store".
-• Paid Apps Agreement is Active. Banking/Tax Active.
+Product ID: bo_taxa_manutencao (Consumable, US$ 1.99)
 
-IN-APP PURCHASE TEST — READ FIRST
-Product ID (exact): bo_taxa_manutencao · Consumable · US$ 1.99
+Demo login (caregiver):
+joana44@gmail.com / teste@123
 
-1. Log in: baba.demo@babaon.test.local / Demo123!
-2. Menu → Taxa do app
-3. Confirm: Taxa pendente shows US$ 1.99 (NOT US$ 0.00)
-4. Tap "Pagar taxa via App Store"
-5. Complete Sandbox purchase of bo_taxa_manutencao
+Alternate:
+baba.demo@babaon.test.local / Demo123!
 
-If pending ever shows US$ 0.00, pull-to-refresh / reopen Taxa do app — demo auto-reseeds.
+Path login:
+Welcome → tap Entrar → email/senha → entrar.
 
-DEMO ACCOUNTS (password both: Demo123!)
-• Babysitter: baba.demo@babaon.test.local — HAS pending IAP fee US$ 1.99
-• Parent: pai.demo@babaon.test.local
+Path IAP:
+Login → Taxa do app → pending US$ 1.99 → tap "Pagar taxa via App Store" → Sandbox purchase bo_taxa_manutencao.
 
-PAYMENTS (Guideline 3.1)
-• Parent → babysitter daily pay: external PIX (outside App Store).
-• Platform fee ONLY: Apple IAP consumable bo_taxa_manutencao.
+Fix in build 16: Entrar button now works on iPad (gesture + early JS boot).
 
-Contact: Eder Lucas Santos · +55 11 96836-2005 · drlucasnutrologo0777@icloud.com
+Parent→babysitter daily pay: PIX outside App Store (Guideline 3.1).
+Platform fee only: Apple IAP.

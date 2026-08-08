@@ -298,7 +298,7 @@ workflows:
         BUNDLE_ID: com.babaon.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         BO_BUILD_NAME: "1.0.0"
-        BO_BUILD_NUMBER: "15"
+        BO_BUILD_NUMBER: "16"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -321,12 +321,14 @@ workflows:
           grep -q "ic24PreviewFotoPerfil" web_app/ic24-curriculo.js || { echo "ERRO: preview foto perfil ausente"; exit 1; }
           grep -q "curriculo-viewer" web_app/index.html || { echo "ERRO: visualizador curriculo ausente"; exit 1; }
           grep -q "validarEnderecoFam" web_app/index.html || { echo "ERRO: fix cadastro fam?lia ausente"; exit 1; }
-          grep -q "baba_v21" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp deve ser baba_v21 (atual no web_app_bundle.dart)"; exit 1; }
+          grep -q "baba_v22" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp deve ser baba_v22 (atual no web_app_bundle.dart)"; exit 1; }
           grep -q "bo-geo.js" web_app/index.html || { echo "ERRO: bo-geo.js ausente no index"; exit 1; }
           grep -q "bo_taxa_manutencao" web_app/ic24-cobranca.js || { echo "ERRO: IAP product id"; exit 1; }
           grep -q "IC24_DOCS_OBRIGATORIOS" web_app/firebase-ic24.js || { echo "ERRO: firebase-ic24.js"; exit 1; }
-          if [ "${BO_BUILD_NUMBER}" -le 14 ]; then
-            echo "ERRO: build ${BO_BUILD_NUMBER} deve ser > 14 (TestFlight ? evita DUPLICATE)"
+          grep -q "EagerGestureRecognizer" lib/screens/web_app_screen.dart || { echo "ERRO: falta gestureRecognizers iPad Entrar"; exit 1; }
+          grep -q "ic24BootNav" web_app/index.html || { echo "ERRO: boot nav Entrar ausente"; exit 1; }
+          if [ "${BO_BUILD_NUMBER}" -le 15 ]; then
+            echo "ERRO: build ${BO_BUILD_NUMBER} deve ser > 15 (TestFlight — evita DUPLICATE)"
             exit 1
           fi
           echo "Commit: $(git rev-parse --short HEAD 2>/dev/null || echo local)"
@@ -366,11 +368,12 @@ workflows:
         script: |
           set -e
           echo "Gerando Bab? ON ${BO_BUILD_NAME} (${BO_BUILD_NUMBER})"
-          if [ "$BO_BUILD_NUMBER" -le 14 ]; then
-            echo "ERRO: build deve ser > 14 (DUPLICATE TestFlight)"
+          if [ "$BO_BUILD_NUMBER" -le 15 ]; then
+            echo "ERRO: build deve ser > 15 (DUPLICATE TestFlight)"
             exit 1
           fi
-          grep -aF 'allowingReadAccessTo' lib/screens/web_app_screen.dart >/dev/null || { echo 'ERRO: WebView iOS file:// ? falta allowingReadAccessTo em web_app_screen.dart'; file lib/screens/web_app_screen.dart; exit 1; }
+          grep -aF 'allowingReadAccessTo' lib/screens/web_app_screen.dart >/dev/null || { echo 'ERRO: WebView iOS file:// — falta allowingReadAccessTo em web_app_screen.dart'; file lib/screens/web_app_screen.dart; exit 1; }
+          grep -aF 'EagerGestureRecognizer' lib/screens/web_app_screen.dart >/dev/null || { echo 'ERRO: falta EagerGestureRecognizer (toque iPad)'; exit 1; }
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${BO_BUILD_NAME}" ios/Runner/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${BO_BUILD_NUMBER}" ios/Runner/Info.plist
           sed -i.bak "s/FLUTTER_BUILD_NAME=.*/FLUTTER_BUILD_NAME=${BO_BUILD_NAME}/" ios/Flutter/Version.xcconfig
@@ -392,7 +395,7 @@ workflows:
           IPA_CHECK=$(find build/ios/ipa -name "*.ipa" | head -1)
           IPA_BUILT=$(bash tool/ipa_bundle_version.sh "$IPA_CHECK" 2>/dev/null || echo "")
           echo "CFBundleVersion no IPA gerado: ${IPA_BUILT} (obrigatorio ${BO_BUILD_NUMBER})"
-          if [ -z "${IPA_BUILT:-}" ] || [ "$IPA_BUILT" -le 14 ]; then
+          if [ -z "${IPA_BUILT:-}" ] || [ "$IPA_BUILT" -le 15 ]; then
             echo "ERRO: IPA build ${IPA_BUILT:-vazio} ? deve ser > 14 (DUPLICATE TestFlight)"
             exit 1
           fi
@@ -412,7 +415,7 @@ workflows:
           IPA_SHORT=$(bash tool/ipa_bundle_version.sh "$IPA" --short 2>/dev/null || echo "")
           echo "IPA CFBundleVersion: ${IPA_VER} (obrigatorio ${BUILD_NUM})"
           echo "IPA CFBundleShortVersionString: ${IPA_SHORT} (obrigatorio ${BO_BUILD_NAME})"
-          if [ -z "${IPA_VER:-}" ] || [ "$IPA_VER" -le 14 ]; then
+          if [ -z "${IPA_VER:-}" ] || [ "$IPA_VER" -le 15 ]; then
             echo "ERRO: IPA build ${IPA_VER:-vazio} ? deve ser > 14 (evita DUPLICATE)"
             exit 1
           fi

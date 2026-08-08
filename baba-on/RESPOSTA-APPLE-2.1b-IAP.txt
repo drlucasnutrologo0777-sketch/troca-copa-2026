@@ -1,0 +1,41 @@
+Olá, equipe de App Review,
+
+Obrigado pelo retorno sobre o Submission ID 0f1a6ca9-9d3c-4a64-964d-70128a838135 (versão 1.0 build 13), Diretriz 2.1(b) — não foi possível concluir a compra In-App Purchase no Sandbox.
+
+Corrigimos o fluxo de compra e estamos reenviando um novo binário.
+
+O QUE ESTAVA ERRADO / O QUE FOI CORRIGIDO
+1. Em alguns casos a taxa pendente aparecia como US$ 0,00, então a compra não abria uma folha StoreKit válida. Contas demo de babá agora mantêm taxa pendente de US$ 1,99 para que o botão “Pagar taxa via App Store” sempre inicie uma compra Sandbox real.
+2. StoreKit está implementado no app iOS (in_app_purchase) com o handler JavaScript ic24PurchasePlatformFee.
+3. O produto consumível bo_taxa_manutencao (US$ 1,99) está configurado no App Store Connect e é enviado junto com este novo binário.
+4. Paid Apps Agreement / dados bancários / impostos estão Active para o Account Holder.
+
+NOVO BUILD PARA REVISÃO
+• App: Babá ON · Bundle ID: com.babaon.app
+• Versão: 1.0 · Build: 15
+• ID do IAP: bo_taxa_manutencao (Consumível, US$ 1,99)
+
+COMO TESTAR O IAP NO SANDBOX
+1. Entre como babá:
+   E-mail: joana44@gmail.com
+   Senha: teste@123
+2. Abra o menu → Taxa do app (US$ 1,99).
+3. Confirme que “Taxa pendente” mostra US$ 1,99 (não US$ 0,00).
+4. Toque em “Pagar taxa via App Store”.
+5. Conclua a compra Sandbox de bo_taxa_manutencao.
+
+Conta alternativa (se precisar):
+E-mail: baba.demo@babaon.test.local
+Senha: Demo123!
+(Esta conta também gera automaticamente US$ 1,99 de taxa pendente.)
+
+MODELO DE PAGAMENTO (Diretriz 3.1)
+• Diária família → babá: PIX fora da App Store.
+• Taxa de manutenção da plataforma: somente Apple IAP consumível bo_taxa_manutencao.
+
+Por favor, revisem o novo build 15 com os passos acima. Se ainda houver falha no Sandbox, respondam aqui que ajudamos na hora.
+
+Obrigado,
+Eder Lucas Santos Tiago
++55 11 96836-2005
+drlucasnutrologo0777@icloud.com

@@ -1,12 +1,14 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import '../services/bo_iap_service.dart';
 import '../services/web_app_bundle.dart';
 
-/// Web app embutido (file:// no iOS com allowingReadAccessTo ? exigido pelo CI).
+/// Web app embutido (file:// no iOS com allowingReadAccessTo).
 class WebAppScreen extends StatefulWidget {
   const WebAppScreen({super.key});
 
@@ -17,7 +19,6 @@ class WebAppScreen extends StatefulWidget {
 class _WebAppScreenState extends State<WebAppScreen> {
   Directory? _root;
   String? _error;
-  bool _webReady = false;
   bool _pageLoaded = false;
   String? _status;
 
@@ -44,7 +45,7 @@ class _WebAppScreenState extends State<WebAppScreen> {
       if (!mounted) return;
       setState(() {
         _root = root;
-        _status = 'Abrindo Bab· ON?';
+        _status = null;
       });
     } catch (e) {
       if (!mounted) return;
@@ -108,28 +109,16 @@ class _WebAppScreenState extends State<WebAppScreen> {
   Future<void> _injectNativeFlags(InAppWebViewController controller) async {
     await controller.evaluateJavascript(source: '''
       window._ic24NativeIap = ${Platform.isIOS};
+      if (typeof window.ic24BootNav === 'function') { try { window.ic24BootNav(); } catch (_) {} }
     ''');
   }
 
-  Future<void> _verifyContent(InAppWebViewController controller) async {
+  Future<void> _onPageFinished(InAppWebViewController controller) async {
     await _injectNativeFlags(controller);
-    final ok = await controller.evaluateJavascript(source: '''
-      (function(){
-        var w=document.getElementById('welcome');
-        var btn=document.querySelector('#welcome .btn-p');
-        return !!(w && btn && w.classList.contains('on'));
-      })();
-    ''');
     if (!mounted) return;
-    if (ok == true) {
-      setState(() {
-        _webReady = true;
-        _status = null;
-      });
-      return;
-    }
     setState(() {
-      _status = 'P·gina incompleta. Verifique conex„o (Firebase/CDN).';
+      _pageLoaded = true;
+      _status = null;
     });
   }
 
@@ -140,7 +129,7 @@ class _WebAppScreenState extends State<WebAppScreen> {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Text(
-            'N„o foi possÌvel abrir o app web.\n\n$_error',
+            'Nùo foi possùvel abrir o app web.\n\n$_error',
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 15, height: 1.45),
           ),
@@ -163,6 +152,10 @@ class _WebAppScreenState extends State<WebAppScreen> {
         fit: StackFit.expand,
         children: [
           InAppWebView(
+            // CRùTICO iPad/iOS: sem isso o toque no WebView pode nùo chegar ao botùo Entrar
+            gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+              Factory<EagerGestureRecognizer>(() => EagerGestureRecognizer()),
+            },
             onWebViewCreated: (controller) async {
               _registerNativeBridge(controller);
               await _loadWeb(controller);
@@ -176,31 +169,48 @@ class _WebAppScreenState extends State<WebAppScreen> {
               allowFileAccessFromFileURLs: true,
               allowUniversalAccessFromFileURLs: true,
               allowingReadAccessTo: readAccess,
-              javaScriptCanOpenWindowsAutomatically: true,
-              supportMultipleWindows: true,
+              // Evita target=_blank substituir o app inteiro no iPad
+              javaScriptCanOpenWindowsAutomatically: false,
+              supportMultipleWindows: false,
               supportZoom: false,
               transparentBackground: false,
               underPageBackgroundColor: const Color(0xFFF5F7FA),
               isInspectable: true,
+              disableHorizontalScroll: false,
+              disableVerticalScroll: false,
             ),
-            onCreateWindow: (controller, createWindowAction) async {
-              final url = createWindowAction.request.url;
-              if (url != null) {
-                await controller.loadUrl(urlRequest: URLRequest(url: url));
+            shouldOverrideUrlLoading: (controller, navigationAction) async {
+              final url = navigationAction.request.url;
+              if (url == null) return NavigationActionPolicy.ALLOW;
+              final s = url.toString();
+              // Mantùm navegaùùo local do app; links externos https abrem na mesma WebView sù se for nosso hosting
+              if (s.startsWith('file:') || s.startsWith('http://127.0.0.1')) {
+                return NavigationActionPolicy.ALLOW;
               }
-              return true;
+              if (s.contains('baba-on') && (s.contains('termos') || s.contains('privacidade') || s.contains('exclusao'))) {
+                return NavigationActionPolicy.ALLOW;
+              }
+              if (navigationAction.isForMainFrame == true &&
+                  (s.startsWith('http://') || s.startsWith('https://')) &&
+                  !s.contains('gstatic.com') &&
+                  !s.contains('googleapis.com') &&
+                  !s.contains('firebase')) {
+                // Bloqueia sumir do app por link externo acidental
+                return NavigationActionPolicy.CANCEL;
+              }
+              return NavigationActionPolicy.ALLOW;
             },
             onLoadStop: (controller, url) async {
-              if (mounted) setState(() => _pageLoaded = true);
-              await _verifyContent(controller);
+              await _onPageFinished(controller);
             },
             onReceivedError: (controller, request, error) {
               if (!mounted || request.isForMainFrame != true) return;
-              setState(() => _status = error.description);
+              // Nùo bloqueia toque ù sù registra
+              debugPrint('WebView error: ${error.description}');
             },
             onConsoleMessage: (controller, msg) {
-              if (msg.messageLevel == ConsoleMessageLevel.ERROR && mounted) {
-                setState(() => _status = msg.message);
+              if (msg.messageLevel == ConsoleMessageLevel.ERROR) {
+                debugPrint('WebView console: ${msg.message}');
               }
             },
             onPermissionRequest: (controller, request) async {
@@ -217,36 +227,39 @@ class _WebAppScreenState extends State<WebAppScreen> {
               );
             },
           ),
-          if (!_webReady && _status != null)
-            Positioned(
-              left: 16,
-              right: 16,
-              bottom: 24,
-              child: Material(
-                color: const Color(0xFF134175),
-                borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Text(
-                    _status!,
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
-                    textAlign: TextAlign.center,
+          if (!_pageLoaded)
+            const IgnorePointer(
+              child: ColoredBox(
+                color: Color(0xFFF5F7FA),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(color: Color(0xFF134175)),
+                      SizedBox(height: 16),
+                      Text('Carregandoù', style: TextStyle(fontSize: 15)),
+                    ],
                   ),
                 ),
               ),
             ),
-          if (!_pageLoaded)
-            IgnorePointer(
-              child: Container(
-                color: const Color(0xFFF5F7FA),
-                alignment: Alignment.center,
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(color: Color(0xFF134175)),
-                    SizedBox(height: 16),
-                    Text('Carregando?', style: TextStyle(fontSize: 15)),
-                  ],
+          if (_status != null)
+            Positioned(
+              left: 16,
+              right: 16,
+              bottom: 24,
+              child: IgnorePointer(
+                child: Material(
+                  color: const Color(0xFF134175),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      _status!,
+                      style: const TextStyle(color: Colors.white, fontSize: 13),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ),
             ),

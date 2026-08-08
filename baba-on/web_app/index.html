@@ -5,11 +5,36 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#134175"/>
 <title>Babá ON</title>
-<!-- Babá ON iOS build 1.0.0+15 -->
+<!-- Baba ON iOS build 1.0.0+16 -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" href="favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<!-- Boot nav ANTES do Firebase CDN — senão Entrar no iPad parece morto enquanto CDN carrega -->
+<script>
+(function(){
+  function show(id){
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('on'); });
+    var el=document.getElementById(id);
+    if(el) el.classList.add('on');
+    var btn=document.getElementById('btnIrLogin');
+    if(btn) btn.style.display='none';
+    try{ window.scrollTo(0,0); }catch(_){}
+  }
+  window.show=show;
+  window.irWelcome=function(){ show('welcome'); };
+  window.irLogin=function(){ show('login'); };
+  window.irEscolhaPerfil=function(){ show('escolha-perfil'); };
+  window.toast=window.toast||function(msg){
+    var t=document.getElementById('toast');
+    if(!t){ try{ console.log(msg); }catch(_){ } return; }
+    t.textContent=msg; t.classList.add('on');
+    clearTimeout(window._toastT);
+    window._toastT=setTimeout(function(){ t.classList.remove('on'); },2800);
+  };
+  window.ic24BootNav=function(){ /* noop — marca boot ok */ };
+})();
+</script>
 <style>
 :root{
   --p:#134175;--pd:#0F3559;--pl:#D6EBFA;
@@ -262,9 +287,9 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
         <div class="brand">Babá ON</div>
         <p class="brand-sub">Mães, pais e babás com segurança e confiança</p>
       </div>
-      <button class="btn btn-p" type="button" onclick="irLogin()">Entrar</button>
-      <button class="btn btn-o" type="button" style="margin-top:12px" onclick="irEscolhaPerfil()">Criar conta</button>
-      <p class="legal-foot">Ao continuar, você concorda com os <a href="https://baba-on-3634a.web.app/termos.html" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="https://baba-on-3634a.web.app/privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>. <a href="https://baba-on-3634a.web.app/exclusao-conta.html" target="_blank" rel="noopener">Excluir conta</a></p>
+      <button class="btn btn-p" type="button" id="btnWelcomeEntrar" onclick="window.irLogin&&window.irLogin()">Entrar</button>
+      <button class="btn btn-o" type="button" style="margin-top:12px" id="btnWelcomeCriar" onclick="window.irEscolhaPerfil&&window.irEscolhaPerfil()">Criar conta</button>
+      <p class="legal-foot">Ao continuar, você concorda com os <a href="https://baba-on-3634a.web.app/termos.html" rel="noopener">Termos de Uso</a> e a <a href="https://baba-on-3634a.web.app/privacidade.html" rel="noopener">Política de Privacidade</a>. <a href="https://baba-on-3634a.web.app/exclusao-conta.html" rel="noopener">Excluir conta</a></p>
     </div>
   </section>
 
@@ -286,7 +311,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
         <a href="#" onclick="esqueciSenha();return false">Esqueceu a senha?</a>
       </div>
 
-      <button class="btn btn-p" type="button" onclick="entrar()">Entrar</button>
+      <button class="btn btn-p" type="button" id="btnLoginEntrar" onclick="if(typeof entrar==='function'){entrar();}else{toast('Carregando…');}">Entrar</button>
 
       <button class="btn btn-g" type="button" style="margin-top:10px" onclick="irFamiliaPainel()">Demo: área do contratante</button>
 

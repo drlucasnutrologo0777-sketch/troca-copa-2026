@@ -1,0 +1,27 @@
+Olá, equipe de App Review,
+
+Obrigado pelo retorno sobre o Submission ID bde35ce9-82d0-43c2-a842-826c109d441c
+(versão 1.0 build 15), Diretriz 2.1(a) — botão "Entrar" sem resposta no iPad Air.
+
+Corrigimos o toque no iPad/WebView e reenviamos o build 16.
+
+O QUE FOI CORRIGIDO
+1. EagerGestureRecognizer no InAppWebView — o toque no iPad agora chega ao botão Entrar.
+2. Navegação irLogin/show carrega ANTES dos scripts Firebase CDN (cold start não deixa Entrar morto).
+3. Removido target=_blank / multi-window que podia substituir o app no iPad.
+4. Orientação liberada também no iPad (não só portrait).
+
+NOVO BUILD
+• App: Babá ON · Bundle: com.babaon.app
+• Versão: 1.0 · Build: 16
+
+COMO TESTAR
+1. Abrir o app (tela Boas-vindas).
+2. Tocar em "Entrar" — deve abrir a tela de login imediatamente.
+3. Login demo: joana44@gmail.com / teste@123
+4. Taxa do app: US$ 1,99 → "Pagar taxa via App Store" → IAP bo_taxa_manutencao.
+
+Obrigado,
+Eder Lucas Santos Tiago
++55 11 96836-2005
+drlucasnutrologo0777@icloud.com
