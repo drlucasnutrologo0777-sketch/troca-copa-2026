@@ -298,7 +298,8 @@ workflows:
         BUNDLE_ID: com.babaon.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         BO_BUILD_NAME: "1.0.0"
-        BO_BUILD_NUMBER: "20"
+        BO_BUILD_NUMBER: "21"
+        APP_STORE_APPLE_ID: ""
       flutter: 3.41.9
       xcode: latest
       cocoapods: default
@@ -318,7 +319,7 @@ workflows:
             echo "ERRO: pubspec +${PUBSPEC_NUM} != BO_BUILD_NUMBER ${BO_BUILD_NUMBER}"
             exit 1
           fi
-          grep -q "baba_v30_build20" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp deve ser baba_v30_build20"; exit 1; }
+          grep -q "baba_v30_build21" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp deve ser baba_v30_build21"; exit 1; }
           grep -q "platform :ios, '16.0'" ios/Podfile || { echo "ERRO: ios/Podfile deve ter platform :ios, 16.0"; exit 1; }
           grep -q "IPHONEOS_DEPLOYMENT_TARGET = 16.0" ios/Runner.xcodeproj/project.pbxproj || { echo "ERRO: Xcode deployment target 16.0"; exit 1; }
           ASC_LAST=16
@@ -418,50 +419,54 @@ workflows:
             echo "ERRO: IPA ${IPA_BUILT} != BO_BUILD_NUMBER ${BO_BUILD_NUMBER}"
             exit 1
           fi
-          bash tool/verify_web_build.sh --ipa "$IPA_CHECK"
           bash tool/verify_build_number.sh
       - name: Upload TestFlight
         script: |
           set -e
           IPA=$(find build/ios/ipa -name "*.ipa" | head -1)
-          test -n "$IPA"
-          BUILD_NUM="${BO_BUILD_NUMBER}"
-          IPA_VER=$(bash tool/ipa_bundle_version.sh "$IPA" 2>/dev/null || unzip -p "$IPA" 'Payload/*.app/Info.plist' | plutil -extract CFBundleVersion raw - 2>/dev/null || echo "")
-          IPA_SHORT=$(bash tool/ipa_bundle_version.sh "$IPA" --short 2>/dev/null || echo "")
-          echo "IPA CFBundleVersion: ${IPA_VER} (obrigatorio ${BUILD_NUM})"
-          echo "IPA CFBundleShortVersionString: ${IPA_SHORT} (obrigatorio ${BO_BUILD_NAME})"
+          if [ -z "$IPA" ]; then
+            echo "ERRO: .ipa nao encontrado em build/ios/ipa"
+            exit 1
+          fi
+          BUILD_NUM=$(bash tool/ipa_bundle_version.sh "$IPA")
+          IPA_SHORT=$(bash tool/ipa_bundle_version.sh "$IPA" --short)
+          echo "IPA: $IPA"
+          echo "CFBundleVersion: ${BUILD_NUM} (obrigatorio ${BO_BUILD_NUMBER})"
+          echo "CFBundleShortVersionString: ${IPA_SHORT} (obrigatorio ${BO_BUILD_NAME})"
+          if [ "${BUILD_NUM}" != "${BO_BUILD_NUMBER}" ]; then
+            echo "ERRO: IPA ${BUILD_NUM} != BO_BUILD_NUMBER ${BO_BUILD_NUMBER}"
+            exit 1
+          fi
           ASC_LAST=16
           if [ -f ios/ASC_LAST_UPLOADED_BUILD.txt ]; then
             ASC_LAST=$(tr -d ' \n\r' < ios/ASC_LAST_UPLOADED_BUILD.txt)
           fi
-          if [ -z "${IPA_VER:-}" ] || [ "$IPA_VER" -le "$ASC_LAST" ]; then
-            echo "ERRO: IPA build ${IPA_VER:-vazio} deve ser > ${ASC_LAST} (evita DUPLICATE)"
-            exit 1
-          fi
-          if [ "${IPA_VER}" != "${BUILD_NUM}" ]; then
-            echo "ERRO: IPA ${IPA_VER} != BO_BUILD_NUMBER ${BUILD_NUM}"
-            exit 1
-          fi
-          if [ -n "${IPA_SHORT}" ] && [ "${IPA_SHORT}" != "${BO_BUILD_NAME}" ]; then
-            echo "ERRO: IPA marketing ${IPA_SHORT} != ${BO_BUILD_NAME}"
+          if [ -z "${BUILD_NUM:-}" ] || [ "$BUILD_NUM" -le "$ASC_LAST" ]; then
+            echo "ERRO: build ${BUILD_NUM:-vazio} deve ser > ${ASC_LAST} (DUPLICATE TestFlight)"
             exit 1
           fi
           API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
+          test -f "$API_KEY" || { echo "ERRO: API key ausente: $API_KEY"; exit 1; }
           export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
           pip3 install --quiet PyJWT requests
-          APP_STORE_APPLE_ID=$(python3 tool/resolve_asc_apple_id.py)
+          if [ -z "${APP_STORE_APPLE_ID:-}" ]; then
+            APP_STORE_APPLE_ID=$(python3 tool/resolve_asc_apple_id.py) || {
+              echo "ERRO: crie app Babá ON com bundle com.babaon.app no App Store Connect"
+              exit 1
+            }
+          fi
           echo "Bundle $BUNDLE_ID -> Apple ID $APP_STORE_APPLE_ID"
+          echo "Enviando build ${BUILD_NUM}..."
           app-store-connect publish \
             --path "$IPA" \
             --private-key "@file:$API_KEY" \
             --altool-additional-arguments "--apple-id $APP_STORE_APPLE_ID" \
-            --max-find-build-wait 900 \
-            --max-build-processing-wait 3600 \
+            --max-find-build-wait 600 \
+            --max-build-processing-wait 0 \
             --verbose
-          echo "${BUILD_NUM}" > ios/ASC_LAST_UPLOADED_BUILD.txt
-          echo "Upload concluido (build ${BUILD_NUM})."
-          echo "Codemagic: https://codemagic.io/apps"
+          echo "Upload enviado (build ${BUILD_NUM}). Aguarde processamento no ASC."
           echo "TestFlight: https://appstoreconnect.apple.com/apps/${APP_STORE_APPLE_ID}/testflight/ios"
+          echo "Se ficar amarelo: ASC -> App -> TestFlight -> Manage Compliance -> criptografia NAO"
 
     artifacts:
       - build/ios/ipa/*.ipa

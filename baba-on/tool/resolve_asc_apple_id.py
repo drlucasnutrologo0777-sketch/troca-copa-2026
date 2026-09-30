@@ -27,8 +27,16 @@ def token() -> str:
 
 
 def main() -> int:
+    override = (os.environ.get("APP_STORE_APPLE_ID") or os.environ.get("BO_APP_STORE_APPLE_ID") or "").strip()
+    if override.isdigit():
+        print(override)
+        return 0
+
     if not all([ISSUER_ID, KEY_ID, KEY_PATH]):
         print("ERRO: defina APP_STORE_CONNECT_ISSUER_ID, KEY_IDENTIFIER e API_KEY_PATH", file=sys.stderr)
+        return 1
+    if not os.path.isfile(KEY_PATH):
+        print(f"ERRO: API key nao encontrada: {KEY_PATH}", file=sys.stderr)
         return 1
 
     headers = {"Authorization": f"Bearer {token()}"}

@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 class WebAppBundle {
   static const _assetPrefix = 'web_app/';
   static const _stampName = '.bundle_stamp';
-  static const bundleStamp = 'baba_v30_build20';
+  static const bundleStamp = 'baba_v30_build21';
 
   static Future<Directory> ensureOnDisk() async {
     final support = await getApplicationSupportDirectory();
