@@ -299,7 +299,6 @@ workflows:
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         BO_BUILD_NAME: "1.0.0"
         BO_BUILD_NUMBER: "21"
-        APP_STORE_APPLE_ID: ""
       flutter: 3.41.9
       xcode: latest
       cocoapods: default
