@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#134175"/>
 <title>Babá ON</title>
-<!-- Baba ON iOS build 1.0.0+16 -->
+<!-- Baba ON iOS build 1.0.0+18 -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" href="favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
@@ -357,7 +357,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <h2 id="criar-conta-titulo">Criar conta</h2>
     </div>
     <div class="pad">
-      <p class="hint" id="criar-conta-sub">E-mail e senha para acessar o app.</p>
+      <p class="hint" id="criar-conta-sub">E-mail e senha para acessar o app. <strong>Idade mínima: 18 anos.</strong></p>
       <label class="lbl">Nome completo</label>
       <input class="inp" id="acc-nome" placeholder="Seu nome"/>
       <label class="lbl">E-mail</label>
@@ -399,6 +399,9 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
         <div><label class="lbl">Cidade</label><input class="inp" id="cad-cidade" placeholder="Cidade" style="margin:0"/></div>
         <div><label class="lbl">UF</label><input class="inp" id="cad-uf" placeholder="MG" maxlength="2" style="margin:0"/></div>
       </div>
+      <label class="lbl" style="margin-top:14px">Data de nascimento</label>
+      <input class="inp" id="cad-nasc" type="date" max="" aria-describedby="cad-nasc-hint"/>
+      <p class="hint" id="cad-nasc-hint" style="margin-top:6px">É necessário ter <strong>18 anos completos</strong> para ser babá no app.</p>
       <button class="btn btn-p" type="button" style="margin-top:16px" onclick="irBabaEtapa2()">Continuar — Sobre você</button>
     </div>
   </section>
@@ -515,7 +518,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
     <div class="pad">
       <p class="step">Responsável + criança</p>
       <h1 class="h1">Preciso de babá</h1>
-      <p class="hint">Cadastro para mãe ou pai que busca babá para a criança.</p>
+      <p class="hint">Cadastro para mãe ou pai que busca babá para a criança. Responsável com <strong>18 anos ou mais</strong>.</p>
 
       <label class="lbl">Seu nome completo</label>
       <input class="inp" id="fam-nome" placeholder="Nome do responsável"/>
@@ -531,6 +534,10 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
 
       <label class="lbl">Telefone</label>
       <input class="inp" id="fam-tel" placeholder="(00) 00000-0000"/>
+
+      <label class="lbl">Data de nascimento (responsável)</label>
+      <input class="inp" id="fam-nasc" type="date" max="" aria-describedby="fam-nasc-hint"/>
+      <p class="hint" id="fam-nasc-hint" style="margin-top:6px">Menores de 18 anos não podem concluir o cadastro.</p>
 
       <label class="lbl">CEP</label>
       <div class="row2" style="margin-bottom:14px">
@@ -570,7 +577,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <p class="step">Etapa 1 de 2</p>
       <div class="progress"><i class="done"></i><i></i></div>
       <h1 class="h1">Seus dados</h1>
-      <p class="hint">Preencha suas informações pessoais. Todos os campos são obrigatórios.</p>
+      <p class="hint">Preencha suas informações pessoais. Todos os campos são obrigatórios. <strong>Idade mínima: 18 anos.</strong></p>
 
       <label class="photo-pick" id="fotoBox">
         <img id="fotoPreview" alt="" style="display:none"/>
@@ -612,7 +619,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <div class="row2" style="margin-top:14px">
         <div>
           <label class="lbl">Data de nascimento</label>
-          <input class="inp" id="nasc" type="date" style="margin:0"/>
+          <input class="inp" id="nasc" type="date" max="" style="margin:0"/>
         </div>
         <div>
           <label class="lbl">Sexo</label>
@@ -761,6 +768,11 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <button type="button" class="menu-topic" onclick="show('mae-proximos')">
         <span class="menu-ic">📍</span>
         <div><b>Babás próximos</b><small>Ordenadas por distância → data/hora → preço</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('mae-babas-destino')">
+        <span class="menu-ic">✈️</span>
+        <div><b>Babás que vêm até aqui</b><small>Disponíveis para trabalhar na sua cidade ou região</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('mae-urgente')">
@@ -1042,6 +1054,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
     </div>
     <div class="pad" style="display:flex;flex-direction:column;min-height:70vh">
       <div class="note" id="chatLockNote">Chat bloqueado — feche o negócio com a babá em Propostas recebidas para conversar.</div>
+      <p class="hint" style="font-size:11px;margin-top:8px">Negócios devem ser fechados no app. Em suspeita de combinação fora da plataforma, família e babá recebem e-mail automático com o registro da transação no sistema.</p>
       <div class="chat-msgs" id="chatMsgs"></div>
       <div class="chat-bar">
         <input class="inp" id="chatInput" placeholder="Digite sua mensagem..." style="margin:0"/>
@@ -1115,6 +1128,16 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <button type="button" class="menu-topic" onclick="novaAgendaForm()">
         <span class="menu-ic">📅</span>
         <div><b>Disponibilizar agenda</b><small>Nova agenda — dias, horários e valor da diária</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="novoAnuncioOutroLugar()">
+        <span class="menu-ic">✈️</span>
+        <div><b>Trabalhar em outro lugar</b><small>Publicar país, estado ou cidade — período e diárias</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('baba-minhas-ofertas')">
+        <span class="menu-ic">📂</span>
+        <div><b>Minhas ofertas</b><small>Ofertas em outro lugar — ver, encerrar ou excluir</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('baba-ofertas')">
@@ -1295,6 +1318,65 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <label class="lbl">Duração típica (dias)</label>
       <input class="inp" id="agenda-duracao-dias" type="number" min="1" value="15" oninput="atualizarResumoTaxaAgenda()"/>
       <button class="btn btn-o" type="button" style="margin-top:8px" onclick="salvarPreferenciasRecebimento()">Salvar forma de recebimento</button>
+    </div>
+  </section>
+
+  <!-- ========== MINHAS OFERTAS (babá) ========== -->
+  <section class="screen" id="baba-minhas-ofertas">
+    <div class="topbar">
+      <button type="button" onclick="show('baba-painel')">←</button>
+      <h2>Minhas ofertas</h2>
+    </div>
+    <div class="pad">
+      <p class="hint">O que <strong>você publicou</strong>. Ofertas de famílias (geral) continuam em <strong>Ofertas abertas</strong>; propostas diretas em <strong>Propostas recebidas</strong>.</p>
+      <p class="step">Ofertas em outro lugar</p>
+      <p class="hint" style="margin-top:-4px">Anúncios de viagem (outro estado ou país). Você pode <strong>excluir</strong> quando quiser — somem para as famílias.</p>
+      <div id="minhas-ofertas-destino"></div>
+      <button class="btn btn-p" type="button" style="margin-top:16px" onclick="novoAnuncioOutroLugar()">+ Nova oferta em outro lugar</button>
+    </div>
+  </section>
+
+  <section class="screen" id="baba-outro-lugar-form">
+    <div class="topbar">
+      <button type="button" onclick="show('baba-minhas-ofertas')">←</button>
+      <h2>Destino do trabalho</h2>
+    </div>
+    <div class="pad">
+      <p class="hint">Informe onde você quer trabalhar. <strong>CEP</strong> e <strong>número</strong> são opcionais (ajudam no mapa interno).</p>
+      <label class="lbl">País *</label>
+      <input class="inp" id="dest-pais" placeholder="Ex.: Brasil, Estados Unidos"/>
+      <label class="lbl">Estado *</label>
+      <input class="inp" id="dest-estado" placeholder="Ex.: MG, SP, Florida"/>
+      <label class="lbl">Cidade *</label>
+      <input class="inp" id="dest-cidade" placeholder="Ex.: São Paulo, Miami"/>
+      <label class="lbl">CEP (opcional)</label>
+      <input class="inp" id="dest-cep" placeholder="00000-000" maxlength="12" oninput="maskCep(this)"/>
+      <label class="lbl">Número (opcional)</label>
+      <input class="inp" id="dest-numero" placeholder="Ex.: 1200 — referência de rua"/>
+      <label class="lbl">Período — data início e fim *</label>
+      <div class="row2">
+        <div><label class="lbl" style="font-size:11px">Início</label><input class="inp" id="dest-data-inicio" type="date"/></div>
+        <div><label class="lbl" style="font-size:11px">Fim</label><input class="inp" id="dest-data-fim" type="date"/></div>
+      </div>
+      <label class="lbl">Quantidade de diárias desejadas *</label>
+      <input class="inp" id="dest-diarias" type="number" min="1" value="30"/>
+      <label class="lbl">Valor da diária referência (R$ ou moeda combinada) *</label>
+      <input class="inp" id="dest-valor" type="number" min="0" step="1" placeholder="Ex.: 250"/>
+      <label class="lbl">Observações (opcional)</label>
+      <textarea class="inp" id="dest-notas" rows="3" placeholder="Hospedagem, idiomas, documentos…"></textarea>
+      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="publicarAnuncioOutroLugar()">Publicar anúncio</button>
+    </div>
+  </section>
+
+  <section class="screen" id="mae-babas-destino">
+    <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Babás que vêm até aqui</h2></div>
+    <div class="pad">
+      <p class="hint" id="dest-fam-hint">Babás que anunciaram trabalho na sua cidade/estado (cadastro). Fechamento igual: proposta → aceite → fechar negócio.</p>
+      <label class="toggle-row" style="margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        <input type="checkbox" id="dest-fam-todos" onchange="carregarBabasDestinoFamilia()"/>
+        <span><b>Mostrar todos os anúncios abertos</b><small style="display:block;color:var(--m)">Desmarque para filtrar só compatíveis com seu endereço</small></span>
+      </label>
+      <div id="fam-destino-list"></div>
     </div>
   </section>
 
@@ -1646,7 +1728,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
     <div class="pad" style="text-align:center;padding-top:80px">
       <div class="logo" style="margin-bottom:24px">✓</div>
       <h1 class="h1">Cadastro enviado</h1>
-      <p class="hint">Seus documentos serão analisados pela equipe em até 48 horas. Você receberá um e-mail quando for aprovado.</p>
+      <p class="hint">Com documentos completos, seu perfil é <strong>aprovado automaticamente</strong> e entra na busca das famílias. Ative <strong>Oferecer plantão hoje</strong> quando quiser aparecer como disponível.</p>
       <button class="btn btn-p" type="button" onclick="irLogin()">Voltar ao login</button>
     </div>
   </section>
@@ -1670,7 +1752,9 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
 <script src="bo-geo.js"></script>
 <script src="ic24-curriculo.js"></script>
 <script src="ic24-ofertas.js"></script>
+<script src="ic24-destino.js"></script>
 <script src="ic24-cobranca.js"></script>
+<script src="ic24-compliance.js"></script>
 <script>
 let _chatUnsub=null;
 window._cuidSpecs=[];
@@ -1765,6 +1849,20 @@ async function salvarConta(){
     show('baba-etapa1');
   }catch(e){ toast(ic24AuthError(e)||e.message||'Erro ao criar conta'); }
 }
+function ic24AplicarMaxDataNascimento(){
+  const d=new Date();
+  d.setFullYear(d.getFullYear()-18);
+  const max=d.toISOString().slice(0,10);
+  ['cad-nasc','nasc','fam-nasc'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.max=max;
+  });
+}
+function validarIdadeCadastroForm(){
+  const check=ic24ChecarIdadeMinimaCadastro(typeof ic24LerDataNascimentoForm==='function'?ic24LerDataNascimentoForm():'');
+  if(!check.ok){ toast(check.message); return false; }
+  return true;
+}
 function validarEnderecoCad(){
   const num=document.getElementById('cad-num').value.trim();
   const cep=(document.getElementById('cad-cep').value||'').replace(/\D/g,'');
@@ -1773,6 +1871,7 @@ function validarEnderecoCad(){
   if(!num){ toast('Informe o número do endereço'); return false; }
   if(!document.getElementById('cad-cidade').value.trim()){ toast('Cidade obrigatória'); return false; }
   if(!document.getElementById('cad-uf').value.trim()){ toast('UF obrigatória'); return false; }
+  if(!validarIdadeCadastroForm()) return false;
   return true;
 }
 async function irBabaEtapa2(){
@@ -1821,6 +1920,7 @@ function irBabaEtapa3(){
 }
 async function finalizarBaba(){
   if(!ic24FotoPerfilOk()){ toast('Foto de perfil obrigatória — volte à etapa 2'); show('baba-etapa2'); return; }
+  if(!validarIdadeCadastroForm()){ show('baba-etapa1'); return; }
   try{
     ic24InitFirebase();
     const uid=ic24Auth?.currentUser?.uid;
@@ -1857,7 +1957,7 @@ async function finalizarBaba(){
     }
     ic24AplicarRotaCadastro({ complete:true, screen:'baba-painel', message:'' });
     show('baba-painel');
-    toast('Cadastro concluído — área da babá aberta!');
+    toast('Cadastro concluído — você já aparece para famílias (Babás próximos)!');
   }catch(e){ toast(e.message||'Erro ao salvar no Firestore'); }
 }
 function maskCep(el){
@@ -1913,6 +2013,7 @@ async function irDocumentos(){
   if(!cpf){ toast('Informe o CPF'); return; }
   if(!num){ toast('Informe o número do endereço'); return; }
   if((document.getElementById('cad-cep').value||'').replace(/\D/g,'').length!==8){ toast('Informe um CEP válido'); return; }
+  if(!validarIdadeCadastroForm()) return;
   try{
     await ic24CriarConta({nome,email,senha,senha2,role:window._signupRole||'caregiver'});
     if(window._pendingProfilePhoto){
@@ -1936,6 +2037,8 @@ function preencherCadastroBaba(d){
   set('cad-bairro', d.neighborhood);
   set('cad-cidade', d.city);
   set('cad-uf', d.state);
+  set('cad-nasc', d.birthDate);
+  set('nasc', d.birthDate);
   set('cuid-bio', d.bio);
   set('cuid-cpf', d.cpf);
   if(Array.isArray(d.specialties)){
@@ -1967,6 +2070,7 @@ function preencherCadastroFamilia(d){
   set('fam-bairro', d.neighborhood);
   set('fam-cidade', d.city);
   set('fam-uf', d.state);
+  set('fam-nasc', d.birthDate);
 }
 async function ic24NavegarPosLogin(u){
   if(u.role==='caregiver'){
@@ -2079,6 +2183,7 @@ function anexar(input){
   }).finally(()=>{ input.value=''; if(row) row.classList.remove('uploading'); });
 }
 async function finalizar(){
+  if(!validarIdadeCadastroForm()){ show('cadastro'); return; }
   await syncDocumentosUI();
   if(!ic24DocsObrigatoriosOk()){
     ic24ToastDocsFaltando(window._babaDocs||{});
@@ -2155,6 +2260,7 @@ async function finalizarFamilia(){
   const senha2=document.getElementById('fam-senha2').value;
   if(!nome){ toast('Informe seu nome completo'); return; }
   if(!email){ toast('Informe o e-mail'); return; }
+  if(!validarIdadeCadastroForm()) return;
   if(!validarEnderecoFam()) return;
   async function concluirFamilia(){
     await ic24SalvarFamilia();
@@ -2998,6 +3104,138 @@ async function salvarPreferenciasRecebimento(){
   }catch(e){ toast(e.message||'Erro ao salvar'); }
 }
 
+function novoAnuncioOutroLugar(){
+  ['dest-pais','dest-estado','dest-cidade','dest-cep','dest-numero','dest-notas'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value='';
+  });
+  const di=document.getElementById('dest-diarias');
+  if(di) di.value='30';
+  const v=document.getElementById('dest-valor');
+  if(v) v.value='';
+  show('baba-outro-lugar-form');
+}
+
+function ic24RotuloStatusDestino(st){
+  if(st==='open') return '<span style="color:var(--p)">Aberto</span>';
+  if(st==='cancelled') return 'Encerrado';
+  if(st==='matched') return 'Negócio fechado';
+  return escapeHtml(st||'—');
+}
+
+async function renderMinhasOfertasDestino(){
+  const box=document.getElementById('minhas-ofertas-destino');
+  if(!box) return;
+  box.innerHTML='<p class="hint">Carregando…</p>';
+  try{
+    const rows=await ic24ListarMeusTrabalhosOutroLugar();
+    box.innerHTML=rows.length?rows.map(a=>{
+      const podeExcluir=a.status!=='matched';
+      let acoes='';
+      if(podeExcluir){
+        acoes='<button class="btn btn-g" type="button" style="margin-top:8px;height:40px;width:100%;background:#fef2f2;color:var(--err);border:1px solid #fecaca;font-weight:700" onclick="excluirAnuncioOutroLugar(\''+a.id+'\')">Excluir oferta</button>';
+        if(a.status==='open'){
+          acoes='<button class="btn btn-o" type="button" style="margin-top:8px;height:36px;width:100%" onclick="encerrarAnuncioOutroLugar(\''+a.id+'\')">Encerrar (parar de aparecer)</button>'+acoes;
+        }
+      }else{
+        acoes='<p class="hint" style="margin-top:8px;font-size:12px">Vinculada a negócio fechado — mantida só no seu histórico.</p>';
+      }
+      return '<div class="list-item"><b>'+escapeHtml(ic24ResumoDestinoAnuncio(a))+'</b><small>'+
+        escapeHtml([a.country,a.state,a.city].filter(Boolean).join(' · '))+
+        (a.postalCode?' · CEP '+escapeHtml(a.postalCode):'')+
+        (a.streetNumber?' · nº '+escapeHtml(a.streetNumber):'')+
+        ' · '+ic24RotuloStatusDestino(a.status)+'</small>'+acoes+'</div>';
+    }).join(''):'<p class="hint">Nenhuma oferta em outro lugar. Use <strong>+ Nova oferta</strong> ou o menu <em>Trabalhar em outro lugar</em>.</p>';
+  }catch(e){ box.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
+async function publicarAnuncioOutroLugar(){
+  try{
+    await ic24PublicarTrabalhoOutroLugar({
+      country:document.getElementById('dest-pais')?.value,
+      state:document.getElementById('dest-estado')?.value,
+      city:document.getElementById('dest-cidade')?.value,
+      cep:document.getElementById('dest-cep')?.value,
+      streetNumber:document.getElementById('dest-numero')?.value,
+      periodStart:document.getElementById('dest-data-inicio')?.value,
+      periodEnd:document.getElementById('dest-data-fim')?.value,
+      targetDiarias:document.getElementById('dest-diarias')?.value,
+      dailyRate:parseFloat(document.getElementById('dest-valor')?.value)||0,
+      notes:document.getElementById('dest-notas')?.value,
+    });
+    toast('Anúncio publicado!');
+    await renderMinhasOfertasDestino();
+    show('baba-minhas-ofertas');
+  }catch(e){ toast(e.message||'Erro ao publicar'); }
+}
+
+async function encerrarAnuncioOutroLugar(id){
+  if(!confirm('Encerrar esta oferta? Ela deixa de aparecer para famílias, mas você ainda vê aqui até excluir.')) return;
+  try{
+    await ic24CancelarTrabalhoOutroLugar(id);
+    toast('Oferta encerrada');
+    await renderMinhasOfertasDestino();
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+async function excluirAnuncioOutroLugar(id){
+  if(!confirm('Excluir esta oferta em outro lugar? Não dá para desfazer.')) return;
+  try{
+    await ic24ExcluirTrabalhoOutroLugar(id);
+    toast('Oferta excluída');
+    await renderMinhasOfertasDestino();
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+async function carregarBabasDestinoFamilia(){
+  const list=document.getElementById('fam-destino-list');
+  const hint=document.getElementById('dest-fam-hint');
+  if(!list) return;
+  list.innerHTML='<p class="hint">Carregando…</p>';
+  try{
+    const showAll=!!document.getElementById('dest-fam-todos')?.checked;
+    const { list: rows, familyLocation }=await ic24ListarTrabalhosOutroLugarParaFamilia({ showAll });
+    window._destinoRowsCache=rows;
+    if(hint){
+      const loc=[familyLocation.city,familyLocation.state,familyLocation.country].filter(Boolean).join(', ');
+      hint.innerHTML='Filtro: <strong>'+(showAll?'todos os anúncios abertos':'compatíveis com '+escapeHtml(loc||'seu cadastro'))+'</strong>. Proposta → aceite → fechar negócio (igual ao restante do app).';
+    }
+    list.innerHTML=rows.length?rows.map(a=>{
+      const foto=a.caregiverPhoto?'<img src="'+escapeHtml(a.caregiverPhoto)+'" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;margin-right:10px"/>':'';
+      const val=a.dailyRate?('R$ '+Number(a.dailyRate).toFixed(2)+'/dia ref.'):'Valor a combinar';
+      return '<div class="list-item"><div style="display:flex;align-items:flex-start">'+foto+'<div><b>'+escapeHtml(a.caregiverName||'Babá')+'</b><small>'+
+        escapeHtml(ic24ResumoDestinoAnuncio(a))+' · '+escapeHtml(val)+'</small></div></div>'+
+        '<button class="btn btn-o" type="button" style="margin-top:8px;height:40px;width:100%" onclick="abrirPerfilBabaFamilia(\''+a.caregiverId+'\')">Ver perfil</button>'+
+        '<button class="btn btn-p" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirPropostaDestino(\''+a.caregiverId+'\',\''+a.id+'\')">Oferecer proposta neste período</button></div>';
+    }).join(''):
+      '<p class="hint">Nenhuma babá anunciou destino compatível. Marque <strong>Mostrar todos</strong> ou peça à babá publicar em <em>Trabalhar em outro lugar</em>.</p>';
+  }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
+async function abrirPropostaDestino(caregiverId, anuncioId){
+  window._propostaDestinoId=anuncioId;
+  window._propostaDestinoCache=(window._destinoRowsCache||[]).find(x=>x.id===anuncioId)||null;
+  if(!window._propostaDestinoCache){
+    try{
+      ic24InitFirebase();
+      const s=await ic24Db.collection('caregiver_destination_availability').doc(anuncioId).get();
+      if(s.exists) window._propostaDestinoCache={id:s.id,...s.data()};
+    }catch(_e){ /* ignore */ }
+  }
+  abrirPropostaBabá(caregiverId,'mae-babas-destino');
+  const cache=window._propostaDestinoCache;
+  if(cache){
+    const d=document.getElementById('proposta-data');
+    const dur=document.getElementById('proposta-duracao');
+    const val=document.getElementById('proposta-valor');
+    if(d&&cache.periodStart) d.value=cache.periodStart;
+    if(dur&&cache.targetDiarias) dur.value=String(cache.targetDiarias);
+    if(val&&cache.dailyRate) val.value=String(cache.dailyRate);
+    document.getElementById('proposta-cuid-nome').textContent=
+      'Proposta · destino '+[cache.city,cache.state,cache.country].filter(Boolean).join(', ');
+  }
+}
+
 async function salvarAgenda(){
   const escala=chipVal('agenda-escala')||'8';
   const ratesByScale=ic24ColetarRatesByScale('agenda', IC24_ESCALAS_AGENDA);
@@ -3525,7 +3763,7 @@ async function carregarProximosFamilia(){
     const cgs=await ic24ListarBabasProximos(need);
     list.innerHTML=
       '<button class="btn btn-o" type="button" style="margin-bottom:12px" onclick="atualizarLocalizacaoFamilia()">📍 Atualizar minha localização (GPS)</button>'+
-      '<p class="hint" style="margin-bottom:12px">Ordem: <strong>mais perto</strong>, depois <strong>encaixe data/hora</strong> ('+escapeHtml(need.data)+' '+escapeHtml(need.hora)+'), depois <strong>menor preço</strong>. Endereço não aparece.</p>'+
+      '<p class="hint" style="margin-bottom:12px"><strong>1º distância (km)</strong> · 2º data/hora ('+escapeHtml(need.data)+' '+escapeHtml(need.hora)+') · 3º preço. Use GPS ou CEP no cadastro. Endereço da babá não aparece.</p>'+
       (cgs.length?cgs.map((c,i)=>{
       const linha=ic24LinhaBuscaBaba(c);
       const foto=c.photoUrl?'<img src="'+escapeHtml(c.photoUrl)+'" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;margin-right:10px;vertical-align:middle"/>':'';
@@ -3536,7 +3774,7 @@ async function carregarProximosFamilia(){
       '<button class="btn btn-o" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirCurriculoBaba(\''+c.id+'\')">Ver currículo</button>'+
       '<button class="btn btn-p" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirPropostaBabá(\''+c.id+'\',\'mae-proximos\')">Oferecer proposta</button></div>';
     }).join(''):
-      '<p class="hint">Nenhuma babá disponível hoje. Peça para ativarem "Oferecer plantão hoje".</p>');
+      '<p class="hint">Nenhuma babá <strong>aprovada</strong> no momento. Novas babás aparecem aqui após análise dos documentos (até 48 h). Babás podem ativar <strong>Oferecer plantão hoje</strong> para priorizar disponibilidade.</p>');
   }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
 }
 
@@ -3595,6 +3833,10 @@ async function abrirCurriculoBaba(id){
 
 function abrirPropostaBabá(id, voltar){
   window._propostaVoltar=voltar||'mae-proximos';
+  if(voltar!=='mae-babas-destino'){
+    window._propostaDestinoId=null;
+    window._propostaDestinoCache=null;
+  }
   document.getElementById('proposta-cuid-id').value=id;
   document.getElementById('proposta-cuid-nome').textContent='Proposta direta à babá selecionada';
   const d=document.getElementById('proposta-data');
@@ -3612,6 +3854,8 @@ async function enviarPropostaBaba(){
   const serviceTime=document.getElementById('proposta-hora')?.value||'';
   if(!serviceDate){ toast('Informe a data do serviço'); return; }
   if(!serviceTime){ toast('Informe a hora de início'); return; }
+  const destId=window._propostaDestinoId||null;
+  const destMeta=window._propostaDestinoCache||null;
   try{
     await ic24FamiliaProporBaba(id,{
       dailyRate:parseFloat(document.getElementById('proposta-valor').value)||0,
@@ -3621,7 +3865,21 @@ async function enviarPropostaBaba(){
       message:document.getElementById('proposta-msg').value.trim(),
       serviceDate,
       serviceTime,
+      ...(destId?{
+        destinationAvailabilityId:destId,
+        workDestination:destMeta?{
+          country:destMeta.country,
+          state:destMeta.state,
+          city:destMeta.city,
+          postalCode:destMeta.postalCode||'',
+          streetNumber:destMeta.streetNumber||'',
+          periodStart:destMeta.periodStart,
+          periodEnd:destMeta.periodEnd,
+        }:null,
+      }:{}),
     });
+    window._propostaDestinoId=null;
+    window._propostaDestinoCache=null;
     toast('Proposta enviada! A babá verá em Propostas recebidas.');
     show('mae-ofertas');
     carregarOfertasFamilia();
@@ -3730,7 +3988,7 @@ async function carregarPontoFamilia(){
 async function confirmarPontoFamilia(id){
   try{
     await ic24ConfirmarPontoFamilia(id);
-    toast('Diária autenticada pelo contratante');
+    toast('Diária autenticada — se foi saída final, a babá volta à lista para outras famílias');
     carregarPontoFamilia();
   }catch(e){ toast(e.message||'Erro'); }
 }
@@ -3915,6 +4173,8 @@ show=function(id){
   }
   _famShowOrig(id);
   if(id==='mae-proximos') carregarProximosFamilia();
+  if(id==='mae-babas-destino') carregarBabasDestinoFamilia();
+  if(id==='baba-minhas-ofertas') renderMinhasOfertasDestino();
   if(id==='mae-curriculo') carregarCurriculoListaFamilia();
   if(id==='mae-avaliar') preencherSelectBabas('avaliar-cuid-id');
   if(id==='mae-recomendacao') preencherSelectBabas('rec-cuid-id');
@@ -3948,6 +4208,7 @@ document.addEventListener('click',e=>{
 });
 try{
   ic24InitFirebase();
+  if(typeof ic24AplicarMaxDataNascimento==='function') ic24AplicarMaxDataNascimento();
   ic24Auth.onAuthStateChanged(async (user)=>{
     if(!user||window._ic24IgnorarAuthRedirect) return;
     const on=document.querySelector('.screen.on')?.id;

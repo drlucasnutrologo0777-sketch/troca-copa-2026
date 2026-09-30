@@ -1,0 +1,32 @@
+Babá ON — Build 1.0.0+18 · Codemagic (checklist)
+
+NÚMEROS (todos = 18)
+[ ] pubspec.yaml → 1.0.0+18
+[ ] ios/Flutter/Version.xcconfig → FLUTTER_BUILD_NUMBER=18
+[ ] ios/BO_IOS_BUILD.txt → 18
+[ ] web_app/index.html → <!-- Baba ON iOS build 1.0.0+18 -->
+[ ] lib/services/web_app_bundle.dart → baba_v30_build18
+[ ] troca_copa_app/codemagic.yaml → BO_BUILD_NUMBER: "18"
+[ ] ios/ASC_LAST_UPLOADED_BUILD.txt → 16 (último aceito Apple — NÃO mudar até upload OK)
+
+ORDEM OBRIGATÓRIA
+1. git add + commit + push branch main (repo que o Codemagic usa)
+2. Codemagic → workflow "Babá ON — iOS TestFlight" (baba-on-ios)
+3. Só depois do upload OK: ASC_LAST_UPLOADED_BUILD.txt = 18
+
+FIREBASE (antes ou logo após TestFlight)
+cd baba-on/firebase-deploy
+firebase deploy --only firestore:rules,firestore:indexes,functions,hosting
+
+Workflow usa:
+- working_directory: baba-on
+- tool/verify_web_build.sh + verify_build_number.sh
+- BO_BUILD_NAME 1.0.0 / BO_BUILD_NUMBER 18
+- Certificados: ../ios/codemagic_signing/ (monorepo TrocaCopa)
+
+iOS mínimo: 15.0 (Podfile + Xcode — Flutter stable no Codemagic)
+
+TESTE RÁPIDO NO APP 18
+- Trabalhar em outro lugar → publicar → Minhas ofertas → Excluir
+- Família → Babás que vêm até aqui
+- Fechar negócio / IAP / chat (igual 16)

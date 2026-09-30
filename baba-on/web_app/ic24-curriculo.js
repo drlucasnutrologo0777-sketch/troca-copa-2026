@@ -433,7 +433,8 @@ async function ic24MontarCurriculoSnapshot(uid, opts = {}) {
 
     reviewCount: cg.reviewCount || 0,
 
-    kycStatus: classification.missingRequired.length === 0 ? 'pending_review' : 'incomplete',
+    kycStatus:
+      classification.missingRequired.length === 0 ? 'approved' : 'incomplete',
 
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
 
@@ -441,25 +442,29 @@ async function ic24MontarCurriculoSnapshot(uid, opts = {}) {
 
   if (opts.persist) {
 
-    await ic24Db.collection('caregivers').doc(uid).set(
+    const idadeOk =
+      typeof ic24BirthDateAtendeMinimo === 'function' ? ic24BirthDateAtendeMinimo(cg.birthDate) : true;
+    const autoApprove =
+      idadeOk &&
+      classification.missingRequired.length === 0 &&
+      !!(cg.fullName || '').trim() &&
+      !!(cg.photoUrl || '');
 
-      {
+    const cgPatch = {
+      classification,
+      documentsCount: classification.documentsCount,
+      certificatesVerified: curriculum.certificatesVerified,
+      kycStatus: autoApprove ? 'approved' : curriculum.kycStatus,
+      curriculumUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    };
 
-        classification,
+    if (autoApprove) {
+      cgPatch.approved = true;
+      cgPatch.approvedAt = firebase.firestore.FieldValue.serverTimestamp();
+      cgPatch.autoApproved = true;
+    }
 
-        documentsCount: classification.documentsCount,
-
-        certificatesVerified: curriculum.certificatesVerified,
-
-        kycStatus: curriculum.kycStatus,
-
-        curriculumUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-
-      },
-
-      { merge: true },
-
-    );
+    await ic24Db.collection('caregivers').doc(uid).set(cgPatch, { merge: true });
 
     await ic24Db.collection('curriculum_public').doc(uid).set(curriculum, { merge: true });
 

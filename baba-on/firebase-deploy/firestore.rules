@@ -282,6 +282,25 @@ service cloud.firestore {
           .hasOnly(['log', 'updatedAt', 'status']));
     }
 
+    match /caregiver_destination_availability/{id} {
+      allow read: if signedIn() && (
+        resource.data.status == 'open'
+        || resource.data.caregiverId == request.auth.uid
+        || isAdmin()
+      );
+      allow create: if isCaregiver()
+        && request.resource.data.caregiverId == request.auth.uid
+        && request.resource.data.status == 'open';
+      allow update: if isAdmin()
+        || (isCaregiver()
+          && resource.data.caregiverId == request.auth.uid
+          && resource.data.status == 'open'
+          && request.resource.data.status in ['open', 'cancelled']
+          && request.resource.data.caregiverId == resource.data.caregiverId);
+      allow delete: if isAdmin()
+        || (isCaregiver() && resource.data.caregiverId == request.auth.uid);
+    }
+
     match /job_offers/{id} {
       allow read: if signedIn();
       allow create: if isFamily()
@@ -406,6 +425,24 @@ service cloud.firestore {
       allow create: if signedIn();
       allow update: if signedIn() && resource.data.caregiverId == request.auth.uid;
       allow delete: if isAdmin();
+    }
+
+    /** Compliance anti-circunvenção — app cria; e-mail via Cloud Function */
+    match /compliance_events/{id} {
+      allow create: if signedIn()
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.type in [
+          'suspeita_circunvencao_chat',
+          'negocio_fechado_oficial'
+        ];
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.createdBy == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    /** Fila de e-mail (Trigger Email / Functions) — somente backend */
+    match /mail/{id} {
+      allow read, write: if false;
     }
   }
 }

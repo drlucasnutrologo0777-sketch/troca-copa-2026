@@ -1,0 +1,12 @@
+{
+  "name": "baba-on-functions",
+  "description": "Babá ON — compliance e e-mails",
+  "engines": { "node": "20" },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^5.1.1",
+    "nodemailer": "^6.9.15"
+  },
+  "private": true
+}

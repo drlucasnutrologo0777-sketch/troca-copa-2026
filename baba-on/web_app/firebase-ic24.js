@@ -27,6 +27,67 @@ function ic24InitFirebase() {
   return { auth: ic24Auth, db: ic24Db };
 }
 
+const IC24_IDADE_MINIMA = 18;
+
+const IC24_MSG_IDADE_MINIMA =
+  'O Babá ON é só para maiores de 18 anos. Informe uma data de nascimento válida — menores de idade não podem concluir o cadastro.';
+
+/** YYYY-MM-DD (input type=date) ou string ISO — retorna Date local meia-noite ou null. */
+function ic24ParseBirthDate(value) {
+  const s = String(value || '').trim();
+  if (!s) return null;
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) {
+    const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    if (d.getFullYear() !== Number(m[1]) || d.getMonth() !== Number(m[2]) - 1 || d.getDate() !== Number(m[3])) {
+      return null;
+    }
+    return d;
+  }
+  const d = new Date(s);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function ic24IdadeCompletaAnos(birthDate) {
+  const d = birthDate instanceof Date ? birthDate : ic24ParseBirthDate(birthDate);
+  if (!d) return null;
+  const today = new Date();
+  let age = today.getFullYear() - d.getFullYear();
+  const md = today.getMonth() - d.getMonth();
+  if (md < 0 || (md === 0 && today.getDate() < d.getDate())) age -= 1;
+  return age;
+}
+
+/** { ok, message, birthDate } — birthDate = YYYY-MM-DD quando ok */
+function ic24ChecarIdadeMinimaCadastro(dateStr) {
+  const raw = String(dateStr || '').trim();
+  if (!raw) {
+    return { ok: false, message: 'Informe sua data de nascimento.', birthDate: null };
+  }
+  const parsed = ic24ParseBirthDate(raw);
+  if (!parsed) {
+    return { ok: false, message: 'Data de nascimento inválida.', birthDate: null };
+  }
+  const age = ic24IdadeCompletaAnos(parsed);
+  if (age == null || age < IC24_IDADE_MINIMA) {
+    return { ok: false, message: IC24_MSG_IDADE_MINIMA, birthDate: null };
+  }
+  const iso = raw.match(/^\d{4}-\d{2}-\d{2}/) ? raw.slice(0, 10) : parsed.toISOString().slice(0, 10);
+  return { ok: true, message: '', birthDate: iso };
+}
+
+function ic24BirthDateAtendeMinimo(stored) {
+  return ic24ChecarIdadeMinimaCadastro(stored).ok;
+}
+
+function ic24LerDataNascimentoForm() {
+  const el =
+    document.getElementById('cad-nasc') ||
+    document.getElementById('nasc') ||
+    document.getElementById('fam-nasc');
+  return el?.value?.trim() || '';
+}
+
 function ic24AuthError(err) {
   const code = err && err.code ? err.code : '';
   switch (code) {
@@ -204,6 +265,16 @@ async function ic24SalvarBaba() {
   const bio = document.getElementById('cuid-bio')?.value?.trim() || '';
   const specialties = window._cuidSpecs || [];
   const cpf = document.getElementById('cuid-cpf')?.value?.trim() || '';
+  const birthInput = ic24LerDataNascimentoForm();
+  const cgRef = ic24Db.collection('caregivers').doc(uid);
+  const cgSnap = await cgRef.get();
+  const existingBirth = cgSnap.exists ? cgSnap.data()?.birthDate : null;
+  const birthCheck = birthInput
+    ? ic24ChecarIdadeMinimaCadastro(birthInput)
+    : existingBirth
+      ? ic24ChecarIdadeMinimaCadastro(existingBirth)
+      : { ok: false, message: 'Informe sua data de nascimento.' };
+  if (!birthCheck.ok) throw new Error(birthCheck.message);
   const payload = ic24StripUndefined({
     fullName: nome,
     email: ic24Auth.currentUser.email,
@@ -211,13 +282,17 @@ async function ic24SalvarBaba() {
     bio,
     specialties,
     cpf: cpf || null,
-    approved: false,
+    birthDate: birthCheck.birthDate,
     rating: 4.5,
-    kycStatus: 'incomplete',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
   if (!cpf) delete payload.cpf;
-  await ic24Db.collection('caregivers').doc(uid).set(payload, { merge: true });
+  // Só na criação: pending — nunca sobrescrever approved=true da equipe ao editar cadastro
+  if (!cgSnap.exists) {
+    payload.approved = false;
+    payload.kycStatus = 'incomplete';
+  }
+  await cgRef.set(payload, { merge: true });
   await ic24Db.collection('users').doc(uid).set(
     {
       email: String(ic24Auth.currentUser.email || '')
@@ -251,6 +326,8 @@ async function ic24SalvarFamilia() {
   const nome = document.getElementById('fam-nome').value.trim();
   const tel = document.getElementById('fam-tel').value.trim();
   const addr = ic24EnderecoMap('fam');
+  const birthCheck = ic24ChecarIdadeMinimaCadastro(ic24LerDataNascimentoForm());
+  if (!birthCheck.ok) throw new Error(birthCheck.message);
   await ic24Db.collection('clients').doc(uid).set(
     {
       fullName: nome,
@@ -258,6 +335,7 @@ async function ic24SalvarFamilia() {
         .trim()
         .toLowerCase(),
       phone: tel,
+      birthDate: birthCheck.birthDate,
       ...addr,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     },
@@ -388,6 +466,9 @@ async function ic24SendChatMessage(chatId, text) {
     lastMessage: text.trim(),
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
+  if (typeof ic24ComplianceScanChatMessage === 'function') {
+    ic24ComplianceScanChatMessage(chatId, text).catch(() => {});
+  }
 }
 
 async function ic24MatchChatUnlocked(chatId) {
@@ -446,6 +527,13 @@ function ic24AvaliarCadastroBaba(d, docsMap) {
   if (!d.street || !d.number || cep.length !== 8 || !d.city || !d.state) {
     return { complete: false, screen: 'baba-etapa1', message: 'Complete seu endereço para continuar o cadastro' };
   }
+  if (!ic24BirthDateAtendeMinimo(d.birthDate)) {
+    return {
+      complete: false,
+      screen: 'baba-etapa1',
+      message: d.birthDate ? IC24_MSG_IDADE_MINIMA : 'Informe sua data de nascimento (18 anos ou mais)',
+    };
+  }
   if (!(d.bio || '').trim()) {
     return { complete: false, screen: 'baba-etapa2', message: 'Conte sobre você e suas especialidades' };
   }
@@ -475,6 +563,13 @@ function ic24AvaliarCadastroFamilia(d) {
   const cep = String(d.cep || '').replace(/\D/g, '');
   if (!(d.fullName || '').trim() || !d.street || !d.number || cep.length !== 8 || !d.city) {
     return { complete: false, screen: 'cadastro-familia', message: 'Complete seu cadastro de mãe/pai' };
+  }
+  if (!ic24BirthDateAtendeMinimo(d.birthDate)) {
+    return {
+      complete: false,
+      screen: 'cadastro-familia',
+      message: d.birthDate ? IC24_MSG_IDADE_MINIMA : 'Informe sua data de nascimento (18 anos ou mais)',
+    };
   }
   return { complete: true, screen: 'mae-painel', message: '' };
 }

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Babá ON</title>
+  <meta http-equiv="refresh" content="0;url=https://apps.apple.com/us/app/idoso-care-24-horas/idBABAON_ASC">
+</head>
+<body>
+  <p>Redirecionando para a App Store…</p>
+  <p><a id="link" href="https://apps.apple.com/us/app/idoso-care-24-horas/idBABAON_ASC">Baixar Babá ON</a></p>
+  <script>
+    (function () {
+      var APP = 'https://apps.apple.com/us/app/idoso-care-24-horas/idBABAON_ASC';
+      var params = new URLSearchParams(location.search);
+      var code = (params.get('c') || 'IC24-DIRECT').slice(0, 32);
+      var type = params.get('t') === 'open' ? 'open' : 'click';
+      var projectId = 'baba-on-3634a';
+      var apiKey = 'AIzaSyAXE24i5_5R9vNSSDMJIcifEGqYAdGZnPs';
+      var docId = Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+      var url = 'https://firestore.googleapis.com/v1/projects/' + projectId +
+        '/databases/(default)/documents/outreach_events?documentId=' + encodeURIComponent(docId) +
+        '&key=' + apiKey;
+      var body = {
+        fields: {
+          code: { stringValue: code },
+          type: { stringValue: type },
+          ts: { timestampValue: new Date().toISOString() },
+          path: { stringValue: location.pathname + location.search },
+        },
+      };
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        keepalive: true,
+      }).catch(function () {});
+      if (type === 'click') {
+        location.replace(APP);
+      }
+    })();
+  </script>
+</body>
+</html>

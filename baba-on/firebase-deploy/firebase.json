@@ -9,22 +9,21 @@
   "storage": {
     "rules": "storage.rules"
   },
+  "functions": {
+    "source": "functions",
+    "codebase": "baba-on"
+  },
   "hosting": {
     "public": "public",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      { "source": "/o", "destination": "/o.html" }
+    ],
     "headers": [
       {
         "source": "**/*.@(js|css|html)",
         "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
       }
-    ],
-    "rewrites": [
-      { "source": "/curriculo", "destination": "/curriculo.html" },
-      { "source": "/privacidade", "destination": "/privacidade.html" },
-      { "source": "/termos", "destination": "/termos.html" },
-      { "source": "/suporte", "destination": "/suporte.html" },
-      { "source": "/exclusao-conta", "destination": "/exclusao-conta.html" },
-      { "source": "/legal", "destination": "/legal.html" }
     ]
   }
 }

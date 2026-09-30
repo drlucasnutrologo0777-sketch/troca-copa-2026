@@ -5,11 +5,36 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#134175"/>
 <title>Babá ON</title>
-<!-- Babá ON iOS build 1.0.0+11 — fix cadastro mãe/pai -->
+<!-- Baba ON iOS build 1.0.0+18 -->
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" href="favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="logo.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<!-- Boot nav ANTES do Firebase CDN — senão Entrar no iPad parece morto enquanto CDN carrega -->
+<script>
+(function(){
+  function show(id){
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('on'); });
+    var el=document.getElementById(id);
+    if(el) el.classList.add('on');
+    var btn=document.getElementById('btnIrLogin');
+    if(btn) btn.style.display='none';
+    try{ window.scrollTo(0,0); }catch(_){}
+  }
+  window.show=show;
+  window.irWelcome=function(){ show('welcome'); };
+  window.irLogin=function(){ show('login'); };
+  window.irEscolhaPerfil=function(){ show('escolha-perfil'); };
+  window.toast=window.toast||function(msg){
+    var t=document.getElementById('toast');
+    if(!t){ try{ console.log(msg); }catch(_){ } return; }
+    t.textContent=msg; t.classList.add('on');
+    clearTimeout(window._toastT);
+    window._toastT=setTimeout(function(){ t.classList.remove('on'); },2800);
+  };
+  window.ic24BootNav=function(){ /* noop — marca boot ok */ };
+})();
+</script>
 <style>
 :root{
   --p:#134175;--pd:#0F3559;--pl:#D6EBFA;
@@ -169,6 +194,28 @@ html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--so
 .menu-topic b{display:block;font-size:15px;color:var(--t)}
 .menu-topic small{display:block;font-size:12px;color:var(--m);margin-top:2px;line-height:1.35}
 .menu-topic .menu-arr{margin-left:auto;color:var(--m);font-size:20px}
+.menu-topic.menu-alerta{
+  border:2px solid var(--p);
+  background:var(--pl);
+  box-shadow:0 0 0 3px rgba(14,116,184,.12);
+  animation:alertaPulse 1.6s ease-in-out infinite;
+}
+.menu-topic.menu-alerta .menu-arr{color:var(--p);font-weight:700}
+.alerta-acao{
+  border:2px solid var(--p);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:14px;
+  background:linear-gradient(180deg,var(--pl) 0%,#fff 70%);
+  animation:alertaPulse 1.6s ease-in-out infinite;
+}
+.alerta-acao .alerta-titulo{font-size:17px;font-weight:800;color:var(--pd);margin:0 0 6px;line-height:1.25}
+.alerta-acao .alerta-texto{font-size:14px;color:var(--t);margin:0 0 14px;line-height:1.4}
+.alerta-acao .btn{animation:none}
+@keyframes alertaPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(14,116,184,.28)}
+  50%{box-shadow:0 0 0 6px rgba(14,116,184,.08)}
+}
 .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .chip{padding:8px 12px;border:1px solid var(--line);border-radius:999px;font-size:13px;background:var(--bg);cursor:pointer;font-family:inherit}
 .chip.on{background:var(--p);color:#fff;border-color:var(--p)}
@@ -240,9 +287,9 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
         <div class="brand">Babá ON</div>
         <p class="brand-sub">Mães, pais e babás com segurança e confiança</p>
       </div>
-      <button class="btn btn-p" type="button" onclick="irLogin()">Entrar</button>
-      <button class="btn btn-o" type="button" style="margin-top:12px" onclick="irEscolhaPerfil()">Criar conta</button>
-      <p class="legal-foot">Ao continuar, você concorda com os <a href="https://baba-on-3634a.web.app/termos.html" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="https://baba-on-3634a.web.app/privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>. <a href="https://baba-on-3634a.web.app/exclusao-conta.html" target="_blank" rel="noopener">Excluir conta</a></p>
+      <button class="btn btn-p" type="button" id="btnWelcomeEntrar" onclick="window.irLogin&&window.irLogin()">Entrar</button>
+      <button class="btn btn-o" type="button" style="margin-top:12px" id="btnWelcomeCriar" onclick="window.irEscolhaPerfil&&window.irEscolhaPerfil()">Criar conta</button>
+      <p class="legal-foot">Ao continuar, você concorda com os <a href="https://baba-on-3634a.web.app/termos.html" rel="noopener">Termos de Uso</a> e a <a href="https://baba-on-3634a.web.app/privacidade.html" rel="noopener">Política de Privacidade</a>. <a href="https://baba-on-3634a.web.app/exclusao-conta.html" rel="noopener">Excluir conta</a></p>
     </div>
   </section>
 
@@ -264,7 +311,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
         <a href="#" onclick="esqueciSenha();return false">Esqueceu a senha?</a>
       </div>
 
-      <button class="btn btn-p" type="button" onclick="entrar()">Entrar</button>
+      <button class="btn btn-p" type="button" id="btnLoginEntrar" onclick="if(typeof entrar==='function'){entrar();}else{toast('Carregando…');}">Entrar</button>
 
       <button class="btn btn-g" type="button" style="margin-top:10px" onclick="irFamiliaPainel()">Demo: área do contratante</button>
 
@@ -310,7 +357,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <h2 id="criar-conta-titulo">Criar conta</h2>
     </div>
     <div class="pad">
-      <p class="hint" id="criar-conta-sub">E-mail e senha para acessar o app.</p>
+      <p class="hint" id="criar-conta-sub">E-mail e senha para acessar o app. <strong>Idade mínima: 18 anos.</strong></p>
       <label class="lbl">Nome completo</label>
       <input class="inp" id="acc-nome" placeholder="Seu nome"/>
       <label class="lbl">E-mail</label>
@@ -352,6 +399,9 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
         <div><label class="lbl">Cidade</label><input class="inp" id="cad-cidade" placeholder="Cidade" style="margin:0"/></div>
         <div><label class="lbl">UF</label><input class="inp" id="cad-uf" placeholder="MG" maxlength="2" style="margin:0"/></div>
       </div>
+      <label class="lbl" style="margin-top:14px">Data de nascimento</label>
+      <input class="inp" id="cad-nasc" type="date" max="" aria-describedby="cad-nasc-hint"/>
+      <p class="hint" id="cad-nasc-hint" style="margin-top:6px">É necessário ter <strong>18 anos completos</strong> para ser babá no app.</p>
       <button class="btn btn-p" type="button" style="margin-top:16px" onclick="irBabaEtapa2()">Continuar — Sobre você</button>
     </div>
   </section>
@@ -468,7 +518,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
     <div class="pad">
       <p class="step">Responsável + criança</p>
       <h1 class="h1">Preciso de babá</h1>
-      <p class="hint">Cadastro para mãe ou pai que busca babá para a criança.</p>
+      <p class="hint">Cadastro para mãe ou pai que busca babá para a criança. Responsável com <strong>18 anos ou mais</strong>.</p>
 
       <label class="lbl">Seu nome completo</label>
       <input class="inp" id="fam-nome" placeholder="Nome do responsável"/>
@@ -484,6 +534,10 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
 
       <label class="lbl">Telefone</label>
       <input class="inp" id="fam-tel" placeholder="(00) 00000-0000"/>
+
+      <label class="lbl">Data de nascimento (responsável)</label>
+      <input class="inp" id="fam-nasc" type="date" max="" aria-describedby="fam-nasc-hint"/>
+      <p class="hint" id="fam-nasc-hint" style="margin-top:6px">Menores de 18 anos não podem concluir o cadastro.</p>
 
       <label class="lbl">CEP</label>
       <div class="row2" style="margin-bottom:14px">
@@ -523,7 +577,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <p class="step">Etapa 1 de 2</p>
       <div class="progress"><i class="done"></i><i></i></div>
       <h1 class="h1">Seus dados</h1>
-      <p class="hint">Preencha suas informações pessoais. Todos os campos são obrigatórios.</p>
+      <p class="hint">Preencha suas informações pessoais. Todos os campos são obrigatórios. <strong>Idade mínima: 18 anos.</strong></p>
 
       <label class="photo-pick" id="fotoBox">
         <img id="fotoPreview" alt="" style="display:none"/>
@@ -565,7 +619,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <div class="row2" style="margin-top:14px">
         <div>
           <label class="lbl">Data de nascimento</label>
-          <input class="inp" id="nasc" type="date" style="margin:0"/>
+          <input class="inp" id="nasc" type="date" max="" style="margin:0"/>
         </div>
         <div>
           <label class="lbl">Sexo</label>
@@ -684,7 +738,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <button class="btn btn-o" type="button" style="margin-top:12px" onclick="solicitarCurriculoContratante()">Abrir currículo completo</button>
       <div class="note" id="pesquisa-curriculo-link" style="display:none;margin-top:12px;font-size:12px;word-break:break-all"></div>
       <button class="btn btn-p" type="button" style="margin-top:12px" onclick="abrirChatNegocio()">Abrir chat</button>
-      <p class="hint" style="margin-top:12px;text-align:center;font-size:12px">Chat liberado somente após fechar negócio em Minhas ofertas.</p>
+      <p class="hint" style="margin-top:12px;text-align:center;font-size:12px">Chat liberado somente após fechar negócio em Propostas recebidas.</p>
     </div>
   </section>
 
@@ -704,9 +758,21 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
           </div>
         </div>
       </div>
+      <div id="fam-alerta-propostas" style="display:none;margin-bottom:12px"></div>
+      <div id="fam-alerta-negocio" style="display:none;margin-bottom:12px"></div>
+      <button type="button" class="menu-topic" id="fam-menu-propostas" onclick="show('mae-ofertas')">
+        <span class="menu-ic">📬</span>
+        <div><b>Propostas recebidas</b><small id="fam-ofertas-menu-sub">Quando a babá aceitar, aparece aqui — toque para fechar e liberar o chat</small></div>
+        <span class="menu-arr" id="fam-ofertas-badge">›</span>
+      </button>
       <button type="button" class="menu-topic" onclick="show('mae-proximos')">
         <span class="menu-ic">📍</span>
-        <div><b>Babás próximos</b><small>Disponíveis hoje — cruza com plantão oferecido</small></div>
+        <div><b>Babás próximos</b><small>Ordenadas por distância → data/hora → preço</small></div>
+        <span class="menu-arr">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="show('mae-babas-destino')">
+        <span class="menu-ic">✈️</span>
+        <div><b>Babás que vêm até aqui</b><small>Disponíveis para trabalhar na sua cidade ou região</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('mae-urgente')">
@@ -714,25 +780,20 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
         <div><b>Plantão urgente</b><small>Publicar necessidade imediata — ofertas cruzadas</small></div>
         <span class="menu-arr">›</span>
       </button>
-      <button type="button" class="menu-topic" onclick="show('mae-ofertas')">
-        <span class="menu-ic">📋</span>
-        <div><b>Minhas ofertas de serviço</b><small>Diária, semanal, quinzenal — propostas dos babás</small></div>
-        <span class="menu-arr">›</span>
-      </button>
       <button type="button" class="menu-topic" onclick="abrirChatNegocio()">
         <span class="menu-ic">💬</span>
-        <div><b>Chat com babá</b><small>Liberado após fechar negócio</small></div>
-        <span class="menu-arr">›</span>
+        <div><b>Chat com babá</b><small id="fam-chat-menu-sub">Liberado após os dois fecharem o negócio</small></div>
+        <span class="menu-arr" id="fam-chat-badge">›</span>
       </button>
-      <button type="button" class="menu-topic" onclick="show('mae-ponto')">
+      <button type="button" class="menu-topic" onclick="abrirPontoFamilia()">
         <span class="menu-ic">🕐</span>
-        <div><b>Cartão de ponto</b><small>Confirmar entrada e saída da babá após o plantão</small></div>
-        <span class="menu-arr">›</span>
+        <div><b>Cartão de ponto</b><small id="fam-ponto-menu-sub">Liberado após fechar o negócio</small></div>
+        <span class="menu-arr" id="fam-ponto-badge">›</span>
       </button>
-      <button type="button" class="menu-topic" onclick="show('mae-diario')">
+      <button type="button" class="menu-topic" onclick="abrirDiarioFamilia()">
         <span class="menu-ic">📝</span>
-        <div><b>Assinar diário da criança</b><small>Sumário diário da babá — ciência da família</small></div>
-        <span class="menu-arr">›</span>
+        <div><b>Diário da criança</b><small id="fam-diario-menu-sub">Liberado após fechar o negócio</small></div>
+        <span class="menu-arr" id="fam-diario-badge">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('mae-pagamentos')">
         <span class="menu-ic">💳</span>
@@ -776,7 +837,17 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
   <section class="screen" id="mae-proximos">
     <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Babás próximos</h2></div>
     <div class="pad">
-      <p class="hint">Babás com <strong>plantão hoje</strong> ativo — cruzamento com disponibilidade publicada.</p>
+      <p class="hint">Prioridade de fechamento: <strong>1º distância</strong>, <strong>2º data/hora</strong>, <strong>3º preço</strong>. Informe quando precisa — a lista reordena.</p>
+      <div class="row2" style="margin-bottom:10px">
+        <div>
+          <label class="lbl" style="font-size:11px">Data do serviço</label>
+          <input class="inp" id="prox-filtro-data" type="date" style="margin:0" onchange="carregarProximosFamilia()"/>
+        </div>
+        <div>
+          <label class="lbl" style="font-size:11px">Hora início</label>
+          <input class="inp" id="prox-filtro-hora" type="time" value="07:00" style="margin:0" onchange="carregarProximosFamilia()"/>
+        </div>
+      </div>
       <div id="fam-proximos-list"></div>
     </div>
   </section>
@@ -791,6 +862,17 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
     <div class="pad">
       <input type="hidden" id="proposta-cuid-id"/>
       <p class="hint" id="proposta-cuid-nome"></p>
+      <p class="hint" style="margin-top:-4px">Data e hora são <strong>obrigatórias</strong> para fechar o serviço.</p>
+      <div class="row2">
+        <div>
+          <label class="lbl" style="font-size:11px">Data do serviço *</label>
+          <input class="inp" id="proposta-data" type="date" style="margin:0" required/>
+        </div>
+        <div>
+          <label class="lbl" style="font-size:11px">Hora início *</label>
+          <input class="inp" id="proposta-hora" type="time" value="07:00" style="margin:0" required/>
+        </div>
+      </div>
       <label class="lbl">Valor diária (R$)</label>
       <input class="inp" id="proposta-valor" type="number" placeholder="Ex.: 250"/>
       <label class="lbl">Tipo de cuidado / criança</label>
@@ -827,10 +909,11 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
   </section>
 
   <section class="screen" id="mae-ofertas">
-    <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Minhas ofertas</h2></div>
+    <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Propostas recebidas</h2></div>
     <div class="pad">
-      <p class="hint">Propostas dos babás: aceitar, recusar ou negociar.</p>
+      <p class="hint">Aqui entram os <strong>aceites da babá</strong> (e contra-propostas). Toque em <strong>Fechar negócio</strong> para liberar chat, cartão de ponto e diário da criança para os dois.</p>
       <div id="fam-notificacoes-list"></div>
+      <p class="step" style="margin-top:16px">Suas ofertas enviadas</p>
       <div id="fam-ofertas-list"></div>
       <button class="btn btn-o" type="button" style="margin-top:12px" onclick="show('mae-urgente')">+ Nova oferta de serviço</button>
     </div>
@@ -839,16 +922,22 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
   <section class="screen" id="mae-ponto">
     <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Cartão de ponto</h2></div>
     <div class="pad">
+      <div id="fam-ponto-lock" style="display:none" class="note">Cartão de ponto bloqueado — feche o negócio em Propostas recebidas primeiro.</div>
+      <div id="fam-ponto-body">
       <p class="hint">Confirme entrada, intervalo e saída registrados pela babá após o plantão.</p>
       <div id="fam-ponto-list"></div>
+      </div>
     </div>
   </section>
 
   <section class="screen" id="mae-diario">
     <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Diário da criança</h2></div>
     <div class="pad">
+      <div id="fam-diario-lock" style="display:none" class="note">Diário bloqueado — feche o negócio em Propostas recebidas primeiro.</div>
+      <div id="fam-diario-body">
       <p class="hint">Leia o sumário da babá e assine eletronicamente.</p>
       <div id="fam-diario-list"></div>
+      </div>
     </div>
   </section>
 
@@ -964,7 +1053,8 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <h2>Chat do match</h2>
     </div>
     <div class="pad" style="display:flex;flex-direction:column;min-height:70vh">
-      <div class="note" id="chatLockNote">Chat bloqueado — feche o negócio com a babá em Minhas ofertas para conversar.</div>
+      <div class="note" id="chatLockNote">Chat bloqueado — feche o negócio com a babá em Propostas recebidas para conversar.</div>
+      <p class="hint" style="font-size:11px;margin-top:8px">Negócios devem ser fechados no app. Em suspeita de combinação fora da plataforma, família e babá recebem e-mail automático com o registro da transação no sistema.</p>
       <div class="chat-msgs" id="chatMsgs"></div>
       <div class="chat-bar">
         <input class="inp" id="chatInput" placeholder="Digite sua mensagem..." style="margin:0"/>
@@ -992,8 +1082,29 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
         </div>
       </div>
       <div id="cuid-notificacoes" style="display:none;margin-bottom:12px"></div>
+      <div id="cuid-alerta-negocio" style="display:none;margin-bottom:12px"></div>
 
       <div class="menu-grid">
+      <button type="button" class="menu-topic" id="baba-menu-propostas" onclick="show('baba-propostas')" style="border-color:var(--p)">
+        <span class="menu-ic">📬</span>
+        <div><b>Propostas recebidas</b><small id="baba-propostas-menu-sub">Propostas do pai/mãe para você aceitar</small></div>
+        <span class="menu-arr" id="baba-propostas-badge">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="abrirChatNegocio()">
+        <span class="menu-ic">💬</span>
+        <div><b>Chat com contratante</b><small id="baba-chat-menu-sub">Liberado após os dois fecharem o negócio</small></div>
+        <span class="menu-arr" id="baba-chat-badge">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="abrirPontoBaba()">
+        <span class="menu-ic">🕐</span>
+        <div><b>Cartão de ponto</b><small id="baba-ponto-menu-sub">Liberado após fechar o negócio</small></div>
+        <span class="menu-arr" id="baba-ponto-badge">›</span>
+      </button>
+      <button type="button" class="menu-topic" onclick="abrirDiarioBaba()">
+        <span class="menu-ic">📝</span>
+        <div><b>Diário da criança</b><small id="baba-diario-menu-sub">Liberado após fechar o negócio</small></div>
+        <span class="menu-arr" id="baba-diario-badge">›</span>
+      </button>
       <button type="button" class="menu-topic" onclick="show('baba-curriculo')">
         <span class="menu-ic">📋</span>
         <div><b>Currículo Lates</b><small>Dados, certificados e formação — enviar ao contratante</small></div>
@@ -1019,24 +1130,19 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
         <div><b>Disponibilizar agenda</b><small>Nova agenda — dias, horários e valor da diária</small></div>
         <span class="menu-arr">›</span>
       </button>
-      <button type="button" class="menu-topic" onclick="show('baba-ponto')">
-        <span class="menu-ic">🕐</span>
-        <div><b>Cartão de ponto</b><small>Entrada, saída e intervalo — confirmação do patrão</small></div>
+      <button type="button" class="menu-topic" onclick="novoAnuncioOutroLugar()">
+        <span class="menu-ic">✈️</span>
+        <div><b>Trabalhar em outro lugar</b><small>Publicar país, estado ou cidade — período e diárias</small></div>
         <span class="menu-arr">›</span>
       </button>
-      <button type="button" class="menu-topic" onclick="show('baba-diario')">
-        <span class="menu-ic">📝</span>
-        <div><b>Diário da criança</b><small>Sumário diário, assinatura e repasse à próxima babá</small></div>
+      <button type="button" class="menu-topic" onclick="show('baba-minhas-ofertas')">
+        <span class="menu-ic">📂</span>
+        <div><b>Minhas ofertas</b><small>Ofertas em outro lugar — ver, encerrar ou excluir</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="show('baba-ofertas')">
         <span class="menu-ic">🔔</span>
-        <div><b>Ofertas de serviço</b><small>Plantões urgentes hoje e outras oportunidades</small></div>
-        <span class="menu-arr">›</span>
-      </button>
-      <button type="button" class="menu-topic" onclick="abrirChatNegocio()">
-        <span class="menu-ic">💬</span>
-        <div><b>Chat com contratante</b><small>Liberado após fechar negócio</small></div>
+        <div><b>Ofertas abertas (geral)</b><small>Plantões urgentes e oportunidades públicas</small></div>
         <span class="menu-arr">›</span>
       </button>
       <button type="button" class="menu-topic" onclick="novoPlantaoForm()">
@@ -1215,6 +1321,83 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
     </div>
   </section>
 
+  <!-- ========== MINHAS OFERTAS (babá) ========== -->
+  <section class="screen" id="baba-minhas-ofertas">
+    <div class="topbar">
+      <button type="button" onclick="show('baba-painel')">←</button>
+      <h2>Minhas ofertas</h2>
+    </div>
+    <div class="pad">
+      <p class="hint">O que <strong>você publicou</strong>. Ofertas de famílias (geral) continuam em <strong>Ofertas abertas</strong>; propostas diretas em <strong>Propostas recebidas</strong>.</p>
+      <p class="step">Ofertas em outro lugar</p>
+      <p class="hint" style="margin-top:-4px">Anúncios de viagem (outro estado ou país). Você pode <strong>excluir</strong> quando quiser — somem para as famílias.</p>
+      <div id="minhas-ofertas-destino"></div>
+      <button class="btn btn-p" type="button" style="margin-top:16px" onclick="novoAnuncioOutroLugar()">+ Nova oferta em outro lugar</button>
+    </div>
+  </section>
+
+  <section class="screen" id="baba-outro-lugar-form">
+    <div class="topbar">
+      <button type="button" onclick="show('baba-minhas-ofertas')">←</button>
+      <h2>Destino do trabalho</h2>
+    </div>
+    <div class="pad">
+      <p class="hint">Informe onde você quer trabalhar. <strong>CEP</strong> e <strong>número</strong> são opcionais (ajudam no mapa interno).</p>
+      <label class="lbl">País *</label>
+      <input class="inp" id="dest-pais" placeholder="Ex.: Brasil, Estados Unidos"/>
+      <label class="lbl">Estado *</label>
+      <input class="inp" id="dest-estado" placeholder="Ex.: MG, SP, Florida"/>
+      <label class="lbl">Cidade *</label>
+      <input class="inp" id="dest-cidade" placeholder="Ex.: São Paulo, Miami"/>
+      <label class="lbl">CEP (opcional)</label>
+      <input class="inp" id="dest-cep" placeholder="00000-000" maxlength="12" oninput="maskCep(this)"/>
+      <label class="lbl">Número (opcional)</label>
+      <input class="inp" id="dest-numero" placeholder="Ex.: 1200 — referência de rua"/>
+      <label class="lbl">Período — data início e fim *</label>
+      <div class="row2">
+        <div><label class="lbl" style="font-size:11px">Início</label><input class="inp" id="dest-data-inicio" type="date"/></div>
+        <div><label class="lbl" style="font-size:11px">Fim</label><input class="inp" id="dest-data-fim" type="date"/></div>
+      </div>
+      <label class="lbl">Quantidade de diárias desejadas *</label>
+      <input class="inp" id="dest-diarias" type="number" min="1" value="30"/>
+      <label class="lbl">Valor da diária referência (R$ ou moeda combinada) *</label>
+      <input class="inp" id="dest-valor" type="number" min="0" step="1" placeholder="Ex.: 250"/>
+      <label class="lbl">Observações (opcional)</label>
+      <textarea class="inp" id="dest-notas" rows="3" placeholder="Hospedagem, idiomas, documentos…"></textarea>
+      <button class="btn btn-p" type="button" style="margin-top:12px" onclick="publicarAnuncioOutroLugar()">Publicar anúncio</button>
+    </div>
+  </section>
+
+  <section class="screen" id="mae-babas-destino">
+    <div class="topbar"><button type="button" onclick="show('mae-painel')">←</button><h2>Babás que vêm até aqui</h2></div>
+    <div class="pad">
+      <p class="hint" id="dest-fam-hint">Babás que anunciaram trabalho na sua cidade/estado (cadastro). Fechamento igual: proposta → aceite → fechar negócio.</p>
+      <label class="toggle-row" style="margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        <input type="checkbox" id="dest-fam-todos" onchange="carregarBabasDestinoFamilia()"/>
+        <span><b>Mostrar todos os anúncios abertos</b><small style="display:block;color:var(--m)">Desmarque para filtrar só compatíveis com seu endereço</small></span>
+      </label>
+      <div id="fam-destino-list"></div>
+    </div>
+  </section>
+
+  <!-- ========== PROPOSTAS RECEBIDAS (babá) ========== -->
+  <section class="screen" id="baba-propostas">
+    <div class="topbar">
+      <button type="button" onclick="show('baba-painel')">←</button>
+      <h2>Propostas recebidas</h2>
+    </div>
+    <div class="pad">
+      <div id="ofertas-taxa-bloqueio-propostas"></div>
+      <p class="hint">Propostas que o pai/mãe enviou <strong>para você</strong>. Ao aceitar, ele vê o aceite em <strong>Propostas recebidas</strong> e fecha o negócio — aí liberam chat, ponto e diário para os dois.</p>
+      <div id="baba-negocio-liberado-box" style="display:none;margin-bottom:12px"></div>
+      <p class="step">Novas propostas</p>
+      <div id="propostas-recebidas-list"></div>
+      <p class="step" style="margin-top:16px">Aguardando o pai/mãe confirmar</p>
+      <div id="propostas-aguardando-familia"></div>
+      <button class="btn btn-o" type="button" style="margin-top:16px" onclick="show('baba-ofertas')">Ver também ofertas abertas (geral)</button>
+    </div>
+  </section>
+
   <!-- ========== CARTÃO DE PONTO ========== -->
   <section class="screen" id="baba-ponto">
     <div class="topbar">
@@ -1222,6 +1405,8 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <h2>Cartão de ponto</h2>
     </div>
     <div class="pad">
+      <div id="baba-ponto-lock" style="display:none" class="note">Cartão de ponto bloqueado — feche o negócio com a família em Propostas recebidas.</div>
+      <div id="baba-ponto-body">
       <p class="hint">Registre entrada, intervalo (saída/retorno), saída final e observações do dia.</p>
       <div class="ponto-row"><label>Entrada</label><button type="button" class="btn btn-o" style="height:44px" onclick="registrarPonto('entrada')">▶ Registrar entrada</button></div>
       <div class="ponto-row"><label>Saída intervalo</label><button type="button" class="btn btn-o" style="height:44px" onclick="registrarPonto('intervalo_saida')">⏸ Saída p/ intervalo</button></div>
@@ -1236,6 +1421,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <div class="note">Status: <span id="ponto-status">Aguardando entrada</span></div>
       <div class="ponto-log" id="ponto-log">Nenhum registro hoje.</div>
       <button class="btn btn-s" type="button" style="margin-top:12px" onclick="salvarObsPonto()">Salvar observações no registro</button>
+      </div>
     </div>
   </section>
 
@@ -1246,6 +1432,8 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <h2>Diário da criança</h2>
     </div>
     <div class="pad">
+      <div id="baba-diario-lock" style="display:none" class="note">Diário bloqueado — feche o negócio com a família primeiro.</div>
+      <div id="baba-diario-body">
       <p class="hint">Sumário dos cuidados do dia. A família acessa no menu dela e pode repassar à próxima babá.</p>
       <label class="lbl">Sumário de cuidados — hoje</label>
       <textarea class="inp" id="diario-texto" rows="6" style="height:auto;padding:12px 14px" placeholder="Medicação, alimentação, humor, mobilidade, observações…"></textarea>
@@ -1255,6 +1443,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       </div>
       <button class="btn btn-p" type="button" style="margin-top:12px" onclick="salvarDiario()">Salvar diário</button>
       <button class="btn btn-s" type="button" style="margin-top:8px" onclick="enviarDiarioProximoBaba()">Enviar à próxima babá</button>
+      </div>
     </div>
   </section>
 
@@ -1262,13 +1451,14 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
   <section class="screen" id="baba-ofertas">
     <div class="topbar">
       <button type="button" onclick="show('baba-painel')">←</button>
-      <h2>Ofertas de serviço</h2>
+      <h2>Ofertas abertas</h2>
     </div>
     <div class="pad">
       <div id="ofertas-taxa-bloqueio"></div>
+      <p class="hint">Ofertas públicas. Propostas enviadas <strong>direto para você</strong> ficam em <strong>Propostas recebidas</strong>.</p>
       <p class="step">Urgente — hoje</p>
       <div id="ofertas-urgentes"></div>
-      <p class="step" style="margin-top:16px">Ofertas de famílias (diária, semanal, quinzenal)</p>
+      <p class="step" style="margin-top:16px">Ofertas abertas de famílias</p>
       <div id="ofertas-outras"></div>
       <div id="oferta-acao-box" style="display:none;margin-top:12px" class="cv">
         <p class="lbl" id="oferta-acao-titulo">Responder oferta</p>
@@ -1472,7 +1662,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       </div>
       <div class="cv" id="taxa-detalhe" style="margin-top:12px"></div>
       <p class="step" style="margin-top:16px">Pagar taxa pendente</p>
-      <p class="hint">Pagamento via <strong>Apple App Store</strong> — produto consumível <code>bo_taxa_manutencao</code> (US$ 1,99 por diária; várias compras se o trabalho tiver várias diárias).</p>
+      <p class="hint">Pagamento via <strong>Apple App Store</strong> — produto consumível <code>bo_taxa_manutencao</code> (US$ 1,99 por diária; várias compras se o trabalho tiver várias diárias). Conta demo de revisão já vem com taxa pendente.</p>
       <button class="btn btn-p" type="button" id="taxa-pagar-btn" style="margin-top:12px" onclick="pagarTaxaPlataforma()">Pagar taxa via App Store</button>
       <div class="note" style="margin-top:12px;font-size:12px">
         Histórico de taxas pagas via App Store (<code>bo_taxa_manutencao</code>).
@@ -1527,7 +1717,10 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
       <button type="button" onclick="fecharCurriculoViewer()">←</button>
       <h2>Currículo Lates</h2>
     </div>
-    <iframe id="curriculo-iframe" title="Currículo" style="width:100%;flex:1;border:none;min-height:calc(100vh - 56px);background:#fff"></iframe>
+    <div class="pad" id="curriculo-viewer-body" style="overflow-y:auto;flex:1;min-height:calc(100vh - 56px)">
+      <p class="hint">Carregando currículo…</p>
+    </div>
+    <iframe id="curriculo-iframe" title="Currículo" style="display:none;width:100%;flex:1;border:none;min-height:calc(100vh - 56px);background:#fff"></iframe>
   </section>
 
   <!-- ========== SUCESSO ========== -->
@@ -1535,7 +1728,7 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
     <div class="pad" style="text-align:center;padding-top:80px">
       <div class="logo" style="margin-bottom:24px">✓</div>
       <h1 class="h1">Cadastro enviado</h1>
-      <p class="hint">Seus documentos serão analisados pela equipe em até 48 horas. Você receberá um e-mail quando for aprovado.</p>
+      <p class="hint">Com documentos completos, seu perfil é <strong>aprovado automaticamente</strong> e entra na busca das famílias. Ative <strong>Oferecer plantão hoje</strong> quando quiser aparecer como disponível.</p>
       <button class="btn btn-p" type="button" onclick="irLogin()">Voltar ao login</button>
     </div>
   </section>
@@ -1555,10 +1748,13 @@ code,a{word-break:break-word;overflow-wrap:anywhere}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
 <script src="pix.js"></script>
 <script src="firebase-ic24.js"></script>
+<script src="ic24-disponibilidade.js"></script>
+<script src="bo-geo.js"></script>
 <script src="ic24-curriculo.js"></script>
 <script src="ic24-ofertas.js"></script>
+<script src="ic24-destino.js"></script>
 <script src="ic24-cobranca.js"></script>
-<script src="ic24-disponibilidade.js"></script>
+<script src="ic24-compliance.js"></script>
 <script>
 let _chatUnsub=null;
 window._cuidSpecs=[];
@@ -1653,6 +1849,20 @@ async function salvarConta(){
     show('baba-etapa1');
   }catch(e){ toast(ic24AuthError(e)||e.message||'Erro ao criar conta'); }
 }
+function ic24AplicarMaxDataNascimento(){
+  const d=new Date();
+  d.setFullYear(d.getFullYear()-18);
+  const max=d.toISOString().slice(0,10);
+  ['cad-nasc','nasc','fam-nasc'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.max=max;
+  });
+}
+function validarIdadeCadastroForm(){
+  const check=ic24ChecarIdadeMinimaCadastro(typeof ic24LerDataNascimentoForm==='function'?ic24LerDataNascimentoForm():'');
+  if(!check.ok){ toast(check.message); return false; }
+  return true;
+}
 function validarEnderecoCad(){
   const num=document.getElementById('cad-num').value.trim();
   const cep=(document.getElementById('cad-cep').value||'').replace(/\D/g,'');
@@ -1661,6 +1871,7 @@ function validarEnderecoCad(){
   if(!num){ toast('Informe o número do endereço'); return false; }
   if(!document.getElementById('cad-cidade').value.trim()){ toast('Cidade obrigatória'); return false; }
   if(!document.getElementById('cad-uf').value.trim()){ toast('UF obrigatória'); return false; }
+  if(!validarIdadeCadastroForm()) return false;
   return true;
 }
 async function irBabaEtapa2(){
@@ -1709,6 +1920,7 @@ function irBabaEtapa3(){
 }
 async function finalizarBaba(){
   if(!ic24FotoPerfilOk()){ toast('Foto de perfil obrigatória — volte à etapa 2'); show('baba-etapa2'); return; }
+  if(!validarIdadeCadastroForm()){ show('baba-etapa1'); return; }
   try{
     ic24InitFirebase();
     const uid=ic24Auth?.currentUser?.uid;
@@ -1745,7 +1957,7 @@ async function finalizarBaba(){
     }
     ic24AplicarRotaCadastro({ complete:true, screen:'baba-painel', message:'' });
     show('baba-painel');
-    toast('Cadastro concluído — área da babá aberta!');
+    toast('Cadastro concluído — você já aparece para famílias (Babás próximos)!');
   }catch(e){ toast(e.message||'Erro ao salvar no Firestore'); }
 }
 function maskCep(el){
@@ -1801,6 +2013,7 @@ async function irDocumentos(){
   if(!cpf){ toast('Informe o CPF'); return; }
   if(!num){ toast('Informe o número do endereço'); return; }
   if((document.getElementById('cad-cep').value||'').replace(/\D/g,'').length!==8){ toast('Informe um CEP válido'); return; }
+  if(!validarIdadeCadastroForm()) return;
   try{
     await ic24CriarConta({nome,email,senha,senha2,role:window._signupRole||'caregiver'});
     if(window._pendingProfilePhoto){
@@ -1824,6 +2037,8 @@ function preencherCadastroBaba(d){
   set('cad-bairro', d.neighborhood);
   set('cad-cidade', d.city);
   set('cad-uf', d.state);
+  set('cad-nasc', d.birthDate);
+  set('nasc', d.birthDate);
   set('cuid-bio', d.bio);
   set('cuid-cpf', d.cpf);
   if(Array.isArray(d.specialties)){
@@ -1855,6 +2070,7 @@ function preencherCadastroFamilia(d){
   set('fam-bairro', d.neighborhood);
   set('fam-cidade', d.city);
   set('fam-uf', d.state);
+  set('fam-nasc', d.birthDate);
 }
 async function ic24NavegarPosLogin(u){
   if(u.role==='caregiver'){
@@ -1880,15 +2096,22 @@ async function ic24NavegarPosLogin(u){
   return rota;
 }
 async function entrar(){
-  const e=document.getElementById('email').value.trim();
+  const e=document.getElementById('email').value.trim().toLowerCase();
   const s=document.getElementById('senha').value;
   if(!e||!s){ toast('Preencha e-mail e senha'); return; }
   try{
+    window._ic24IgnorarAuthRedirect=true;
     const u=await ic24Entrar(e,s);
+    if(u.email && u.email!==e){
+      throw new Error('Segurança: sessão diferente do e-mail digitado ('+e+').');
+    }
     const rota=await ic24NavegarPosLogin(u);
     toast(rota.complete ? ('Login OK — bem-vindo, '+u.fullName) : (rota.message||'Complete seu cadastro'));
     show(rota.screen);
   }catch(err){ toast(ic24AuthError(err)); }
+  finally{
+    setTimeout(()=>{ window._ic24IgnorarAuthRedirect=false; },600);
+  }
 }
 function fotoPerfil(input){
   const f=input.files[0];
@@ -1960,6 +2183,7 @@ function anexar(input){
   }).finally(()=>{ input.value=''; if(row) row.classList.remove('uploading'); });
 }
 async function finalizar(){
+  if(!validarIdadeCadastroForm()){ show('cadastro'); return; }
   await syncDocumentosUI();
   if(!ic24DocsObrigatoriosOk()){
     ic24ToastDocsFaltando(window._babaDocs||{});
@@ -2036,6 +2260,7 @@ async function finalizarFamilia(){
   const senha2=document.getElementById('fam-senha2').value;
   if(!nome){ toast('Informe seu nome completo'); return; }
   if(!email){ toast('Informe o e-mail'); return; }
+  if(!validarIdadeCadastroForm()) return;
   if(!validarEnderecoFam()) return;
   async function concluirFamilia(){
     await ic24SalvarFamilia();
@@ -2078,15 +2303,74 @@ async function abrirChatNegocio(){
   try{
     ic24InitFirebase();
     if(!ic24Auth.currentUser){ toast('Faça login'); irLogin(); return; }
+    const neg=typeof ic24NegocioAtivoUsuario==='function'?await ic24NegocioAtivoUsuario():null;
+    if(neg&&neg.chatId){
+      await abrirChat(neg.chatId,true);
+      return;
+    }
     const chat=await ic24BuscarChatAtivoUsuario();
     if(!chat||!chat.id){
-      toast('Chat bloqueado — feche o negócio em Minhas ofertas primeiro');
+      toast('Chat liberado só depois que os dois fecharem o negócio');
       const role=(window._babaPainel&&Object.keys(window._babaPainel).length)?'caregiver':'family';
-      show(role==='caregiver'?'baba-ofertas':'mae-ofertas');
+      show(role==='caregiver'?'baba-propostas':'mae-ofertas');
       return;
     }
     await abrirChat(chat.id,true);
   }catch(e){ toast(e.message||'Chat indisponível'); }
+}
+
+async function garantirNegocioLiberado(destinoBloqueado){
+  const neg=typeof ic24NegocioAtivoUsuario==='function'?await ic24NegocioAtivoUsuario():null;
+  if(neg&&neg.unlocked){
+    if(neg.familyId) window._activeFamilyId=neg.familyId;
+    return neg;
+  }
+  toast('Liberado só depois que os dois fecharem o negócio');
+  show(destinoBloqueado||'mae-ofertas');
+  return null;
+}
+
+async function abrirPontoBaba(){
+  const neg=await garantirNegocioLiberado('baba-propostas');
+  if(!neg) return;
+  show('baba-ponto');
+  aplicarLockNegocioBaba(true);
+}
+async function abrirDiarioBaba(){
+  const neg=await garantirNegocioLiberado('baba-propostas');
+  if(!neg) return;
+  show('baba-diario');
+  aplicarLockNegocioBaba(true);
+}
+async function abrirPontoFamilia(){
+  const neg=await garantirNegocioLiberado('mae-ofertas');
+  if(!neg) return;
+  show('mae-ponto');
+  carregarPontoFamilia();
+}
+async function abrirDiarioFamilia(){
+  const neg=await garantirNegocioLiberado('mae-ofertas');
+  if(!neg) return;
+  show('mae-diario');
+  carregarDiarioFamilia();
+}
+
+function aplicarLockNegocioBaba(liberado){
+  const pl=document.getElementById('baba-ponto-lock');
+  const pb=document.getElementById('baba-ponto-body');
+  const dl=document.getElementById('baba-diario-lock');
+  const db=document.getElementById('baba-diario-body');
+  if(pl) pl.style.display=liberado?'none':'block';
+  if(pb) pb.style.display=liberado?'block':'none';
+  if(dl) dl.style.display=liberado?'none':'block';
+  if(db) db.style.display=liberado?'block':'none';
+}
+
+function setMenuLiberado(subId, badgeId, liberado, textoOk, textoBloq){
+  const sub=document.getElementById(subId);
+  const badge=document.getElementById(badgeId);
+  if(sub) sub.textContent=liberado?textoOk:textoBloq;
+  if(badge) badge.textContent=liberado?'✓':'›';
 }
 function renderChatMsgs(msgs){
   const box=document.getElementById('chatMsgs');
@@ -2185,6 +2469,9 @@ async function carregarPainelBaba(){
   if(uid){
     const snap=await ic24Db.collection('caregivers').doc(uid).get();
     d=snap.exists?snap.data():{};
+    if(typeof ic24EnsureReviewDemoFee==='function'){
+      try{ d=await ic24EnsureReviewDemoFee(d); }catch(e){ console.warn('review demo fee',e); }
+    }
     docsMap=await ic24ListDocumentos(uid);
     d.documentsList=Object.entries(docsMap).map(([k,v])=>({key:k,...v}));
     if(d.activeFamilyId) window._activeFamilyId=d.activeFamilyId;
@@ -2241,6 +2528,58 @@ async function carregarPainelBaba(){
   renderOfertasTaxaBloqueio(d);
   if(d.diario?.texto) document.getElementById('diario-texto').value=d.diario.texto;
   if(d.diario?.assinado) marcarDiarioAssinado();
+  carregarNotifsBaba();
+  carregarPropostasRecebidas();
+  atualizarMenusNegocioBaba();
+}
+
+async function atualizarMenusNegocioBaba(){
+  try{
+    const neg=typeof ic24NegocioAtivoUsuario==='function'?await ic24NegocioAtivoUsuario():null;
+    const ok=!!(neg&&neg.unlocked);
+    if(ok&&neg.familyId) window._activeFamilyId=neg.familyId;
+    setMenuLiberado('baba-chat-menu-sub','baba-chat-badge',ok,'Chat liberado — toque para conversar','Liberado após os dois fecharem o negócio');
+    setMenuLiberado('baba-ponto-menu-sub','baba-ponto-badge',ok,'Plantão ativo — registre entrada/saída','Liberado após fechar o negócio');
+    setMenuLiberado('baba-diario-menu-sub','baba-diario-badge',ok,'Escreva o sumário do dia','Liberado após fechar o negócio');
+    aplicarLockNegocioBaba(ok);
+    const alerta=document.getElementById('cuid-alerta-negocio');
+    if(alerta){
+      if(ok){
+        alerta.style.display='block';
+        alerta.innerHTML='<div class="list-item" style="border-color:var(--p);background:var(--pl)"><b>✓ Negócio fechado</b><p style="font-size:14px;margin:8px 0">Chat, cartão de ponto e diário liberados.</p>'+
+          '<button class="btn btn-p" type="button" style="height:36px;width:100%;margin-bottom:6px" onclick="abrirChatNegocio()">Chat</button>'+
+          '<button class="btn btn-o" type="button" style="height:36px;width:100%;margin-bottom:6px" onclick="abrirPontoBaba()">Cartão de ponto</button>'+
+          '<button class="btn btn-o" type="button" style="height:36px;width:100%" onclick="abrirDiarioBaba()">Diário da criança</button></div>';
+      }else{ alerta.style.display='none'; alerta.innerHTML=''; }
+    }
+  }catch(e){ console.warn('menus negocio baba',e); }
+}
+
+async function carregarNotifsBaba(){
+  const box=document.getElementById('cuid-notificacoes');
+  if(!box||typeof ic24ListarNotificacoesBaba!=='function') return;
+  try{
+    const notifs=await ic24ListarNotificacoesBaba(8);
+    if(!notifs.length){ box.style.display='none'; box.innerHTML=''; return; }
+    box.style.display='block';
+    box.innerHTML=notifs.map(n=>{
+      const fechado=n.type==='negocio_fechado'||(n.message||'').toLowerCase().indexOf('negócio fechado')>=0||(n.message||'').toLowerCase().indexOf('negocio fechado')>=0;
+      let acao='';
+      if(fechado){
+        acao='<button class="btn btn-p" type="button" style="margin-top:8px;height:36px;width:100%" onclick="abrirChatNegocio()">Abrir chat</button>';
+      }else if(n.offerId){
+        acao='<button class="btn btn-p" type="button" style="margin-top:8px;height:36px;width:100%" onclick="selecionarOfertaBaba(\''+n.offerId+'\');show(\'baba-ofertas\')">Ver proposta</button>';
+      }
+      return '<div class="list-item" style="border-color:var(--p);background:var(--pl)"><b>🔔 '+(n.read?'':'Nova · ')+escapeHtml((n.message||'Notificação').slice(0,120))+'</b>'+acao+'</div>';
+    }).join('');
+    // Atalho: propostas novas vão para o tópico dedicado
+    notifs.forEach(n=>{
+      if(n.offerId&&!n.type){ /* badge atualizado em carregarPropostasRecebidas */ }
+    });
+  }catch(e){
+    box.style.display='none';
+    console.warn('notifs baba',e);
+  }
 }
 
 function baixarCurriculoCadastro(){
@@ -2309,15 +2648,95 @@ function renderRecomendacoes(d){
 }
 
 function renderOfertas(){
-  ic24ListarOfertasAbertas({urgent:true}).then(urg=>{
+  const btnHtml=(o,pri)=>'<button class="btn '+(pri?'btn-p':'btn-o')+'" type="button" style="margin-top:8px;height:40px" onclick="selecionarOfertaBaba(\''+o.id+'\')">'+(pri?'Ver / Responder':'Responder')+'</button>';
+  ic24ListarOfertasAbertas({urgent:true,directedOnly:false}).then(urg=>{
     const box=document.getElementById('ofertas-urgentes');
-    if(box) box.innerHTML=urg.length?urg.map(o=>ic24FmtOferta(o)+'<button class="btn btn-p" type="button" style="margin-top:8px;height:40px" onclick="selecionarOfertaBaba(\''+o.id+'\')">Ver / Responder</button>').join(''):'<p class="hint">Nenhum plantão urgente no momento.</p>';
-  }).catch(()=>{});
-  ic24ListarOfertasAbertas({urgent:false}).then(all=>{
+    if(box) box.innerHTML=urg.length?urg.map(o=>ic24FmtOferta(o)+btnHtml(o,true)).join(''):'<p class="hint">Nenhum plantão urgente no momento.</p>';
+  }).catch(e=>{
+    const box=document.getElementById('ofertas-urgentes');
+    if(box) box.innerHTML='<p class="hint">Erro: '+escapeHtml(e.message||e)+'</p>';
+  });
+  ic24ListarOfertasAbertas({urgent:false,directedOnly:false}).then(all=>{
     const out=document.getElementById('ofertas-outras');
     const others=(all||[]).filter(o=>!o.urgent);
-    if(out) out.innerHTML=others.length?others.map(o=>ic24FmtOferta(o)+'<button class="btn btn-o" type="button" style="margin-top:8px;height:40px" onclick="selecionarOfertaBaba(\''+o.id+'\')">Responder</button>').join(''):'<p class="hint">Nenhuma oferta aberta.</p>';
-  }).catch(()=>{});
+    if(out) out.innerHTML=others.length?others.map(o=>ic24FmtOferta(o)+btnHtml(o,false)).join(''):'<p class="hint">Nenhuma oferta aberta.</p>';
+  }).catch(e=>{
+    const out=document.getElementById('ofertas-outras');
+    if(out) out.innerHTML='<p class="hint">Erro: '+escapeHtml(e.message||e)+'</p>';
+  });
+}
+
+async function carregarPropostasRecebidas(){
+  const list=document.getElementById('propostas-recebidas-list');
+  const aguard=document.getElementById('propostas-aguardando-familia');
+  const libera=document.getElementById('baba-negocio-liberado-box');
+  const taxaBox=document.getElementById('ofertas-taxa-bloqueio-propostas');
+  if(taxaBox&&typeof renderOfertasTaxaBloqueio==='function'){
+    // espelha bloqueio de taxa se houver elemento legado
+    const src=document.getElementById('ofertas-taxa-bloqueio');
+    if(src) taxaBox.innerHTML=src.innerHTML;
+    else renderOfertasTaxaBloqueio(window._babaPainel||{});
+  }
+  try{
+    const neg=typeof ic24NegocioAtivoUsuario==='function'?await ic24NegocioAtivoUsuario():null;
+    if(libera){
+      if(neg&&neg.unlocked){
+        libera.style.display='block';
+        libera.innerHTML='<div class="list-item" style="border-color:var(--p);background:var(--pl)"><b>✓ Negócio fechado</b><p style="font-size:14px;margin:8px 0">Chat, cartão de ponto e diário da criança liberados para você e para a família.</p>'+
+          '<button class="btn btn-p" type="button" style="height:40px;width:100%;margin-bottom:6px" onclick="abrirChatNegocio()">Abrir chat</button>'+
+          '<button class="btn btn-o" type="button" style="height:40px;width:100%;margin-bottom:6px" onclick="abrirPontoBaba()">Cartão de ponto</button>'+
+          '<button class="btn btn-o" type="button" style="height:40px;width:100%" onclick="abrirDiarioBaba()">Diário da criança</button></div>';
+      }else{ libera.style.display='none'; libera.innerHTML=''; }
+    }
+    const dir=await ic24ListarOfertasAbertas({directedOnly:true});
+    if(list){
+      list.innerHTML=dir.length
+        ?dir.map(o=>ic24FmtOferta(o)+'<button class="btn btn-p" type="button" style="margin-top:8px;height:40px;width:100%" onclick="selecionarOfertaBaba(\''+o.id+'\');show(\'baba-ofertas\')">Aceitar / responder</button>').join('')
+        :'<p class="hint">Nenhuma proposta nova. Quando o pai/mãe oferecer, aparece aqui.</p>';
+    }
+    const pend=typeof ic24ListarMinhasRespostasPendentes==='function'?await ic24ListarMinhasRespostasPendentes():[];
+    if(aguard){
+      aguard.innerHTML=pend.length
+        ?pend.map(r=>'<div class="list-item" style="border-color:var(--p)"><b>Aguardando confirmação do contratante</b><small>'+
+          escapeHtml(r.scheduleLabel||r.action||'Aceite enviado')+
+          (r.dailyRateUsed||r.proposedDailyRate?' · R$ '+(r.proposedDailyRate||r.dailyRateUsed)+'/dia':'')+
+          '</small><p class="hint" style="margin:8px 0 0">O pai/mãe precisa abrir <strong>Propostas recebidas</strong> e tocar em Fechar negócio.</p></div>').join('')
+        :'<p class="hint">Nenhum aceite aguardando o pai/mãe.</p>';
+    }
+    const badge=document.getElementById('baba-propostas-badge');
+    const sub=document.getElementById('baba-propostas-menu-sub');
+    const menuB=document.getElementById('baba-menu-propostas');
+    const nNovas=dir.length;
+    if(badge) badge.textContent=nNovas?('● '+nNovas):(pend.length?'…':'›');
+    if(sub) sub.textContent=nNovas?('⚠ '+nNovas+' proposta(s) — toque para aceitar'):(pend.length?'Aguardando o pai/mãe confirmar':'Propostas do pai/mãe para você aceitar');
+    if(menuB){
+      if(nNovas) menuB.classList.add('menu-alerta');
+      else menuB.classList.remove('menu-alerta');
+    }
+    const alertaHome=document.getElementById('cuid-notificacoes');
+    if(alertaHome&&nNovas){
+      const o=dir[0];
+      alertaHome.style.display='block';
+      const ja=alertaHome.getAttribute('data-alerta-oferta');
+      alertaHome.setAttribute('data-alerta-oferta',o.id);
+      alertaHome.innerHTML=
+        '<div class="alerta-acao" role="alert">'+
+        '<p class="alerta-titulo">Nova proposta recebida</p>'+
+        '<p class="alerta-texto"><strong>'+escapeHtml(o.familyName||'Uma família')+'</strong> ofereceu R$ '+escapeHtml(String(o.dailyRate||'—'))+'/dia'+(o.elderlyType||o.title?' · '+escapeHtml(o.elderlyType||o.title):'')+'.</p>'+
+        '<button class="btn btn-p" type="button" style="height:52px;width:100%;font-size:16px;font-weight:800" onclick="selecionarOfertaBaba(\''+o.id+'\');show(\'baba-ofertas\')">TOQUE AQUI — Ver e aceitar</button>'+
+        '<button class="btn btn-o" type="button" style="margin-top:8px;height:44px;width:100%" onclick="show(\'baba-propostas\')">Abrir Propostas recebidas</button>'+
+        '</div>'+(alertaHome.innerHTML&&ja&&ja!==o.id?'':'');
+      if(window._babaUltimaOfertaAlerta!==o.id){
+        window._babaUltimaOfertaAlerta=o.id;
+        toast('Nova proposta! Toque no alerta para aceitar');
+      }
+    }else if(alertaHome&&!nNovas&&alertaHome.querySelector('.alerta-acao')){
+      // mantém notifs normais via carregarNotifsBaba se não houver proposta nova
+      if(typeof carregarNotifsBaba==='function') carregarNotifsBaba();
+    }
+  }catch(e){
+    if(list) list.innerHTML='<p class="hint">Erro: '+escapeHtml(e.message||e)+'</p>';
+  }
 }
 function selecionarOfertaBaba(id){
   document.getElementById('oferta-acao-id').value=id;
@@ -2392,9 +2811,12 @@ async function aceitarOfertaBaba(){
   }
   try{
     await ic24AceitarOfertaComTermos(id,{action:'accept',message:document.getElementById('oferta-contra-msg')?.value||''});
-    toast('Proposta enviada ao contratante!');
+    toast('Aceite enviado! O pai/mãe verá em Propostas recebidas para fechar o negócio.');
     document.getElementById('oferta-acao-box').style.display='none';
     renderOfertas();
+    carregarPropostasRecebidas();
+    if(typeof carregarNotifsBaba==='function') carregarNotifsBaba();
+    show('baba-propostas');
   }catch(e){ toast(e.message||'Erro'); }
 }
 async function contraOfertaBaba(){
@@ -2465,13 +2887,18 @@ function renderTaxa(d){
   if(pendEl) pendEl.textContent=pend>0?ic24FmtTaxaUsd(pend):'US$ 0,00';
   const btn=document.getElementById('taxa-pagar-btn');
   if(btn){
-    btn.disabled=pend<=0.001;
-    btn.textContent=pend>0?(diariasPend>1?'Pagar '+diariasPend+'× taxa via App Store ('+ic24FmtTaxaUsd(pend)+')':'Pagar taxa via App Store ('+ic24FmtTaxaUsd(pend)+')'):'Sem taxa pendente — feche um negócio primeiro';
-    btn.style.opacity=pend>0?'1':'0.55';
+    // Nunca disabled — App Review: botão morto = rejeição 2.1(b)
+    btn.disabled=false;
+    btn.removeAttribute('disabled');
+    btn.setAttribute('aria-label', pend>0 ? 'Pagar taxa pendente via App Store' : 'Ver taxa pendente');
+    btn.textContent=pend>0
+      ?(diariasPend>1?'Pagar '+diariasPend+'× taxa via App Store ('+ic24FmtTaxaUsd(pend)+')':'Pagar taxa via App Store ('+ic24FmtTaxaUsd(pend)+')')
+      :'Ver taxa pendente';
+    btn.style.opacity='1';
   }
   document.getElementById('taxa-detalhe').innerHTML=
     '<p>Taxa de manutenção: <strong>'+ic24FmtTaxaUsd(IC24_FEE_FIXED_USD)+'</strong> ('+ic24FmtTaxaBrl(IC24_FEE_FIXED_BRL)+') <strong>por diária</strong> (máx. 1 cobrança pendente por negócio).</p>'+
-    (pend>0?'<p style="margin-top:8px">Taxa pendente: <strong style="color:var(--err)">'+ic24FmtTaxaUsd(pend)+'</strong> · <strong>'+diariasPend+' diária(s)</strong>'+(offerId?' · plantão <code>'+escapeHtml(String(offerId).slice(0,12))+'…</code>':'')+'</p>':'<p style="margin-top:8px;color:var(--p)">Nenhuma taxa pendente — você pode aceitar novos negócios.</p>')+
+    (pend>0?'<p style="margin-top:8px">Taxa pendente: <strong style="color:var(--err)">'+ic24FmtTaxaUsd(pend)+'</strong> · <strong>'+diariasPend+' diária(s)</strong>'+(offerId?' · plantão <code>'+escapeHtml(String(offerId).slice(0,12))+'…</code>':'')+'</p>':'<p style="margin-top:8px;color:var(--p)">Nenhuma taxa pendente. Conta demo <strong>baba.demo@babaon.test.local</strong> já vem com taxa US$ 1,99 para testar o IAP.</p>')+
     (ic24OffersBlockedByFee(d)?'<p style="margin-top:8px;color:var(--err)">Aceitar ofertas <strong>bloqueado</strong> até quitar via App Store.</p>':'')+
     '<p style="margin-top:8px">Diárias recebidas: <strong>'+fmtMoeda(bruto)+'</strong> · '+Number(fin.plantoes||0)+' cobrança(s) paga(s)</p>';
   renderTaxaAlerta(d);
@@ -2677,6 +3104,138 @@ async function salvarPreferenciasRecebimento(){
   }catch(e){ toast(e.message||'Erro ao salvar'); }
 }
 
+function novoAnuncioOutroLugar(){
+  ['dest-pais','dest-estado','dest-cidade','dest-cep','dest-numero','dest-notas'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value='';
+  });
+  const di=document.getElementById('dest-diarias');
+  if(di) di.value='30';
+  const v=document.getElementById('dest-valor');
+  if(v) v.value='';
+  show('baba-outro-lugar-form');
+}
+
+function ic24RotuloStatusDestino(st){
+  if(st==='open') return '<span style="color:var(--p)">Aberto</span>';
+  if(st==='cancelled') return 'Encerrado';
+  if(st==='matched') return 'Negócio fechado';
+  return escapeHtml(st||'—');
+}
+
+async function renderMinhasOfertasDestino(){
+  const box=document.getElementById('minhas-ofertas-destino');
+  if(!box) return;
+  box.innerHTML='<p class="hint">Carregando…</p>';
+  try{
+    const rows=await ic24ListarMeusTrabalhosOutroLugar();
+    box.innerHTML=rows.length?rows.map(a=>{
+      const podeExcluir=a.status!=='matched';
+      let acoes='';
+      if(podeExcluir){
+        acoes='<button class="btn btn-g" type="button" style="margin-top:8px;height:40px;width:100%;background:#fef2f2;color:var(--err);border:1px solid #fecaca;font-weight:700" onclick="excluirAnuncioOutroLugar(\''+a.id+'\')">Excluir oferta</button>';
+        if(a.status==='open'){
+          acoes='<button class="btn btn-o" type="button" style="margin-top:8px;height:36px;width:100%" onclick="encerrarAnuncioOutroLugar(\''+a.id+'\')">Encerrar (parar de aparecer)</button>'+acoes;
+        }
+      }else{
+        acoes='<p class="hint" style="margin-top:8px;font-size:12px">Vinculada a negócio fechado — mantida só no seu histórico.</p>';
+      }
+      return '<div class="list-item"><b>'+escapeHtml(ic24ResumoDestinoAnuncio(a))+'</b><small>'+
+        escapeHtml([a.country,a.state,a.city].filter(Boolean).join(' · '))+
+        (a.postalCode?' · CEP '+escapeHtml(a.postalCode):'')+
+        (a.streetNumber?' · nº '+escapeHtml(a.streetNumber):'')+
+        ' · '+ic24RotuloStatusDestino(a.status)+'</small>'+acoes+'</div>';
+    }).join(''):'<p class="hint">Nenhuma oferta em outro lugar. Use <strong>+ Nova oferta</strong> ou o menu <em>Trabalhar em outro lugar</em>.</p>';
+  }catch(e){ box.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
+async function publicarAnuncioOutroLugar(){
+  try{
+    await ic24PublicarTrabalhoOutroLugar({
+      country:document.getElementById('dest-pais')?.value,
+      state:document.getElementById('dest-estado')?.value,
+      city:document.getElementById('dest-cidade')?.value,
+      cep:document.getElementById('dest-cep')?.value,
+      streetNumber:document.getElementById('dest-numero')?.value,
+      periodStart:document.getElementById('dest-data-inicio')?.value,
+      periodEnd:document.getElementById('dest-data-fim')?.value,
+      targetDiarias:document.getElementById('dest-diarias')?.value,
+      dailyRate:parseFloat(document.getElementById('dest-valor')?.value)||0,
+      notes:document.getElementById('dest-notas')?.value,
+    });
+    toast('Anúncio publicado!');
+    await renderMinhasOfertasDestino();
+    show('baba-minhas-ofertas');
+  }catch(e){ toast(e.message||'Erro ao publicar'); }
+}
+
+async function encerrarAnuncioOutroLugar(id){
+  if(!confirm('Encerrar esta oferta? Ela deixa de aparecer para famílias, mas você ainda vê aqui até excluir.')) return;
+  try{
+    await ic24CancelarTrabalhoOutroLugar(id);
+    toast('Oferta encerrada');
+    await renderMinhasOfertasDestino();
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+async function excluirAnuncioOutroLugar(id){
+  if(!confirm('Excluir esta oferta em outro lugar? Não dá para desfazer.')) return;
+  try{
+    await ic24ExcluirTrabalhoOutroLugar(id);
+    toast('Oferta excluída');
+    await renderMinhasOfertasDestino();
+  }catch(e){ toast(e.message||'Erro'); }
+}
+
+async function carregarBabasDestinoFamilia(){
+  const list=document.getElementById('fam-destino-list');
+  const hint=document.getElementById('dest-fam-hint');
+  if(!list) return;
+  list.innerHTML='<p class="hint">Carregando…</p>';
+  try{
+    const showAll=!!document.getElementById('dest-fam-todos')?.checked;
+    const { list: rows, familyLocation }=await ic24ListarTrabalhosOutroLugarParaFamilia({ showAll });
+    window._destinoRowsCache=rows;
+    if(hint){
+      const loc=[familyLocation.city,familyLocation.state,familyLocation.country].filter(Boolean).join(', ');
+      hint.innerHTML='Filtro: <strong>'+(showAll?'todos os anúncios abertos':'compatíveis com '+escapeHtml(loc||'seu cadastro'))+'</strong>. Proposta → aceite → fechar negócio (igual ao restante do app).';
+    }
+    list.innerHTML=rows.length?rows.map(a=>{
+      const foto=a.caregiverPhoto?'<img src="'+escapeHtml(a.caregiverPhoto)+'" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;margin-right:10px"/>':'';
+      const val=a.dailyRate?('R$ '+Number(a.dailyRate).toFixed(2)+'/dia ref.'):'Valor a combinar';
+      return '<div class="list-item"><div style="display:flex;align-items:flex-start">'+foto+'<div><b>'+escapeHtml(a.caregiverName||'Babá')+'</b><small>'+
+        escapeHtml(ic24ResumoDestinoAnuncio(a))+' · '+escapeHtml(val)+'</small></div></div>'+
+        '<button class="btn btn-o" type="button" style="margin-top:8px;height:40px;width:100%" onclick="abrirPerfilBabaFamilia(\''+a.caregiverId+'\')">Ver perfil</button>'+
+        '<button class="btn btn-p" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirPropostaDestino(\''+a.caregiverId+'\',\''+a.id+'\')">Oferecer proposta neste período</button></div>';
+    }).join(''):
+      '<p class="hint">Nenhuma babá anunciou destino compatível. Marque <strong>Mostrar todos</strong> ou peça à babá publicar em <em>Trabalhar em outro lugar</em>.</p>';
+  }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
+}
+
+async function abrirPropostaDestino(caregiverId, anuncioId){
+  window._propostaDestinoId=anuncioId;
+  window._propostaDestinoCache=(window._destinoRowsCache||[]).find(x=>x.id===anuncioId)||null;
+  if(!window._propostaDestinoCache){
+    try{
+      ic24InitFirebase();
+      const s=await ic24Db.collection('caregiver_destination_availability').doc(anuncioId).get();
+      if(s.exists) window._propostaDestinoCache={id:s.id,...s.data()};
+    }catch(_e){ /* ignore */ }
+  }
+  abrirPropostaBabá(caregiverId,'mae-babas-destino');
+  const cache=window._propostaDestinoCache;
+  if(cache){
+    const d=document.getElementById('proposta-data');
+    const dur=document.getElementById('proposta-duracao');
+    const val=document.getElementById('proposta-valor');
+    if(d&&cache.periodStart) d.value=cache.periodStart;
+    if(dur&&cache.targetDiarias) dur.value=String(cache.targetDiarias);
+    if(val&&cache.dailyRate) val.value=String(cache.dailyRate);
+    document.getElementById('proposta-cuid-nome').textContent=
+      'Proposta · destino '+[cache.city,cache.state,cache.country].filter(Boolean).join(', ');
+  }
+}
+
 async function salvarAgenda(){
   const escala=chipVal('agenda-escala')||'8';
   const ratesByScale=ic24ColetarRatesByScale('agenda', IC24_ESCALAS_AGENDA);
@@ -2736,6 +3295,8 @@ function renderPontoLog(log){
 }
 
 async function registrarPonto(tipo){
+  const neg=await garantirNegocioLiberado('baba-propostas');
+  if(!neg) return;
   const labels={entrada:'Entrada',intervalo_saida:'Saída intervalo',intervalo_retorno:'Retorno intervalo',saida:'Saída final'};
   const manual=document.getElementById('ponto-hora-manual')?.value;
   const now=new Date();
@@ -2750,7 +3311,7 @@ async function registrarPonto(tipo){
     renderPontoLog(log);
     toast(labels[tipo]+' registrada — '+hora);
     if(tipo==='saida'){
-      await ic24SyncPontoFromCaregiver(uid, window._activeFamilyId||null, log, document.getElementById('ponto-obs')?.value?.trim()||'');
+      await ic24SyncPontoFromCaregiver(uid, window._activeFamilyId||neg.familyId||null, log, document.getElementById('ponto-obs')?.value?.trim()||'');
       setTimeout(()=>toast('Patrão/confirmação: familiar autentica no cartão de ponto'),1500);
     }
   }catch(e){ toast(e.message||'Erro ao registrar ponto'); }
@@ -2784,12 +3345,14 @@ async function assinarDiario(){
 }
 
 async function salvarDiario(){
+  const neg=await garantirNegocioLiberado('baba-propostas');
+  if(!neg) return;
   const texto=document.getElementById('diario-texto')?.value?.trim();
   if(!texto){ toast('Escreva o sumário do dia'); return; }
   try{
     const uid=ic24Auth?.currentUser?.uid;
     await ic24SalvarPainelBaba({diario:{texto,assinado:!!window._babaPainel.diario?.assinado}});
-    if(uid) await ic24SalvarDiarioComFamilia({texto,caregiverId:uid,familyId:window._activeFamilyId||null,idosoNome:''});
+    if(uid) await ic24SalvarDiarioComFamilia({texto,caregiverId:uid,familyId:window._activeFamilyId||neg.familyId||null,idosoNome:''});
     toast('Diário salvo — familiar pode visualizar e assinar');
   }catch(e){ toast(e.message||'Erro ao salvar diário'); }
 }
@@ -2977,7 +3540,10 @@ async function carregarCobrancasHistorico(){
 }
 async function pagarTaxaPlataforma(){
   try{
-    const d=window._babaPainel||{};
+    let d=window._babaPainel||{};
+    if(typeof ic24EnsureReviewDemoFee==='function'){
+      try{ d=await ic24EnsureReviewDemoFee(d); window._babaPainel=d; }catch(_){}
+    }
     const pend=ic24PlatformFeePending(d);
     if(pend<=0.001){
       toast('Sem taxa pendente. Feche um negócio (família + babá) ou use a conta demo preparada para revisão.');
@@ -2992,7 +3558,9 @@ async function pagarTaxaPlataforma(){
 }
 function fecharCurriculoViewer(){
   const iframe=document.getElementById('curriculo-iframe');
-  if(iframe) iframe.src='about:blank';
+  if(iframe){ iframe.src='about:blank'; iframe.style.display='none'; }
+  const box=document.getElementById('curriculo-viewer-body');
+  if(box) box.innerHTML='';
   show(window._curriculoVoltar||'mae-curriculo');
 }
 
@@ -3067,24 +3635,146 @@ async function carregarPainelFamilia(){
   }
   const el=document.getElementById('fam-nome-display');
   if(el) el.textContent=nome;
+  try{
+    const notifs=typeof ic24ListarNotificacoesFamilia==='function'?await ic24ListarNotificacoesFamilia():[];
+    const alerta=document.getElementById('fam-alerta-propostas');
+    const sub=document.getElementById('fam-ofertas-menu-sub');
+    const badge=document.getElementById('fam-ofertas-badge');
+    const menuProp=document.getElementById('fam-menu-propostas');
+    if(alerta){
+      if(notifs.length){
+        const n=notifs[0];
+        const rid=n.responseId||'';
+        const nid=n.id||'';
+        alerta.style.display='block';
+        alerta.innerHTML=
+          '<div class="alerta-acao" role="alert">'+
+          '<p class="alerta-titulo">Proposta recebida — babá aceitou</p>'+
+          '<p class="alerta-texto"><strong>'+escapeHtml(n.caregiverName||'A babá')+'</strong> '+escapeHtml(n.message||'aceitou e espera você fechar o negócio.')+'</p>'+
+          (rid
+            ?'<button class="btn btn-p" type="button" style="height:52px;width:100%;font-size:16px;font-weight:800" onclick="familiaFecharNegocio(\''+rid+'\',true,\''+nid+'\')">TOQUE AQUI — Fechar negócio e liberar chat</button>'+
+             '<button class="btn btn-o" type="button" style="margin-top:8px;height:44px;width:100%" onclick="show(\'mae-ofertas\')">Abrir Propostas recebidas</button>'
+            :'<button class="btn btn-p" type="button" style="height:52px;width:100%;font-size:16px;font-weight:800" onclick="show(\'mae-ofertas\')">TOQUE AQUI — Abrir Propostas recebidas</button>')+
+          '</div>';
+        if(menuProp) menuProp.classList.add('menu-alerta');
+        if(window._famUltimaNotifId!==nid){
+          window._famUltimaNotifId=nid;
+          toast((n.caregiverName||'Babá')+' aceitou! Toque no alerta para fechar o negócio');
+        }
+      }else{
+        alerta.style.display='none';
+        alerta.innerHTML='';
+        if(menuProp) menuProp.classList.remove('menu-alerta');
+      }
+    }
+    if(sub) sub.textContent=notifs.length?('⚠ '+notifs.length+' aceite(s) — toque para fechar'):'Quando a babá aceitar, aparece alerta aqui';
+    if(badge) badge.textContent=notifs.length?('● '+notifs.length):'›';
+    const neg=typeof ic24NegocioAtivoUsuario==='function'?await ic24NegocioAtivoUsuario():null;
+    const ok=!!(neg&&neg.unlocked);
+    setMenuLiberado('fam-chat-menu-sub','fam-chat-badge',ok,'Chat liberado — toque para conversar','Liberado após os dois fecharem o negócio');
+    setMenuLiberado('fam-ponto-menu-sub','fam-ponto-badge',ok,'Confirme entrada/saída da babá','Liberado após fechar o negócio');
+    setMenuLiberado('fam-diario-menu-sub','fam-diario-badge',ok,'Assine o sumário da babá','Liberado após fechar o negócio');
+    const alertaNeg=document.getElementById('fam-alerta-negocio');
+    if(alertaNeg){
+      if(ok&&!notifs.length){
+        alertaNeg.style.display='block';
+        alertaNeg.innerHTML='<div class="alerta-acao" style="animation:none"><p class="alerta-titulo">Negócio fechado</p><p class="alerta-texto">Chat, cartão de ponto e diário da criança liberados.</p>'+
+          '<button class="btn btn-p" type="button" style="height:44px;width:100%;margin-bottom:6px" onclick="abrirChatNegocio()">Abrir chat</button>'+
+          '<button class="btn btn-o" type="button" style="height:40px;width:100%;margin-bottom:6px" onclick="abrirPontoFamilia()">Cartão de ponto</button>'+
+          '<button class="btn btn-o" type="button" style="height:40px;width:100%" onclick="abrirDiarioFamilia()">Diário da criança</button></div>';
+      }else{ alertaNeg.style.display='none'; alertaNeg.innerHTML=''; }
+    }
+    const fl=document.getElementById('fam-ponto-lock');
+    const fb=document.getElementById('fam-ponto-body');
+    const dl=document.getElementById('fam-diario-lock');
+    const db=document.getElementById('fam-diario-body');
+    if(fl) fl.style.display=ok?'none':'block';
+    if(fb) fb.style.display=ok?'block':'none';
+    if(dl) dl.style.display=ok?'none':'block';
+    if(db) db.style.display=ok?'block':'none';
+    iniciarPollFamiliaPropostas();
+  }catch(e){ console.warn('painel familia notifs',e); }
+}
+
+let _famPollPropostas=null;
+function iniciarPollFamiliaPropostas(){
+  if(_famPollPropostas) return;
+  _famPollPropostas=setInterval(()=>{
+    const on=document.getElementById('mae-painel')?.classList.contains('on');
+    if(on) carregarPainelFamilia();
+  },8000);
+}
+
+function ic24LinhaBuscaBaba(c){
+  const nome=c.fullName||'Babá';
+  const nivel=c.nivelLabel||(typeof ic24RotuloNivelBaba==='function'?ic24RotuloNivelBaba(c):'Babá');
+  const disp=c.disponivelLabel||(c.availableToday||c.plantaoHoje?.ativo?'Disponível':'Agenda');
+  const dist=c.distanceKm!=null
+    ?(typeof ic24FmtDistanciaKm==='function'?ic24FmtDistanciaKm(c.distanceKm,c.withinRadius):(c.distanceKm+' km'))
+    :(c.distanceLabel||'');
+  const valor=typeof ic24ExibirRateCaregiver==='function'?ic24ExibirRateCaregiver(c):'—';
+  const when=c.scheduleLabel||'';
+  const parts=[nivel, disp];
+  if(dist) parts.push('📍 '+dist);
+  if(when) parts.push(when);
+  if(valor && valor!=='—') parts.push(valor);
+  return {
+    titulo:nome,
+    subtitulo:parts.join(' · ')
+  };
+}
+
+async function atualizarLocalizacaoFamilia(){
+  try{
+    toast('Capturando GPS…');
+    const r=await ic24CapturarGpsESalvar('clients');
+    toast('Localização atualizada (±'+r.accuracyM+' m) — endereço não é exibido nas buscas');
+    await carregarProximosFamilia();
+  }catch(e){
+    const msg=e&&e.code===1?'Permita o acesso à localização nas configurações do iPhone/iPad.':(e.message||'Não foi possível obter GPS');
+    toast(msg);
+  }
+}
+
+async function atualizarLocalizacaoBaba(){
+  try{
+    toast('Capturando GPS…');
+    const r=await ic24CapturarGpsESalvar('caregivers');
+    toast('Localização da babá atualizada (±'+r.accuracyM+' m)');
+  }catch(e){
+    const msg=e&&e.code===1?'Permita o acesso à localização nas configurações.':(e.message||'Não foi possível obter GPS');
+    toast(msg);
+  }
 }
 
 async function carregarProximosFamilia(){
   const list=document.getElementById('fam-proximos-list');
   if(!list) return;
-  list.innerHTML='<p class="hint">Carregando…</p>';
+  const dataEl=document.getElementById('prox-filtro-data');
+  const horaEl=document.getElementById('prox-filtro-hora');
+  if(dataEl && !dataEl.value) dataEl.value=new Date().toISOString().slice(0,10);
+  const need={
+    data:dataEl?.value||new Date().toISOString().slice(0,10),
+    hora:horaEl?.value||'07:00',
+  };
+  list.innerHTML='<p class="hint">Ordenando por distância → data/hora → preço…</p>';
   try{
-    const cgs=await ic24ListarBabasProximos();
-    list.innerHTML=cgs.length?cgs.map(c=>{
+    // GPS sob demanda (não automático) — evita pedido de permissão inesperado na App Review
+    const cgs=await ic24ListarBabasProximos(need);
+    list.innerHTML=
+      '<button class="btn btn-o" type="button" style="margin-bottom:12px" onclick="atualizarLocalizacaoFamilia()">📍 Atualizar minha localização (GPS)</button>'+
+      '<p class="hint" style="margin-bottom:12px"><strong>1º distância (km)</strong> · 2º data/hora ('+escapeHtml(need.data)+' '+escapeHtml(need.hora)+') · 3º preço. Use GPS ou CEP no cadastro. Endereço da babá não aparece.</p>'+
+      (cgs.length?cgs.map((c,i)=>{
+      const linha=ic24LinhaBuscaBaba(c);
       const foto=c.photoUrl?'<img src="'+escapeHtml(c.photoUrl)+'" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;margin-right:10px;vertical-align:middle"/>':'';
-      return '<div class="list-item"><div style="display:flex;align-items:center">'+foto+'<div><b>'+escapeHtml(c.fullName||'Babá')+'</b><small>'+
-      escapeHtml((c.city||'')+(c.state?' - '+c.state:''))+' · '+
-      (c.availableToday||c.plantaoHoje?.ativo?'✅ Disponível hoje':'Agenda')+' · '+escapeHtml(typeof ic24ExibirRateCaregiver==='function'?ic24ExibirRateCaregiver(c):'—')+'</small></div></div>'+
+      const rank=i===0?'<span style="color:var(--p);font-size:11px;font-weight:700">#1 mais próxima</span> ':'';
+      return '<div class="list-item"><div style="display:flex;align-items:center">'+foto+'<div>'+rank+'<b>'+escapeHtml(linha.titulo)+'</b><small>'+
+      escapeHtml(linha.subtitulo)+'</small></div></div>'+
       '<button class="btn btn-o" type="button" style="margin-top:8px;height:40px;width:100%" onclick="abrirPerfilBabaFamilia(\''+c.id+'\')">Ver perfil</button>'+
       '<button class="btn btn-o" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirCurriculoBaba(\''+c.id+'\')">Ver currículo</button>'+
       '<button class="btn btn-p" type="button" style="margin-top:6px;height:40px;width:100%" onclick="abrirPropostaBabá(\''+c.id+'\',\'mae-proximos\')">Oferecer proposta</button></div>';
     }).join(''):
-      '<p class="hint">Nenhuma babá disponível hoje. Peça para ativarem "Oferecer plantão hoje".</p>';
+      '<p class="hint">Nenhuma babá <strong>aprovada</strong> no momento. Novas babás aparecem aqui após análise dos documentos (até 48 h). Babás podem ativar <strong>Oferecer plantão hoje</strong> para priorizar disponibilidade.</p>');
   }catch(e){ list.innerHTML='<p class="hint">'+escapeHtml(e.message)+'</p>'; }
 }
 
@@ -3096,13 +3786,25 @@ async function abrirPerfilBabaFamilia(id){
   show('mae-baba-perfil');
   try{
     const p=await ic24CarregarPerfilBabaPublico(id);
+    let distLine='';
+    if(typeof ic24OrdenarPorDistanciaRaio==='function'&&ic24Auth.currentUser){
+      ic24InitFirebase();
+      const clientSnap=await ic24Db.collection('clients').doc(ic24Auth.currentUser.uid).get();
+      const patient=clientSnap.data()||{};
+      const sorted=await ic24OrdenarPorDistanciaRaio([{...p,id}],patient,(doc)=>doc,typeof ic24BabaRaioKm==='function'?ic24BabaRaioKm:()=>0);
+      const d=sorted[0];
+      if(d?.distanceKm!=null){
+        distLine=typeof ic24FmtDistanciaKm==='function'?ic24FmtDistanciaKm(d.distanceKm,d.withinRadius):d.distanceKm+' km';
+      }
+    }
     const foto=p.photoUrl?'<img src="'+escapeHtml(p.photoUrl)+'" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:12px;display:block"/>':'';
     const prefs=p.paymentPreferences||{};
     const rec=prefs.paymentSchedule==='semanal'?'Semanal':prefs.paymentSchedule==='quinzenal'?'Quinzenal':'Diária';
-    const endereco=(typeof ic24FormatAddressPublic==='function'?ic24FormatAddressPublic(p):p.address)||[p.city,p.state].filter(Boolean).join(' - ');
+    const nivel=typeof ic24RotuloNivelBaba==='function'?ic24RotuloNivelBaba(p):'Babá';
+    const disp=p.availableToday?'Disponível':'Agenda';
+    // Perfil público: distância sim, endereço NÃO
     box.innerHTML=foto+'<h3 style="margin:0 0 8px">'+escapeHtml(p.fullName)+'</h3>'+
-      '<p class="hint">'+escapeHtml([p.city,p.state].filter(Boolean).join(' - '))+'</p>'+
-      '<p style="font-size:14px"><strong>Endereço:</strong> '+escapeHtml(endereco||'—')+'</p>'+
+      '<p class="hint">'+escapeHtml(nivel+' · '+disp+(distLine?' · Distância '+distLine:''))+'</p>'+
       '<p style="font-size:14px">'+escapeHtml(p.bio||'')+'</p>'+
       '<p><strong>'+escapeHtml(typeof ic24ExibirRateCaregiver==='function'?ic24ExibirRateCaregiver(p):'Consulte agenda/plantão')+'</strong> · Recebimento: '+rec+'</p>'+
       (p.availableToday?'<p style="color:var(--p)">✓ Disponível hoje</p>':'')+
@@ -3131,13 +3833,29 @@ async function abrirCurriculoBaba(id){
 
 function abrirPropostaBabá(id, voltar){
   window._propostaVoltar=voltar||'mae-proximos';
+  if(voltar!=='mae-babas-destino'){
+    window._propostaDestinoId=null;
+    window._propostaDestinoCache=null;
+  }
   document.getElementById('proposta-cuid-id').value=id;
   document.getElementById('proposta-cuid-nome').textContent='Proposta direta à babá selecionada';
+  const d=document.getElementById('proposta-data');
+  const h=document.getElementById('proposta-hora');
+  const fd=document.getElementById('prox-filtro-data');
+  const fh=document.getElementById('prox-filtro-hora');
+  if(d) d.value=fd?.value||new Date().toISOString().slice(0,10);
+  if(h) h.value=fh?.value||'07:00';
   show('mae-baba-proposta');
 }
 
 async function enviarPropostaBaba(){
   const id=document.getElementById('proposta-cuid-id').value;
+  const serviceDate=document.getElementById('proposta-data')?.value||'';
+  const serviceTime=document.getElementById('proposta-hora')?.value||'';
+  if(!serviceDate){ toast('Informe a data do serviço'); return; }
+  if(!serviceTime){ toast('Informe a hora de início'); return; }
+  const destId=window._propostaDestinoId||null;
+  const destMeta=window._propostaDestinoCache||null;
   try{
     await ic24FamiliaProporBaba(id,{
       dailyRate:parseFloat(document.getElementById('proposta-valor').value)||0,
@@ -3145,10 +3863,27 @@ async function enviarPropostaBaba(){
       careNeeds:document.getElementById('proposta-necessidades').value.trim(),
       durationDays:parseInt(document.getElementById('proposta-duracao').value,10)||15,
       message:document.getElementById('proposta-msg').value.trim(),
+      serviceDate,
+      serviceTime,
+      ...(destId?{
+        destinationAvailabilityId:destId,
+        workDestination:destMeta?{
+          country:destMeta.country,
+          state:destMeta.state,
+          city:destMeta.city,
+          postalCode:destMeta.postalCode||'',
+          streetNumber:destMeta.streetNumber||'',
+          periodStart:destMeta.periodStart,
+          periodEnd:destMeta.periodEnd,
+        }:null,
+      }:{}),
     });
-    toast('Proposta enviada!');
+    window._propostaDestinoId=null;
+    window._propostaDestinoCache=null;
+    toast('Proposta enviada! A babá verá em Propostas recebidas.');
     show('mae-ofertas');
     carregarOfertasFamilia();
+    carregarPainelFamilia();
   }catch(e){ toast(e.message||'Erro'); }
 }
 
@@ -3184,10 +3919,14 @@ async function carregarOfertasFamilia(){
     const notifs=await ic24ListarNotificacoesFamilia();
     if(notifBox){
       const avisoMulta=typeof ic24HtmlAvisoMultaCancelamento==='function'?ic24HtmlAvisoMultaCancelamento():'';
-      notifBox.innerHTML=notifs.length?notifs.map(n=>'<div class="list-item" style="border-color:var(--p);background:var(--pl)"><b>🔔 '+escapeHtml(n.caregiverName||'Babá')+'</b><p style="font-size:14px;margin:8px 0">'+escapeHtml(n.message||'')+'</p>'+
-        '<div class="note" style="font-size:12px;margin:8px 0">'+avisoMulta+'</div>'+
-        '<button class="btn btn-p" type="button" style="height:36px;margin-right:6px" onclick="familiaFecharNegocio(\''+n.responseId+'\',true,\''+n.id+'\')">Fechar negócio</button>'+
-        '<button class="btn btn-g" type="button" style="height:36px;background:#fef2f2;color:var(--err);border:1px solid #fecaca" onclick="familiaFecharNegocio(\''+n.responseId+'\',false,\''+n.id+'\')">Recusar</button></div>').join(''):'';
+      notifBox.innerHTML=notifs.length?notifs.map(n=>
+        '<div class="alerta-acao" role="alert">'+
+        '<p class="alerta-titulo">'+escapeHtml(n.caregiverName||'Babá')+' aceitou</p>'+
+        '<p class="alerta-texto">'+escapeHtml(n.message||'Aceitou sua proposta. Feche o negócio para liberar chat, ponto e diário.')+'</p>'+
+        '<div class="note" style="font-size:12px;margin:0 0 12px;animation:none">'+avisoMulta+'</div>'+
+        '<button class="btn btn-p" type="button" style="height:52px;width:100%;font-size:16px;font-weight:800;margin-bottom:8px" onclick="familiaFecharNegocio(\''+n.responseId+'\',true,\''+n.id+'\')">TOQUE AQUI — Fechar negócio</button>'+
+        '<button class="btn btn-g" type="button" style="height:40px;width:100%;background:#fef2f2;color:var(--err);border:1px solid #fecaca" onclick="familiaFecharNegocio(\''+n.responseId+'\',false,\''+n.id+'\')">Recusar</button></div>'
+      ).join(''):'<p class="hint">Nenhum aceite pendente no momento.</p>';
     }
     const ofertas=await ic24ListarOfertasFamilia();
     let html='';
@@ -3218,10 +3957,14 @@ async function familiaFecharNegocio(responseId, accept, notificationId){
     window.open('https://baba-on-3634a.web.app/termos.html','_blank','noopener');
   }
   try{
-    await ic24FamiliaAceitarContraProposta(responseId, accept, notificationId||null);
-    toast(accept?'Negócio fechado — chat liberado!':'Proposta recusada');
-    if(accept) await abrirChatNegocio();
+    const r=await ic24FamiliaAceitarContraProposta(responseId, accept, notificationId||null);
+    toast(accept?'Negócio fechado — chat, ponto e diário liberados!':'Proposta recusada');
+    if(accept){
+      if(r&&r.chatId) await abrirChat(r.chatId,true);
+      else await abrirChatNegocio();
+    }
     carregarOfertasFamilia();
+    carregarPainelFamilia();
   }catch(e){ toast(e.message||'Erro'); }
 }
 
@@ -3245,7 +3988,7 @@ async function carregarPontoFamilia(){
 async function confirmarPontoFamilia(id){
   try{
     await ic24ConfirmarPontoFamilia(id);
-    toast('Diária autenticada pelo contratante');
+    toast('Diária autenticada — se foi saída final, a babá volta à lista para outras famílias');
     carregarPontoFamilia();
   }catch(e){ toast(e.message||'Erro'); }
 }
@@ -3397,8 +4140,8 @@ async function confirmarExcluirConta(){
 async function sairConta(){
   try{
     await ic24SairConta();
-    toast('Sessão encerrada');
-    show('welcome');
+    toast('Sessão encerrada — entre de novo com o e-mail certo');
+    show('login');
   }catch(e){ toast(e.message||'Erro ao sair'); }
 }
 async function esqueciSenha(){
@@ -3430,14 +4173,20 @@ show=function(id){
   }
   _famShowOrig(id);
   if(id==='mae-proximos') carregarProximosFamilia();
+  if(id==='mae-babas-destino') carregarBabasDestinoFamilia();
+  if(id==='baba-minhas-ofertas') renderMinhasOfertasDestino();
   if(id==='mae-curriculo') carregarCurriculoListaFamilia();
   if(id==='mae-avaliar') preencherSelectBabas('avaliar-cuid-id');
   if(id==='mae-recomendacao') preencherSelectBabas('rec-cuid-id');
   if(id==='mae-irregularidade') preencherSelectBabas('irr-cuid-id', true);
   if(id==='mae-denunciar') preencherSelectBabas('den-cuid-id');
   if(id==='mae-ofertas') carregarOfertasFamilia();
-  if(id==='mae-ponto') carregarPontoFamilia();
-  if(id==='mae-diario') carregarDiarioFamilia();
+  if(id==='mae-painel') carregarPainelFamilia();
+  if(id==='baba-painel'){ if(typeof carregarNotifsBaba==='function') carregarNotifsBaba(); if(typeof atualizarMenusNegocioBaba==='function') atualizarMenusNegocioBaba(); if(typeof carregarPropostasRecebidas==='function') carregarPropostasRecebidas(); }
+  if(id==='baba-propostas'){ carregarPropostasRecebidas(); renderOfertasTaxaBloqueio(window._babaPainel||{}); }
+  if(id==='mae-ponto'){ carregarPainelFamilia(); carregarPontoFamilia(); }
+  if(id==='mae-diario'){ carregarPainelFamilia(); carregarDiarioFamilia(); }
+  if(id==='baba-ponto'||id==='baba-diario'){ if(typeof atualizarMenusNegocioBaba==='function') atualizarMenusNegocioBaba(); }
   if(id==='mae-pagamentos') carregarPagamentosFamilia();
   if(id==='baba-agenda') atualizarResumoTaxaAgenda();
   if(id==='baba-plantao-hoje') atualizarResumoTaxaPlantao();
@@ -3459,14 +4208,23 @@ document.addEventListener('click',e=>{
 });
 try{
   ic24InitFirebase();
+  if(typeof ic24AplicarMaxDataNascimento==='function') ic24AplicarMaxDataNascimento();
   ic24Auth.onAuthStateChanged(async (user)=>{
     if(!user||window._ic24IgnorarAuthRedirect) return;
     const on=document.querySelector('.screen.on')?.id;
-    if(on!=='welcome'&&on!=='login') return;
+    // Tela de login: NÃO entrar sozinho — evita misturar autofill (Joana) com sessão antiga (João Paulo).
+    if(on==='login') return;
+    if(on!=='welcome') return;
     try{
-      const snap=await ic24Db.collection('users').doc(user.uid).get();
-      const data=snap.data()||{};
-      const u={ uid:user.uid, role:data.role||'family', fullName:data.fullName||user.email };
+      let u=null;
+      if(typeof ic24ReconciliarPerfilSeguranca==='function'){
+        try{ u=await ic24ReconciliarPerfilSeguranca(); }catch(_){}
+      }
+      if(!u){
+        const snap=await ic24Db.collection('users').doc(user.uid).get();
+        const data=snap.data()||{};
+        u={ uid:user.uid, role:data.role||'family', fullName:data.fullName||user.email, email:user.email };
+      }
       const rota=await ic24NavegarPosLogin(u);
       show(rota.screen);
       if(!rota.complete) toast(rota.message||'Complete seu cadastro');

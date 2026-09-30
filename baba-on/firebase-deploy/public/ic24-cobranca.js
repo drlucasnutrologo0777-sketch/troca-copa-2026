@@ -50,6 +50,49 @@ function ic24PixCopiaColaValor(amount, txid, pixKeyOverride, beneficiaryNameOver
   return payload + ic24PixCrc16(payload);
 }
 
+const IC24_REVIEW_DEMO_EMAIL = 'baba.demo@babaon.test.local';
+/** Conta sandbox do dono — mesma garantia de taxa US$ 1,99 para teste IAP. */
+const IC24_SANDBOX_IAP_EMAILS = ['drlucasnutrologo0777@gmail.com'];
+const IC24_REVIEW_DEMO_OFFER = 'review_demo_iap_offer';
+
+function ic24IsReviewDemoAccount() {
+  const email = String(ic24Auth?.currentUser?.email || '').trim().toLowerCase();
+  return email === IC24_REVIEW_DEMO_EMAIL || IC24_SANDBOX_IAP_EMAILS.includes(email);
+}
+
+/** Conta de revisão Apple: sempre mantém 1× US$ 1,99 pendente para o IAP funcionar. */
+async function ic24EnsureReviewDemoFee(caregiverData) {
+  if (!ic24IsReviewDemoAccount()) return caregiverData || {};
+  ic24InitFirebase();
+  const uid = ic24Auth.currentUser?.uid;
+  const d = caregiverData || {};
+  const pend = Number(d.platformFeePending || 0);
+  if (pend >= IC24_FEE_FIXED_USD - 0.001) return d;
+  const local = {
+    ...d,
+    platformFeePending: IC24_FEE_FIXED_USD,
+    platformFeePendingDiarias: 1,
+    platformFeeCurrency: IC24_FEE_CURRENCY,
+    platformFeePendingOfferId: d.platformFeePendingOfferId || IC24_REVIEW_DEMO_OFFER,
+  };
+  if (!uid) return local;
+  try {
+    await ic24Db.collection('caregivers').doc(uid).set(
+      {
+        platformFeePending: IC24_FEE_FIXED_USD,
+        platformFeePendingDiarias: 1,
+        platformFeeCurrency: IC24_FEE_CURRENCY,
+        platformFeePendingOfferId: local.platformFeePendingOfferId,
+        platformFeeUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
+  } catch (e) {
+    console.warn('review demo fee write', e);
+  }
+  return local;
+}
+
 function ic24PlatformFeePending(d) {
   return Number((d && d.platformFeePending) || 0);
 }
