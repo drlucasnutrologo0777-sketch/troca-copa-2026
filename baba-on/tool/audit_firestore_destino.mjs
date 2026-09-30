@@ -57,24 +57,42 @@ async function signIn(email, password) {
   return j;
 }
 
-async function listCol(token, collectionId, pageSize = 200) {
+async function runQuery(token, collectionId, field, op, value) {
+  const body = {
+    structuredQuery: {
+      from: [{ collectionId }],
+      where: {
+        fieldFilter: {
+          field: { fieldPath: field },
+          op,
+          value: { stringValue: value },
+        },
+      },
+      limit: 200,
+    },
+  };
+  const r = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents:runQuery`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    },
+  );
+  const rows = await r.json();
+  if (r.status === 403) return { docs: [], denied: true };
+  if (!Array.isArray(rows)) throw new Error(`${collectionId} query: ${JSON.stringify(rows).slice(0, 200)}`);
   const out = [];
-  let pageToken = '';
-  do {
-    const q = new URLSearchParams({ pageSize: String(pageSize) });
-    if (pageToken) q.set('pageToken', pageToken);
-    const r = await fetch(
-      `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/${collectionId}?${q}`,
-      { headers: { Authorization: `Bearer ${token}` } },
-    );
-    const j = await r.json();
-    if (r.status === 403) return { docs: out, denied: true };
-    if (j.error) throw new Error(`${collectionId}: ${j.error.message}`);
-    for (const doc of j.documents || []) {
-      out.push({ id: doc.name.split('/').pop(), ...parseFields(doc.fields) });
-    }
-    pageToken = j.nextPageToken || '';
-  } while (pageToken);
+  for (const row of rows) {
+    if (!row.document) continue;
+    out.push({
+      id: row.document.name.split('/').pop(),
+      ...parseFields(row.document.fields),
+    });
+  }
   return { docs: out, denied: false };
 }
 
@@ -96,9 +114,9 @@ try {
   const auth = await signIn(email, pass);
   const tok = auth.idToken;
 
-  const dest = await listCol(tok, 'caregiver_destination_availability');
+  const dest = await runQuery(tok, 'caregiver_destination_availability', 'status', 'EQUAL', 'open');
   if (dest.denied) {
-    report.errors.push('Sem permissão de leitura em caregiver_destination_availability (rules não deployadas?)');
+    report.errors.push('Sem permissão de leitura em destinos open (faça firebase deploy firestore:rules)');
   } else {
     report.stats.destination_total = dest.docs.length;
     report.stats.destination_by_status = {};
@@ -117,11 +135,9 @@ try {
     }
   }
 
-  const offers = await listCol(tok, 'job_offers');
+  const offers = await runQuery(tok, 'job_offers', 'sourceType', 'EQUAL', 'destination');
   if (!offers.denied) {
-    const linked = offers.docs.filter(
-      (o) => o.sourceType === 'destination' || o.destinationAvailabilityId,
-    );
+    const linked = offers.docs;
     report.stats.offers_destination_linked = linked.length;
     for (const o of linked) {
       if (!o.destinationAvailabilityId) {
