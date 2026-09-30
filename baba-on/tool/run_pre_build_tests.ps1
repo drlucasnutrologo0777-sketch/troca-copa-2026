@@ -13,7 +13,7 @@ function Assert-Match($name, $path, $pattern) {
 Assert-Match 'paridade mae-ofertas' 'web_app/index.html' 'Fechar negócio'
 Assert-Match 'destino JS' 'web_app/ic24-destino.js' 'IC24_DESTINO_MIN_DIAS_ANTECEDENCIA'
 Assert-Match 'fechar destino match' 'web_app/ic24-destino.js' 'ic24FecharDestinoSeOfertaMatch'
-Assert-Match 'bundle 21' 'lib/services/web_app_bundle.dart' 'baba_v30_build21'
+Assert-Match 'bundle 22' 'lib/services/web_app_bundle.dart' 'baba_v30_build22'
 Assert-Match 'Podfile 16' 'ios/Podfile' "platform :ios, '16.0'"
 Assert-Match 'rules destino' 'firebase-deploy/firestore.rules' 'caregiver_destination_availability'
 Assert-Match 'IAP' 'web_app/ic24-cobranca.js' 'bo_taxa_manutencao'

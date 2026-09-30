@@ -1,0 +1,10 @@
+Babá ON — 1.0.1 (22) · TestFlight
+
+APPLE (erro 90186 / 90062 resolvido)
+- Train 1.0.0 FECHADO — marketing version = 1.0.1 (BO_BUILD_NAME)
+- Build number = 22 (CFBundleVersion)
+
+Codemagic: troca-copa-2026 → Babá ON — iOS TestFlight
+https://codemagic.io/apps
+
+Após upload OK: ASC_LAST_UPLOADED_BUILD.txt = 22

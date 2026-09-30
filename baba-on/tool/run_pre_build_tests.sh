@@ -5,4 +5,4 @@ bash tool/verify_build20_regression.sh
 bash tool/verify_build_number.sh
 node tool/test_destino_familia_match.mjs
 node tool/audit_firestore_destino.mjs
-echo "OK run_pre_build_tests — build 21"
+echo "OK run_pre_build_tests — 1.0.1+22"

@@ -297,8 +297,8 @@ workflows:
         CERTIFICATE_PRIVATE_KEY_PATH: ../ios/codemagic_signing/ios_distribution_private_key.pem
         BUNDLE_ID: com.babaon.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
-        BO_BUILD_NAME: "1.0.0"
-        BO_BUILD_NUMBER: "21"
+        BO_BUILD_NAME: "1.0.1"
+        BO_BUILD_NUMBER: "22"
       flutter: 3.41.9
       xcode: latest
       cocoapods: default
@@ -318,7 +318,11 @@ workflows:
             echo "ERRO: pubspec +${PUBSPEC_NUM} != BO_BUILD_NUMBER ${BO_BUILD_NUMBER}"
             exit 1
           fi
-          grep -q "baba_v30_build21" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp deve ser baba_v30_build21"; exit 1; }
+          grep -q "baba_v30_build22" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp deve ser baba_v30_build22"; exit 1; }
+          if [ "${BO_BUILD_NAME}" = "1.0.0" ]; then
+            echo "ERRO: train 1.0.0 fechado na Apple (90186) — use BO_BUILD_NAME >= 1.0.1"
+            exit 1
+          fi
           grep -q "platform :ios, '16.0'" ios/Podfile || { echo "ERRO: ios/Podfile deve ter platform :ios, 16.0"; exit 1; }
           grep -q "IPHONEOS_DEPLOYMENT_TARGET = 16.0" ios/Runner.xcodeproj/project.pbxproj || { echo "ERRO: Xcode deployment target 16.0"; exit 1; }
           ASC_LAST=16
