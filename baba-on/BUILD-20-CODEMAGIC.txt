@@ -1,0 +1,15 @@
+Babá ON — Build 1.0.0+20 · CocoaPods fix iOS 16
+
+NÚMEROS (todos = 20)
+pubspec 1.0.0+20 · BO_BUILD_NUMBER 20 · baba_v30_build20
+ASC_LAST_UPLOADED_BUILD.txt = 16 (até upload OK)
+
+TESTES ANTES DO BUILD
+bash tool/run_pre_build_tests.sh
+
+iOS
+Podfile + Xcode IPHONEOS_DEPLOYMENT_TARGET = 16.0
+Codemagic: flutter build ios --config-only antes de pod install
+
+LINK
+https://codemagic.io/apps → troca-copa-2026 → Babá ON — iOS TestFlight

@@ -1,5 +1,5 @@
-# iOS mínimo alinhado ao Flutter 3.41+ no Codemagic (pod Flutter exige >= 13; plugins seguros em 15).
-platform :ios, '15.0'
+# iOS mínimo alinhado ao Flutter 3.41 + Xcode latest no Codemagic (pod Flutter exige >= 15; CI usa 16).
+platform :ios, '16.0'
 
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
@@ -38,7 +38,7 @@ target 'Runner' do
 end
 
 post_install do |installer|
-  ios_deployment = '15.0'
+  ios_deployment = '16.0'
   installer.pods_project.build_configurations.each do |config|
     config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = ios_deployment
   end
