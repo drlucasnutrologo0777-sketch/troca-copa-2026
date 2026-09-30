@@ -9,6 +9,9 @@ grep -q 'ic24CepDigits' web_app/ic24-destino.js
 grep -q 'mae-babas-destino' web_app/index.html
 grep -q 'Ofertas — babás de outros lugares' web_app/index.html
 grep -q 'caregiver_destination_availability' firebase-deploy/firestore.rules
+grep -q 'matchedFamilyId' firebase-deploy/firestore.rules
+grep -q 'ic24FecharDestinoSeOfertaMatch' web_app/ic24-destino.js
+test -f tool/audit_firestore_destino.mjs
 grep -q 'ic24ExcluirTrabalhoOutroLugar' web_app/ic24-destino.js
 grep -q 'platform :ios, '\''15.0'\''' ios/Podfile
 test -f tool/test_destino_familia_match.mjs

@@ -198,6 +198,24 @@ async function ic24ExcluirTrabalhoOutroLugar(id) {
   await ref.delete();
 }
 
+/** Ao fechar negócio, marca anúncio destino como matched (para sumir da lista família). */
+async function ic24FecharDestinoSeOfertaMatch(offer) {
+  if (!offer?.destinationAvailabilityId) return;
+  ic24InitFirebase();
+  const destId = String(offer.destinationAvailabilityId);
+  const ref = ic24Db.collection(IC24_DESTINO_COLLECTION).doc(destId);
+  const snap = await ref.get();
+  if (!snap.exists || snap.data().status !== 'open') return;
+  const offerId = offer.id || offer.offerId || null;
+  const familyId = offer.familyId || ic24Auth.currentUser?.uid || null;
+  await ref.update({
+    status: 'matched',
+    matchedOfferId: offerId,
+    matchedFamilyId: familyId,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+}
+
 function ic24DestinoCombinaFamilia(anuncio, fam) {
   fam = fam || {};
   anuncio = anuncio || {};

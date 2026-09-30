@@ -295,8 +295,14 @@ service cloud.firestore {
         || (isCaregiver()
           && resource.data.caregiverId == request.auth.uid
           && resource.data.status == 'open'
-          && request.resource.data.status in ['open', 'cancelled']
-          && request.resource.data.caregiverId == resource.data.caregiverId);
+          && request.resource.data.status in ['open', 'cancelled', 'matched']
+          && request.resource.data.caregiverId == resource.data.caregiverId)
+        || (isFamily()
+          && resource.data.status == 'open'
+          && request.resource.data.status == 'matched'
+          && request.resource.data.matchedFamilyId == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['status', 'matchedOfferId', 'matchedFamilyId', 'updatedAt']));
       allow delete: if isAdmin()
         || (isCaregiver() && resource.data.caregiverId == request.auth.uid);
     }

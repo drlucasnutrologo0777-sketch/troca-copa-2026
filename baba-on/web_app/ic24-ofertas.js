@@ -718,6 +718,13 @@ async function ic24FamiliaAceitarContraProposta(responseId, accept, notification
     if (typeof ic24ComplianceNegocioFechadoNoApp === 'function') {
       ic24ComplianceNegocioFechadoNoApp(familyId, r.caregiverId, r.offerId).catch(() => {});
     }
+    if (typeof ic24FecharDestinoSeOfertaMatch === 'function' && offer.destinationAvailabilityId) {
+      try {
+        await ic24FecharDestinoSeOfertaMatch({ ...offer, id: r.offerId, familyId });
+      } catch (_destErr) {
+        console.warn('ic24FecharDestinoSeOfertaMatch', _destErr);
+      }
+    }
     return { chatId, offerId: r.offerId, caregiverId: r.caregiverId };
   }
   await ic24Db.collection('job_offers').doc(r.offerId).update({

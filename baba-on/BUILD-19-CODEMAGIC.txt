@@ -19,6 +19,11 @@ NOVO NO 19 (além do 18)
 • Matching CEP + regra 15 dias no início do trabalho
 • Script test_destino_familia_match.mjs
 
+FIREBASE (obrigatório para destino gravar sem permission-denied)
+cd baba-on/firebase-deploy
+firebase deploy --only firestore:rules,firestore:indexes
+node ../tool/audit_firestore_destino.mjs
+
 ORDEM
 1. git push main
 2. Codemagic → Babá ON — iOS TestFlight
