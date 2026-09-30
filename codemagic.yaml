@@ -368,10 +368,9 @@ workflows:
           grep IPHONEOS_DEPLOYMENT_TARGET ios/Runner.xcodeproj/project.pbxproj | head -3
           test -f ios/Flutter/Generated.xcconfig || { echo "ERRO: rode flutter pub get antes do pod install"; exit 1; }
           flutter build ios --config-only --no-codesign
-          cd ios
-          rm -rf Pods Podfile.lock .symlinks
-          pod install --repo-update
-          test -d Pods/Flutter || { echo "ERRO: pod Flutter nao instalado"; exit 1; }
+          test -f ios/Podfile.lock || { echo "ERRO: Podfile.lock ausente apos config-only"; exit 1; }
+          grep -q Flutter ios/Podfile.lock || { echo "ERRO: Flutter ausente no Podfile.lock"; exit 1; }
+          echo "OK CocoaPods (flutter config-only + Podfile.lock)"
       - name: Build IPA
         script: |
           set -e
