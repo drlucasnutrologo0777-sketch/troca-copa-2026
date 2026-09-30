@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-# Build 18 — paridade 16/17 + destino + minhas ofertas.
+# Legado build 18 — use verify_build19_regression.sh
 set -euo pipefail
-bash tool/verify_web_build.sh
-bash tool/verify_build_number.sh
+bash tool/verify_build19_regression.sh
 grep -q 'bo_taxa_manutencao' web_app/ic24-cobranca.js
 grep -q 'ic24CriarChatNegocioFechado' web_app/firebase-ic24.js
 grep -q 'chatUnlocked: true' web_app/firebase-ic24.js
@@ -13,6 +12,9 @@ grep -q 'ic24-compliance.js' web_app/index.html
 grep -q 'ic24-destino.js' web_app/index.html
 grep -q 'caregiver_destination_availability' web_app/ic24-destino.js
 grep -q 'ic24ExcluirTrabalhoOutroLugar' web_app/ic24-destino.js
+grep -q 'IC24_DESTINO_MIN_DIAS_ANTECEDENCIA' web_app/ic24-destino.js
+grep -q 'ic24CepDigits' web_app/ic24-destino.js
+grep -q 'Ofertas — babás de outros lugares' web_app/index.html
 grep -q 'caregiver_destination_availability' firebase-deploy/firestore.rules
 grep -q 'compliance_events' firebase-deploy/firestore.rules
 grep -q 'deleteMyAccount' firebase-deploy/functions/index.js

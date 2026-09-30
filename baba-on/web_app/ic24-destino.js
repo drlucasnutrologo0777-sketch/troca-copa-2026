@@ -1,6 +1,23 @@
 /* Babá ON — Trabalhar em outro lugar (país / estado / cidade). Tópico à parte da agenda local. */
 
 const IC24_DESTINO_COLLECTION = 'caregiver_destination_availability';
+/** Início do trabalho: no mínimo N dias após a publicação do anúncio. */
+const IC24_DESTINO_MIN_DIAS_ANTECEDENCIA = 15;
+
+function ic24DateOnlyIso(d) {
+  const x = d instanceof Date ? d : new Date();
+  return x.toISOString().slice(0, 10);
+}
+
+function ic24AddDaysIso(isoDate, days) {
+  const d = new Date(String(isoDate).slice(0, 10) + 'T12:00:00Z');
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+function ic24CepDigits(s) {
+  return String(s || '').replace(/\D/g, '');
+}
 
 function ic24NormLocalText(s) {
   return String(s || '')
@@ -83,6 +100,16 @@ async function ic24PublicarTrabalhoOutroLugar(payload) {
   const periodEnd = String(payload.periodEnd || '').trim();
   if (!periodStart || !periodEnd) throw new Error('Informe data início e fim do período');
   if (periodEnd < periodStart) throw new Error('Data fim deve ser após a data início');
+  const minStart = ic24AddDaysIso(ic24DateOnlyIso(), IC24_DESTINO_MIN_DIAS_ANTECEDENCIA);
+  if (periodStart < minStart) {
+    throw new Error(
+      'Data de início deve ser pelo menos ' +
+        IC24_DESTINO_MIN_DIAS_ANTECEDENCIA +
+        ' dias após hoje (' +
+        minStart +
+        ' ou depois)',
+    );
+  }
 
   const targetDiarias = Math.max(1, parseInt(payload.targetDiarias, 10) || 1);
   const dailyRate = Number(payload.dailyRate) || 0;
@@ -173,15 +200,25 @@ async function ic24ExcluirTrabalhoOutroLugar(id) {
 
 function ic24DestinoCombinaFamilia(anuncio, fam) {
   fam = fam || {};
+  anuncio = anuncio || {};
   const fc = ic24NormLocalText(fam.city);
   const fs = ic24NormLocalText(fam.state);
   const fco = ic24NormLocalText(fam.country || 'Brasil');
   const ac = ic24NormLocalText(anuncio.city);
   const as = ic24NormLocalText(anuncio.state);
   const aco = ic24NormLocalText(anuncio.country);
-  if (fc && ac && fc === ac) return true;
+  const fcep = ic24CepDigits(fam.cep || fam.postalCode);
+  const acep = ic24CepDigits(anuncio.postalCode);
+  if (fcep.length >= 8 && acep.length >= 8 && fcep === acep) return true;
+  if (fcep.length >= 5 && acep.length >= 5 && fcep.slice(0, 5) === acep.slice(0, 5)) {
+    if (!fc || !ac || fc === ac) return true;
+  }
+  if (fc && ac && fc === ac) {
+    if (fs && as && fs !== as) return false;
+    return true;
+  }
   if (fs && as && fs === as && (!fc || !ac)) return true;
-  if (fco && aco && fco === aco && !fc && !ac) return true;
+  if (fco && aco && fco === aco && !fc && !ac && !fs && !as) return true;
   return false;
 }
 
@@ -198,6 +235,8 @@ async function ic24ListarTrabalhosOutroLugarParaFamilia(opts) {
     city: fam.city || u.city || '',
     state: fam.state || u.state || '',
     country: fam.country || u.country || 'Brasil',
+    cep: fam.cep || u.cep || '',
+    postalCode: fam.postalCode || fam.cep || u.postalCode || u.cep || '',
   };
 
   const onlyMatch = !(opts && opts.showAll);

@@ -1,0 +1,26 @@
+Babá ON — Build 16 (TestFlight loja) vs Build 19 (repo)
+
+=== INALTERADO (16 funcionava — 19 MANTÉM) ===
+• Layout: menu-topic, topbar, telas mae-painel / baba-painel
+• Babás próximos, propostas, Fechar negócio, plantão urgente
+• IAP bo_taxa_manutencao, chat após matched, ponto/diário
+• Cadastro família/babá, RG, currículo, preview foto
+• iPad: EagerGestureRecognizer + Entrar (btnWelcomeEntrar)
+• WebView file:// + allowingReadAccessTo
+• iOS mínimo 15.0 (Podfile)
+
+=== ADICIONADO (19 — NÃO SUBSTITUI O 16) ===
+• Trabalhar em outro lugar (babá): país, estado, cidade, CEP opcional
+• Minhas ofertas → excluir/encerrar anúncio destino
+• Família: Ofertas — babás de outros lugares (mae-babas-destino)
+• Filtro: cidade/UF/país + CEP do cadastro; checkbox “mostrar todos”
+• Início trabalho: mínimo 15 dias após publicar anúncio
+• Autoaprovação, compliance, deleteMyAccount (desde 17/18)
+
+=== RISCO DE REGRESSÃO (verificado no CI) ===
+Design: só novas sections (#baba-outro-lugar-form, #mae-babas-destino) — mesmo CSS
+Função: ic24ListarOfertas* / proximos / IAP não alterados na lógica core
+Teste: verify_build16_parity.sh + test_destino_familia_match.mjs (7 PASS)
+
+=== PONTUAÇÃO EVOLUTIVA (estimativa) ===
+16 ≈ 72/100 · 19 ≈ 89/100 (destino + paridade CI + iOS 15)

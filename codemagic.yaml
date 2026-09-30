@@ -298,7 +298,7 @@ workflows:
         BUNDLE_ID: com.babaon.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         BO_BUILD_NAME: "1.0.0"
-        BO_BUILD_NUMBER: "18"
+        BO_BUILD_NUMBER: "19"
       flutter: 3.41.9
       xcode: latest
       cocoapods: default
@@ -311,6 +311,8 @@ workflows:
           echo "Diretorio: $(pwd)"
           test -f web_app/index.html || { echo "ERRO: pasta baba-on nao encontrada"; exit 1; }
           bash tool/verify_web_build.sh
+          bash tool/verify_build16_parity.sh
+          bash tool/verify_build19_regression.sh
           bash tool/verify_build_number.sh
           PUBSPEC_NUM=$(grep '^version:' pubspec.yaml | sed -E 's/version: .*\+([0-9]+)/\1/')
           if [ "$PUBSPEC_NUM" != "$BO_BUILD_NUMBER" ]; then
@@ -321,7 +323,9 @@ workflows:
           grep -q "ic24PreviewFotoPerfil" web_app/ic24-curriculo.js || { echo "ERRO: preview foto perfil ausente"; exit 1; }
           grep -q "curriculo-viewer" web_app/index.html || { echo "ERRO: visualizador curriculo ausente"; exit 1; }
           grep -q "validarEnderecoFam" web_app/index.html || { echo "ERRO: fix cadastro fam?lia ausente"; exit 1; }
-          grep -q "baba_v30_build18" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp deve ser baba_v30_build18 (web_app_bundle.dart)"; exit 1; }
+          grep -q "baba_v30_build19" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp deve ser baba_v30_build19 (web_app_bundle.dart)"; exit 1; }
+          grep -q "Ofertas — babás de outros lugares" web_app/index.html || { echo "ERRO: topico família destino ausente"; exit 1; }
+          grep -q "IC24_DESTINO_MIN_DIAS_ANTECEDENCIA" web_app/ic24-destino.js || { echo "ERRO: regra 15 dias destino"; exit 1; }
           grep -q "ic24-destino.js" web_app/index.html || { echo "ERRO: ic24-destino.js ausente (trabalhar em outro lugar)"; exit 1; }
           grep -q "baba-minhas-ofertas" web_app/index.html || { echo "ERRO: tela Minhas ofertas ausente"; exit 1; }
           grep -q "caregiver_destination_availability" firebase-deploy/firestore.rules || { echo "ERRO: rules destino ausentes — copie firebase-deploy para o repo"; exit 1; }

@@ -1,0 +1,25 @@
+Babá ON — Build 1.0.0+19 · Codemagic
+
+NÚMEROS (todos = 19)
+[ ] pubspec.yaml → 1.0.0+19
+[ ] ios/Flutter/Version.xcconfig → FLUTTER_BUILD_NUMBER=19
+[ ] ios/BO_IOS_BUILD.txt → 19
+[ ] web_app/index.html → <!-- Baba ON iOS build 1.0.0+19 -->
+[ ] lib/services/web_app_bundle.dart → baba_v30_build19
+[ ] troca_copa_app/codemagic.yaml → BO_BUILD_NUMBER: "19"
+[ ] ios/ASC_LAST_UPLOADED_BUILD.txt → 16 (até upload Apple OK)
+
+REGRESSÃO vs BUILD 16
+bash tool/verify_build16_parity.sh
+bash tool/verify_build19_regression.sh
+node tool/test_destino_familia_match.mjs
+
+NOVO NO 19 (além do 18)
+• Tópico família: Ofertas — babás de outros lugares (país/estado/cidade/CEP do cadastro)
+• Matching CEP + regra 15 dias no início do trabalho
+• Script test_destino_familia_match.mjs
+
+ORDEM
+1. git push main
+2. Codemagic → Babá ON — iOS TestFlight
+3. Upload OK → ASC_LAST_UPLOADED_BUILD.txt = 19
