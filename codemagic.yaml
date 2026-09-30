@@ -310,6 +310,8 @@ workflows:
           echo "========== BABA ON ? BUILD (pubspec) =========="
           echo "Diretorio: $(pwd)"
           test -f web_app/index.html || { echo "ERRO: pasta baba-on nao encontrada"; exit 1; }
+          find tool -name '*.sh' -exec sed -i '' 's/\r$//' {} +
+          chmod +x tool/*.sh
           bash tool/run_pre_build_tests.sh
           PUBSPEC_NUM=$(grep '^version:' pubspec.yaml | sed -E 's/version: .*\+([0-9]+)/\1/')
           if [ "$PUBSPEC_NUM" != "$BO_BUILD_NUMBER" ]; then

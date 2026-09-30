@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Le CFBundleVersion de um .ipa (Payload/*.app/Info.plist — nao assume Runner.app).
-set -euo pipefail
+set -eu
 IPA="${1:?informe caminho do .ipa}"
 if [ ! -f "$IPA" ]; then
   echo "ERRO: IPA nao encontrado: $IPA" >&2

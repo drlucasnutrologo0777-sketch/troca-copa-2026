@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Pré-build Codemagic / local — regressão + simulações.
-set -euo pipefail
+set -eu
 cd "$(dirname "$0")/.."
 bash tool/verify_build20_regression.sh
 bash tool/verify_build_number.sh
