@@ -111,6 +111,17 @@ async function ic24ListarBabasProximos(need) {
   const snap = await ic24Db.collection('caregivers').where('approved', '==', true).limit(100).get();
   let list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   list = list.filter((c) => !c.activeFamilyId);
+  const famEmail = familyId
+    ? (await ic24Db.collection('users').doc(familyId).get()).data()?.email
+    : '';
+  if (typeof ic24IsSandboxMarketplaceEmail === 'function' && !ic24IsSandboxMarketplaceEmail(famEmail)) {
+    const cgUsers = await ic24Db.collection('users').where('role', '==', 'caregiver').get();
+    const sandboxIds = new Set();
+    cgUsers.forEach((d) => {
+      if (ic24IsSandboxMarketplaceEmail(d.data()?.email)) sandboxIds.add(d.id);
+    });
+    list = list.filter((c) => !sandboxIds.has(c.id));
+  }
   const filtro = need || {
     data: new Date().toISOString().slice(0, 10),
     hora: null,
@@ -276,6 +287,16 @@ async function ic24FamiliaProporBaba(
   const userSnap = await ic24Db.collection('users').doc(familyId).get();
   const cgSnap = await ic24Db.collection('caregivers').doc(caregiverId).get();
   if (!cgSnap.exists) throw new Error('Babá não encontrado');
+  const cgUserSnap = await ic24Db.collection('users').doc(caregiverId).get();
+  const cgEmail = cgUserSnap.data()?.email;
+  const famEmail = userSnap.data()?.email;
+  if (
+    typeof ic24IsSandboxMarketplaceEmail === 'function' &&
+    ic24IsSandboxMarketplaceEmail(cgEmail) &&
+    !ic24IsSandboxMarketplaceEmail(famEmail)
+  ) {
+    throw new Error('Este perfil é de demonstração — escolha uma babá real aprovada.');
+  }
   const ref = ic24Db.collection('job_offers').doc();
   const data = {
     id: ref.id,

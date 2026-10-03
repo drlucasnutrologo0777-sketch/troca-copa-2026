@@ -682,6 +682,16 @@ async function ic24ExcluirConta(senha) {
   return res.data || { ok: true };
 }
 
+/** Contas demo/sandbox — não entram no marketplace para famílias reais. */
+function ic24IsSandboxMarketplaceEmail(email) {
+  const e = String(email || '').trim().toLowerCase();
+  if (!e) return false;
+  if (e.endsWith('@babaon.test.local') || e.endsWith('@ic24test.local')) return true;
+  if (e.endsWith('@example.com')) return true;
+  if (/^(jp44|joana44|maria44)@gmail\.com$/i.test(e)) return true;
+  return false;
+}
+
 async function ic24RecuperarSenha(email) {
   ic24InitFirebase();
   const addr = (email || '').trim().toLowerCase();
