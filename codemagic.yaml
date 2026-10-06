@@ -124,7 +124,7 @@ workflows:
         BUNDLE_ID: com.idosocare24h.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         IC24_BUILD_NAME: "2.0.2"
-        IC24_BUILD_NUMBER: "71"
+        IC24_BUILD_NUMBER: "72"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -153,23 +153,47 @@ workflows:
       - name: Perfil App Store (cria se nao existir)
         script: |
           set -e
-          API_KEY="$APP_STORE_CONNECT_API_KEY_PATH"
-          CERT_KEY="$CERTIFICATE_PRIVATE_KEY_PATH"
-          if [ ! -f "$CERT_KEY" ]; then
-            echo "ERRO: chave privada nao encontrada em $CERT_KEY"
+          if [ -f tool/ci_apple_signing.sh ]; then
+            bash tool/ci_apple_signing.sh
+          else
+            echo "=== assinatura inline v4 (sem G279) ==="
+            LEGACY_BAD_TEAM="G279FN9YW7"
+            EXPORT_PLIST="ios/codemagic_signing/ExportOptions.plist"
+            P12="ios/codemagic_signing/distribution.p12"
+            PEM="${CERTIFICATE_PRIVATE_KEY_PATH:-../ios/codemagic_signing/ios_distribution_private_key.pem}"
+            API_KEY="${APP_STORE_CONNECT_API_KEY_PATH}"
+            PROV="ios/codemagic_signing/app_store.mobileprovision"
+            export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
+            CUR=$(/usr/libexec/PlistBuddy -c "Print :teamID" "$EXPORT_PLIST" 2>/dev/null || true)
+            if [ "$CUR" = "$LEGACY_BAD_TEAM" ]; then
+              /usr/libexec/PlistBuddy -c "Delete :teamID" "$EXPORT_PLIST" 2>/dev/null || true
+            fi
+            unset APP_STORE_CONNECT_TEAM_ID APPLE_TEAM_ID CM_TEAM_ID TEAM_ID 2>/dev/null || true
+            keychain initialize
+            if [ -f "$P12" ]; then
+              keychain add-certificates --certificate "$P12" --certificate-password "$CM_CERTIFICATE_PASSWORD"
+            fi
+            if [ -f "$PROV" ]; then
+              UUID=$(security cms -D -i "$PROV" | plutil -extract UUID raw -)
+              PROV_TEAM=$(security cms -D -i "$PROV" | plutil -extract TeamIdentifier.0 raw - 2>/dev/null || true)
+              mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+              cp "$PROV" "$HOME/Library/MobileDevice/Provisioning Profiles/${UUID}.mobileprovision"
+              if [ -n "$PROV_TEAM" ]; then
+                /usr/libexec/PlistBuddy -c "Add :teamID string ${PROV_TEAM}" "$EXPORT_PLIST" 2>/dev/null \
+                  || /usr/libexec/PlistBuddy -c "Set :teamID ${PROV_TEAM}" "$EXPORT_PLIST" 2>/dev/null || true
+              fi
+              xcode-project use-profiles --project ios/Runner.xcodeproj
+              exit 0
+            fi
+            export CERTIFICATE_PRIVATE_KEY="$(cat "$PEM")"
+            if app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create --verbose \
+              --certificate-key=@file:"$PEM"; then
+              xcode-project use-profiles --project ios/Runner.xcodeproj
+              exit 0
+            fi
+            echo "FALHOU: baixe app_store.mobileprovision em developer.apple.com e suba no GitHub"
             exit 1
           fi
-          export APP_STORE_CONNECT_PRIVATE_KEY="$(cat "$API_KEY")"
-          export CERTIFICATE_PRIVATE_KEY="$(cat "$CERT_KEY")"
-          keychain initialize
-          echo "Buscando/criando certificado e perfil para $BUNDLE_ID ..."
-          app-store-connect fetch-signing-files "$BUNDLE_ID" \
-            --type IOS_APP_STORE \
-            --create \
-            --certificate-key=@file:"$CERT_KEY" \
-            --verbose
-          keychain add-certificates
-          xcode-project use-profiles --project ios/Runner.xcodeproj
       - name: Flutter pub get
         script: |
           set -e
@@ -298,7 +322,7 @@ workflows:
         BUNDLE_ID: com.babaon.app
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
         BO_BUILD_NAME: "1.0.1"
-        BO_BUILD_NUMBER: "22"
+        BO_BUILD_NUMBER: "23"
       flutter: 3.41.9
       xcode: latest
       cocoapods: default
@@ -318,7 +342,8 @@ workflows:
             echo "ERRO: pubspec +${PUBSPEC_NUM} != BO_BUILD_NUMBER ${BO_BUILD_NUMBER}"
             exit 1
           fi
-          grep -q "baba_v30_build22" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp deve ser baba_v30_build22"; exit 1; }
+          grep -q "baba_v30_build23" lib/services/web_app_bundle.dart || { echo "ERRO: bundleStamp deve ser baba_v30_build23"; exit 1; }
+          test -f web_app/logo.png || { echo "ERRO: web_app/logo.png ausente (tela inicial)"; exit 1; }
           if [ "${BO_BUILD_NAME}" = "1.0.0" ]; then
             echo "ERRO: train 1.0.0 fechado na Apple (90186) — use BO_BUILD_NAME >= 1.0.1"
             exit 1
