@@ -156,16 +156,17 @@ workflows:
           echo "=== IC24 assinatura manual v5 (sem fetch Apple / sem G279) ==="
           EXPORT_PLIST="ios/codemagic_signing/ExportOptions.plist"
           P12="../ios/codemagic_signing/distribution.p12"
-          PROFILE="../ios/codemagic_signing/app_store.mobileprovision"
-          if [ ! -f "$PROFILE" ]; then
-            PROFILE="ios/codemagic_signing/app_store.mobileprovision"
+          [ -f "$P12" ] || P12="ios/codemagic_signing/distribution.p12"
+          PROFILE="ios/codemagic_signing/app_store.mobileprovision"
+          USE_MANUAL=0
+          if [ -f "$PROFILE" ] && security cms -D -i "$PROFILE" 2>/dev/null | grep -q "com.idosocare24h.app"; then
+            USE_MANUAL=1
           fi
-          if [ ! -f "$P12" ]; then
-            P12="ios/codemagic_signing/distribution.p12"
-          fi
-          if [ ! -f "$PROFILE" ]; then
-            echo "ERRO: app_store.mobileprovision nao esta no GitHub (ios/codemagic_signing/)"
-            exit 1
+          if [ "$USE_MANUAL" = "0" ]; then
+            echo "Perfil Idoso nao no repo — tentando ci_apple_signing (sem G279)..."
+            test -f tool/ci_apple_signing.sh || { echo "ERRO: faca git push do fix"; exit 1; }
+            bash tool/ci_apple_signing.sh
+            exit 0
           fi
           /usr/libexec/PlistBuddy -c "Delete :teamID" "$EXPORT_PLIST" 2>/dev/null || true
           unset APP_STORE_CONNECT_TEAM_ID APPLE_TEAM_ID CM_TEAM_ID TEAM_ID 2>/dev/null || true
