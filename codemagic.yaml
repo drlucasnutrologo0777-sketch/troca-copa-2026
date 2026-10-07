@@ -105,7 +105,7 @@ workflows:
   idoso-care-ios:
     name: Idoso Care 24H ? iOS TestFlight
     max_build_duration: 90
-    instance_type: mac_mini_m2
+    instance_type: mac_mini_m1
     working_directory: idoso-care-24h
     # Sem push automatico — evita fila/cancel com Babá ON. Inicie MANUAL no Codemagic.
 
