@@ -107,17 +107,7 @@ workflows:
     max_build_duration: 90
     instance_type: mac_mini_m2
     working_directory: idoso-care-24h
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: main
-          include: true
-      cancel_previous_builds: false
-    when:
-      changeset:
-        includes:
-          - 'idoso-care-24h/'
+    # Sem push automatico — evita fila/cancel com Babá ON. Inicie MANUAL no Codemagic.
 
     environment:
       vars:
