@@ -1,0 +1,20 @@
+POR QUE DEU 403 G279 DE NOVO
+============================
+O certificado .p12 no GitHub e do time ANTIGO (G279).
+A Apple NAO deixa criar perfil so com API enquanto isso.
+
+UNICA SAIDA (10 minutos)
+========================
+1) Entre: https://developer.apple.com/account/resources/profiles/list
+2) Profiles -> Distribution -> App Store
+3) Ache: com.idosocare24h.app (Idoso Care 24H)
+4) Download do arquivo .mobileprovision
+5) Renomeie para: app_store.mobileprovision
+6) Coloque na pasta do PC:
+   idoso-care-24h\ios\codemagic_signing\
+7) GitHub -> upload SO esse arquivo:
+   https://github.com/drlucasnutrologo0777-sketch/troca-copa-2026/upload/main
+   (arraste para idoso-care-24h/ios/codemagic_signing/)
+8) Codemagic -> Idoso Care -> build de novo
+
+NAO use o perfil do Troca Copa (com.mycompany.trocafigurinha).
