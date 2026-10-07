@@ -113,7 +113,11 @@ workflows:
       branch_patterns:
         - pattern: main
           include: true
-      cancel_previous_builds: true
+      cancel_previous_builds: false
+    when:
+      changeset:
+        includes:
+          - 'idoso-care-24h/'
 
     environment:
       vars:
@@ -300,7 +304,11 @@ workflows:
       branch_patterns:
         - pattern: main
           include: true
-      cancel_previous_builds: true
+      cancel_previous_builds: false
+    when:
+      changeset:
+        includes:
+          - 'baba-on/'
 
     environment:
       vars:
@@ -508,7 +516,11 @@ workflows:
       branch_patterns:
         - pattern: main
           include: true
-      cancel_previous_builds: true
+      cancel_previous_builds: false
+    when:
+      changeset:
+        includes:
+          - 'medico-de-casa/'
 
     environment:
       vars:
