@@ -29,8 +29,8 @@ if [ -n "${IC24_BUILD_NUMBER:-}" ] && [ "$IC24_BUILD_NUMBER" != "$PUBSPEC_NUM" ]
   echo "ERRO: IC24_BUILD_NUMBER (${IC24_BUILD_NUMBER}) != pubspec (+${PUBSPEC_NUM})"
   exit 1
 fi
-if [ "$PUBSPEC_NUM" -le 66 ]; then
-  echo "ERRO: build ${PUBSPEC_NUM} <= 66 — Apple rejeita DUPLICATE (66 ja no TestFlight)"
+if [ "$PUBSPEC_NUM" -le 72 ]; then
+  echo "ERRO: build ${PUBSPEC_NUM} <= 72 — Apple rejeita DUPLICATE (72 ja no TestFlight)"
   exit 1
 fi
 

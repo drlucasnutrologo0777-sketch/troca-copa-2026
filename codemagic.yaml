@@ -118,8 +118,8 @@ workflows:
         BUNDLE_ID: com.idosocare24h.app
         IC24_APPLE_TEAM_ID: G279FN9YW7
         CM_CERTIFICATE_PASSWORD: TrocaCopa2026
-        IC24_BUILD_NAME: "2.0.2"
-        IC24_BUILD_NUMBER: "72"
+        IC24_BUILD_NAME: "2.0.3"
+        IC24_BUILD_NUMBER: "73"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -164,13 +164,13 @@ workflows:
       - name: Build IPA
         script: |
           set -e
-          echo "Gerando Idoso Care ${IC24_BUILD_NAME} (${IC24_BUILD_NUMBER}) ? trains 2.0.0/2.0.1 fechados na Apple"
-          if [ "$IC24_BUILD_NUMBER" -le 66 ]; then
-            echo "ERRO: build deve ser > 66 (66 ja enviado ao TestFlight ? DUPLICATE)"
+          echo "Gerando Idoso Care ${IC24_BUILD_NAME} (${IC24_BUILD_NUMBER}) ? trains 2.0.0–2.0.2 fechados na Apple"
+          if [ "$IC24_BUILD_NUMBER" -le 72 ]; then
+            echo "ERRO: build deve ser > 72 (72 ja enviado ? DUPLICATE)"
             exit 1
           fi
-          if [ "$IC24_BUILD_NAME" = "2.0.0" ] || [ "$IC24_BUILD_NAME" = "2.0.1" ]; then
-            echo "ERRO: train ${IC24_BUILD_NAME} fechado na Apple ? use 2.0.2+"
+          if [ "$IC24_BUILD_NAME" = "2.0.0" ] || [ "$IC24_BUILD_NAME" = "2.0.1" ] || [ "$IC24_BUILD_NAME" = "2.0.2" ]; then
+            echo "ERRO: train ${IC24_BUILD_NAME} fechado na Apple ? use 2.0.3+"
             exit 1
           fi
           grep -q 'allowingReadAccessTo' lib/screens/web_app_screen.dart || { echo "ERRO: WebView iOS deve usar file:// (build 53)"; exit 1; }
@@ -212,17 +212,17 @@ workflows:
           BUILD_NUM=$(bash tool/ipa_bundle_version.sh "$IPA")
           SHORT_VER=$(bash tool/ipa_bundle_version.sh "$IPA" --short)
           echo "CFBundleVersion no IPA: ${BUILD_NUM} (obrigatorio ${IC24_BUILD_NUMBER}, > 59)"
-          echo "CFBundleShortVersionString no IPA: ${SHORT_VER} (obrigatorio ${IC24_BUILD_NAME}, > 2.0.1)"
-          if [ -z "${BUILD_NUM:-}" ] || [ "$BUILD_NUM" -le 66 ]; then
-            echo "ERRO: IPA build ${BUILD_NUM:-vazio} ? deve ser > 66 (DUPLICATE na Apple)"
+          echo "CFBundleShortVersionString no IPA: ${SHORT_VER} (obrigatorio ${IC24_BUILD_NAME}, > 2.0.2)"
+          if [ -z "${BUILD_NUM:-}" ] || [ "$BUILD_NUM" -le 72 ]; then
+            echo "ERRO: IPA build ${BUILD_NUM:-vazio} ? deve ser > 72 (DUPLICATE na Apple)"
             exit 1
           fi
           if [ "${BUILD_NUM}" != "${IC24_BUILD_NUMBER}" ]; then
             echo "ERRO: IPA ${BUILD_NUM} != ${IC24_BUILD_NUMBER}"
             exit 1
           fi
-          if [ -z "${SHORT_VER:-}" ] || [ "$SHORT_VER" = "2.0.0" ] || [ "$SHORT_VER" = "2.0.1" ]; then
-            echo "ERRO: versao marketing ${SHORT_VER:-vazia} ? trains 2.0.0/2.0.1 fechados na Apple"
+          if [ -z "${SHORT_VER:-}" ] || [ "$SHORT_VER" = "2.0.0" ] || [ "$SHORT_VER" = "2.0.1" ] || [ "$SHORT_VER" = "2.0.2" ]; then
+            echo "ERRO: versao marketing ${SHORT_VER:-vazia} ? trains 2.0.0–2.0.2 fechados na Apple"
             exit 1
           fi
           if [ "${SHORT_VER}" != "${IC24_BUILD_NAME}" ]; then
