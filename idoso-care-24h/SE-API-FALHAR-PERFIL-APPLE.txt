@@ -1,0 +1,9 @@
+Se o Codemagic ainda falhar na assinatura, SO voce consegue baixar 1 arquivo na Apple:
+
+1) Abra: https://developer.apple.com/account/resources/profiles/list
+2) Perfil "App Store" para com.idosocare24h.app (conta CMEDIC)
+3) Download -> renomeie: app_store.mobileprovision
+4) Coloque em: idoso-care-24h\ios\codemagic_signing\
+5) Me avise no Cursor "perfil colocado" — eu subo no GitHub por voce
+
+Enquanto isso: Codemagic pode tentar criar perfil sozinho (fix v6 no GitHub).
